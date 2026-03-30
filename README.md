@@ -31,6 +31,12 @@ Released builds can be manually downloaded from this repository's [Releases page
 
 ## Development
 
+### Checking for Outdated NuGet Packages
+```bash
+dotnet list UnityExtension/UnityExtension.csproj package --outdated
+```
+> `Microsoft.CommandPalette.Extensions` is pre-1.0 and iterates fast — review its changelog before updating, as minor version bumps may include breaking API changes.
+
 ### Parsing Recent Projects
 ```powershell
 # Beautify the history json
