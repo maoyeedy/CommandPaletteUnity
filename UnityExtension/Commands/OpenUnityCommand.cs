@@ -29,7 +29,9 @@ internal sealed partial class OpenUnityCommand : InvokableCommand
 
         if (string.IsNullOrEmpty(_editorPath) || !File.Exists(_editorPath))
         {
-            return CommandResult.ShowToast($"Unity {_projectVersion} not found. Please install through Unity Hub.");
+            return CommandResult.ShowToast(
+                $"Unity {_projectVersion} not found. Please install through Unity Hub."
+            );
         }
 
         try

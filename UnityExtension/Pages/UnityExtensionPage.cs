@@ -2,19 +2,20 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.CommandPalette.Extensions;
-using Microsoft.CommandPalette.Extensions.Toolkit;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace UnityExtension;
 
 internal sealed partial class UnityExtensionPage : ListPage
 {
     private readonly SettingsManager _settingsManager;
+
     public UnityExtensionPage(SettingsManager settingsManager)
     {
         _settingsManager = settingsManager;
@@ -35,12 +36,15 @@ internal sealed partial class UnityExtensionPage : ListPage
 
             if (projects.Count == 0)
             {
-                items.Add(new ListItem(new NoOpCommand())
-                {
-                    Title = "No Unity projects found",
-                    Subtitle = "Make sure you have Unity Hub installed and have opened projects with it",
-                    Icon = Resources.IconUrl
-                });
+                items.Add(
+                    new ListItem(new NoOpCommand())
+                    {
+                        Title = "No Unity projects found",
+                        Subtitle =
+                            "Make sure you have Unity Hub installed and have opened projects with it",
+                        Icon = Resources.IconUrl,
+                    }
+                );
             }
             else
             {
@@ -58,12 +62,14 @@ internal sealed partial class UnityExtensionPage : ListPage
         }
         catch (Exception ex)
         {
-            items.Add(new ListItem(new NoOpCommand())
-            {
-                Title = "Error loading Unity projects",
-                Subtitle = ex.Message,
-                Icon = Resources.IconUrl
-            });
+            items.Add(
+                new ListItem(new NoOpCommand())
+                {
+                    Title = "Error loading Unity projects",
+                    Subtitle = ex.Message,
+                    Icon = Resources.IconUrl,
+                }
+            );
         }
 
         IsLoading = false;
@@ -78,8 +84,8 @@ internal sealed partial class UnityExtensionPage : ListPage
         {
             new CommandContextItem(new OpenExplorerCommand(project))
             {
-                Title = "Open in File Explorer"
-            }
+                Title = "Open in File Explorer",
+            },
         };
 
         var tags = new List<Tag>();
@@ -96,7 +102,7 @@ internal sealed partial class UnityExtensionPage : ListPage
             Subtitle = project.Path,
             Icon = Resources.IconUnity,
             Tags = tags.ToArray(),
-            MoreCommands = contextCommands.ToArray()
+            MoreCommands = contextCommands.ToArray(),
         };
     }
 }

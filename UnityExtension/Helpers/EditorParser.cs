@@ -1,7 +1,7 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Win32;
 
 namespace UnityExtension;
 
@@ -17,20 +17,19 @@ public static class EditorParser
     internal static Dictionary<string, string> GetVersionToPathMapping()
     {
         var versionPathMap = new Dictionary<string, string>();
-        var regPaths = new[] {
-            Registry.CurrentUser,
-            Registry.LocalMachine
-        };
+        var regPaths = new[] { Registry.CurrentUser, Registry.LocalMachine };
         foreach (var hive in regPaths)
         {
             using var key = hive.OpenSubKey(@"SOFTWARE\Unity Technologies\Installer");
-            if (key == null) continue;
+            if (key == null)
+                continue;
             foreach (var subKeyName in key.GetSubKeyNames())
             {
                 using var subKey = key.OpenSubKey(subKeyName);
                 var version = subKey?.GetValue("Version") as string;
                 var installPath = subKey?.GetValue("Location x64") as string;
-                if (string.IsNullOrEmpty(version) || string.IsNullOrEmpty(installPath)) continue;
+                if (string.IsNullOrEmpty(version) || string.IsNullOrEmpty(installPath))
+                    continue;
                 versionPathMap.TryAdd(version, installPath);
             }
         }

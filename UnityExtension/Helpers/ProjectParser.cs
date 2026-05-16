@@ -33,10 +33,14 @@ public static class ProjectParser
                     var project = new UnityProject
                     {
                         Path = projectPath,
-                        Title = projectInfo.GetProperty("title").GetString() ?? Path.GetFileName(projectPath),
+                        Title =
+                            projectInfo.GetProperty("title").GetString()
+                            ?? Path.GetFileName(projectPath),
                         Version = projectInfo.GetProperty("version").GetString() ?? "Unknown",
                         LastModified = projectInfo.GetProperty("lastModified").GetInt64(),
-                        IsFavorite = projectInfo.TryGetProperty("isFavorite", out var isFavorite) && isFavorite.GetBoolean()
+                        IsFavorite =
+                            projectInfo.TryGetProperty("isFavorite", out var isFavorite)
+                            && isFavorite.GetBoolean(),
                     };
 
                     result.Add(project);

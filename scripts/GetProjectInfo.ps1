@@ -44,4 +44,3 @@ Get-UnityProjectsFromJson $testJsonPath
 # Learn-Command-Pattern          C:\Users\jerkl\UnityProjects\_\Learn-Command-Pattern  6000.0.42f1    True
 # Unity6-RendererFeatureExample  C:\Users\jerkl\UnityProjects\_\Unity6-RendererFeat... 2022.3.51f1    False
 # Unity6-VRS-ShadingRate         C:\Users\jerkl\UnityProjects\_\Unity6-VRS-ShadingRate 6000.1.0f1     False
-

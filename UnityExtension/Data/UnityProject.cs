@@ -1,4 +1,5 @@
 ﻿namespace UnityExtension;
+
 internal sealed record UnityProject
 {
     public string Path { get; init; } = string.Empty;

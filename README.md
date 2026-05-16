@@ -42,7 +42,7 @@ Supporting docs:
 ## TODO
 
 - [x] Settings to sort/filter list output
-- [ ] Visual Polish: resolve $HOME/~; remove 'Favorite' text 
+- [ ] Visual Polish: resolve $HOME/~; remove 'Favorite' text
 - [ ] Fallback dialog if editor not installed
 - [ ] Open project with another Unity version
 - [ ] Sub-command to list installed Unity versions + paths
