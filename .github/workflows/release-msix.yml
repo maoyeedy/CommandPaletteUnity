@@ -3,10 +3,14 @@ name: Release MSIX
 on:
   push:
     tags:
-      - "v*"
+      - "v[0-9]*"
 
 permissions:
   contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build-sign-release:
@@ -19,10 +23,65 @@ jobs:
     env:
       PROJECT_PATH: UnityExtension\UnityExtension.csproj
       PACKAGE_DIR: UnityExtension\BundleArtifacts
+      DOTNET_VERSION: 10.0.x
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/Directory.Packages.props', '**/Directory.Build.props', '**/*.csproj', '**/nuget.config') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Dump SDK info
+        run: dotnet --info
+
+      - name: Validate release version
+        run: |
+          $tagVersion = "${{ github.ref_name }}" -replace '^v', ''
+
+          [xml]$project = Get-Content -LiteralPath $env:PROJECT_PATH -Raw
+          $versionGroup = @($project.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1)
+          if (-not $versionGroup) {
+            throw "Could not find Version properties in $env:PROJECT_PATH."
+          }
+
+          $projectVersion = [string]$versionGroup.Version
+          $assemblyVersion = [string]$versionGroup.AssemblyVersion
+          $fileVersion = [string]$versionGroup.FileVersion
+
+          $manifestPath = Join-Path (Split-Path -Parent $env:PROJECT_PATH) 'Package.appxmanifest'
+          [xml]$manifest = Get-Content -LiteralPath $manifestPath -Raw
+          $manifestVersion = [string]$manifest.Package.Identity.Version
+
+          if ($projectVersion -ne $tagVersion) {
+            throw "Tag version '$tagVersion' does not match project Version '$projectVersion'."
+          }
+
+          $expectedFourPartVersion = "$tagVersion.0"
+          if ($assemblyVersion -ne $expectedFourPartVersion) {
+            throw "AssemblyVersion '$assemblyVersion' does not match expected '$expectedFourPartVersion'."
+          }
+
+          if ($fileVersion -ne $expectedFourPartVersion) {
+            throw "FileVersion '$fileVersion' does not match expected '$expectedFourPartVersion'."
+          }
+
+          if ($manifestVersion -ne $expectedFourPartVersion) {
+            throw "Package.appxmanifest Identity Version '$manifestVersion' does not match expected '$expectedFourPartVersion'."
+          }
 
       - name: Restore signing certificate from secret
         env:
@@ -39,7 +98,7 @@ jobs:
 
           New-Item -ItemType Directory -Force -Path $env:PACKAGE_DIR | Out-Null
 
-          $pfxPath = Join-Path $env:PACKAGE_DIR 'Maoyeedy-MSIX-LocalDev.pfx'
+          $pfxPath = Join-Path $env:RUNNER_TEMP 'Maoyeedy-MSIX-LocalDev.pfx'
           [IO.File]::WriteAllBytes($pfxPath, [Convert]::FromBase64String($env:MSIX_PFX_BASE64))
           "PFX_PATH=$pfxPath" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
@@ -57,20 +116,21 @@ jobs:
 
           "CER_PATH=$cerPath" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
+      - name: Restore NuGet packages
+        run: dotnet restore $env:PROJECT_PATH
+
       - name: Build MSIX bundle
-        env:
-          MSIX_PFX_PASSWORD: ${{ secrets.MSIX_PFX_PASSWORD }}
         run: |
           dotnet build $env:PROJECT_PATH `
+            --no-restore `
             -c Release `
             -p:Platform=x64 `
             -p:GenerateAppxPackageOnBuild=true `
             -p:AppxBundle=Always `
             -p:AppxBundlePlatforms='x64|arm64' `
             -p:AppxPackageDir=$env:PACKAGE_DIR\ `
-            -p:AppxPackageSigningEnabled=true `
-            -p:PackageCertificateKeyFile=$env:PFX_PATH `
-            -p:PackageCertificatePassword=$env:MSIX_PFX_PASSWORD
+            -p:AppxPackageSigningEnabled=false `
+            -p:SuppressSdkNoise=false
 
       - name: Find MSIX bundle
         id: bundle
@@ -88,13 +148,15 @@ jobs:
 
       - name: Locate SignTool
         run: |
-          $signtool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin" -Recurse -Filter signtool.exe -ErrorAction SilentlyContinue |
+          $kitsRoot = Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots' -Name KitsRoot10 -ErrorAction Stop
+          $sdkBinRoot = Join-Path $kitsRoot.KitsRoot10 'bin'
+          $signtool = Get-ChildItem -Path $sdkBinRoot -Recurse -Filter signtool.exe -ErrorAction SilentlyContinue |
             Where-Object { $_.FullName -match '\\x64\\signtool\.exe$' } |
             Sort-Object FullName -Descending |
             Select-Object -First 1
 
           if (-not $signtool) {
-            throw 'signtool.exe not found. Install the Windows SDK or use a runner image that includes it.'
+            throw "signtool.exe not found under $sdkBinRoot. Install the Windows SDK."
           }
 
           "SIGNTOOL=$($signtool.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
@@ -124,7 +186,7 @@ jobs:
           }
 
       - name: Upload workflow artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: signed-msix
           path: |
@@ -137,10 +199,17 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = "${{ github.ref_name }}"
+          $prev = git describe --tags --abbrev=0 "$tag^" 2>$null
+          $notes = if ($prev) {
+            $log = git log "$prev..$tag" --oneline --no-decorate
+            "Changes since ${prev}:`n$log"
+          } else {
+            "Automated MSIX release for $tag"
+          }
 
           gh release view $tag 2>$null
           if ($LASTEXITCODE -ne 0) {
-            gh release create $tag --title $tag --notes "Automated MSIX release for $tag"
+            gh release create $tag --title $tag --notes $notes
           }
 
           gh release upload $tag ${{ steps.bundle.outputs.path }} $env:CER_PATH --clobber
