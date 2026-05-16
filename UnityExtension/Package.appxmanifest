@@ -1,17 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <Package
-  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
-  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
-  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
-  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
-  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap uap3 rescap">
+    xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+    xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+    xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+    xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
+    xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+    IgnorableNamespaces="uap uap3 rescap"
+>
 
-  <Identity
-    Name="UnityForCmdPal"
-    Publisher="CN=Yidi Mao"
-    Version="0.0.1.0" />
+  <Identity Name="UnityForCmdPal" Publisher="CN=Yidi Mao" Version="0.1.0.0" />
 
   <Properties>
     <DisplayName>Command Palette - Unity</DisplayName>
@@ -20,48 +17,74 @@
   </Properties>
 
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.19041.0" MaxVersionTested="10.0.19041.0" />
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.19041.0" />
+    <TargetDeviceFamily
+            Name="Windows.Universal"
+            MinVersion="10.0.19041.0"
+            MaxVersionTested="10.0.19041.0"
+        />
+    <TargetDeviceFamily
+            Name="Windows.Desktop"
+            MinVersion="10.0.19041.0"
+            MaxVersionTested="10.0.19041.0"
+        />
   </Dependencies>
 
   <Resources>
-    <Resource Language="x-generate"/>
+    <Resource Language="x-generate" />
   </Resources>
 
   <Applications>
-    <Application Id="App"
-      Executable="$targetnametoken$.exe"
-      EntryPoint="$targetentrypoint$">
+    <Application
+            Id="App"
+            Executable="$targetnametoken$.exe"
+            EntryPoint="$targetentrypoint$"
+        >
       <uap:VisualElements
-        DisplayName="Command Palette - Unity"
-        Description="Unity extension for Command Palette"
-        BackgroundColor="transparent"
-        Square150x150Logo="Assets\Square150x150Logo.png"
-        Square44x44Logo="Assets\Square44x44Logo.png">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"  Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png"/>
+                DisplayName="Command Palette - Unity"
+                Description="Unity extension for Command Palette"
+                BackgroundColor="transparent"
+                Square150x150Logo="Assets\Square150x150Logo.png"
+                Square44x44Logo="Assets\Square44x44Logo.png"
+            >
+        <uap:DefaultTile
+                    Wide310x150Logo="Assets\Wide310x150Logo.png"
+                    Square71x71Logo="Assets\SmallTile.png"
+                    Square310x310Logo="Assets\LargeTile.png"
+                />
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
-            <com:ExeServer Executable="UnityExtension.exe" Arguments="-RegisterProcessAsComServer" DisplayName="Unity Projects">
-              <com:Class Id="69f66764-760b-4031-8f20-f71edef2dac5" DisplayName="Unity Projects" />
+            <com:ExeServer
+                            Executable="UnityExtension.exe"
+                            Arguments="-RegisterProcessAsComServer"
+                            DisplayName="Unity Projects"
+                        >
+              <com:Class
+                                Id="69f66764-760b-4031-8f20-f71edef2dac5"
+                                DisplayName="Unity Projects"
+                            />
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
         <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="com.microsoft.commandpalette"
-            Id="ID"
-            PublicFolder="Public"
-            DisplayName="Unity Projects"
-            Description="Unity projects extension for cmdpal">
+          <uap3:AppExtension
+                        Name="com.microsoft.commandpalette"
+                        Id="ID"
+                        PublicFolder="Public"
+                        DisplayName="Unity Projects"
+                        Description="Unity projects extension for cmdpal"
+                    >
             <uap3:Properties>
               <CmdPalProvider>
                 <Activation>
-                  <CreateInstance ClassId="69f66764-760b-4031-8f20-f71edef2dac5" />
+                  <CreateInstance
+                                        ClassId="69f66764-760b-4031-8f20-f71edef2dac5"
+                                    />
                 </Activation>
                 <SupportedInterfaces>
-                  <Commands/>
+                  <Commands />
                 </SupportedInterfaces>
               </CmdPalProvider>
             </uap3:Properties>
