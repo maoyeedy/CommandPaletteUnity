@@ -353,3 +353,5 @@ src/common/Telemetry/*.etl
 
 # MSBuildCache
 /MSBuildCacheLogs/
+
+/scripts/
