@@ -7,6 +7,14 @@ dotnet build UnityExtension/UnityExtension.csproj -c Debug -p:Platform=x64
 dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64
 ```
 
+Trim / AOT notes:
+
+- `IL2081` / `IL2104` from `ABI.Windows.Foundation.*`, `ABI.System.Collections.Generic.*`, `WinRT.Marshaler<...>` — known CsWinRT / Windows SDK projection warnings.
+- Treated as non-fatal via `WarningsNotAsErrors` but still appear in build output.
+- CsWinRT / Windows SDK projection noise suppressed by default for local publishes via `SuppressSdkNoise=true`.
+- Use `-p:SuppressSdkNoise=false` to review full trim / AOT warning output.
+- Avoid broad linker suppression for release validation; verify package loads + runs in PowerToys.
+
 ## Test
 
 ```bash

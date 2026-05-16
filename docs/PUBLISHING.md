@@ -8,13 +8,21 @@ Use latest Microsoft Learn / PowerToys docs for packaging + publishing.
 
 ```bash
 dotnet publish UnityExtension/UnityExtension.csproj -c Debug -p:Platform=x64
-dotnet publish UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64
+dotnet publish UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:TrimmerSingleWarn=false
 ```
+
+CsWinRT / linker noise suppressed by default for local publish commands. To inspect full trim output:
+
+```bash
+dotnet publish UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:TrimmerSingleWarn=false -p:SuppressSdkNoise=false
+```
+
+Keep default suppression for local smoke tests; turn off for warning review + compatibility checks.
 
 Package directly:
 
 ```bash
-dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:GenerateAppxPackageOnBuild=true
+dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:GenerateAppxPackageOnBuild=true -p:TrimmerSingleWarn=false
 ```
 
 Clean reinstall of packaged build - remove previous MSIX first:

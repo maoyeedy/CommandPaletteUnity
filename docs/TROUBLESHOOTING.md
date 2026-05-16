@@ -40,6 +40,12 @@ Check Unity Editor path resolution + registry lookup.
 
 Recheck restore, trim / AOT warnings, packaging, manifest behavior.
 
+Known non-fatal warnings:
+
+- `IL2081` / `IL2104` from CsWinRT / Windows SDK projection code safe to ignore if package installs + runs.
+- `mspdbcmf.exe could not be found` means symbols package not generated; app bundle still valid.
+- Local publish commands suppress trim warnings by default; use `-p:SuppressSdkNoise=false` to inspect.
+
 If `dotnet-outdated.exe` suggests newer `Microsoft.WindowsAppSDK`, treat as compatibility check, not automatic upgrade.
 
 If Release packaging fails with `WindowsPackageType=None` + `GenerateAppxPackageOnBuild=true`, remove hard `None` for build path.

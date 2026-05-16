@@ -33,6 +33,8 @@ Local workflow:
 2. Register: `Add-AppxPackage -Register` against debug `AppxManifest.xml`
 3. Restart PowerToys
 
+SDK trim noise suppressed by default for local publishes. To see full CsWinRT / linker output, pass `-p:SuppressSdkNoise=false`.
+
 Supporting docs:
 
 - [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)

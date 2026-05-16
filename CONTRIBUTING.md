@@ -14,6 +14,7 @@ Start here if you want to work on the project.
 - Keep changes small and focused.
 - Preserve manifest / CLSID consistency between `UnityExtension.cs` and `Package.appxmanifest`.
 - Keep code trim-safe and AOT-compatible.
+- Treat CsWinRT / Windows SDK projection warnings (`IL2081` / `IL2104`) as non-fatal unless runtime issue proves otherwise. Local publish defaults suppress; use `SuppressSdkNoise=false` only for trim review.
 - Avoid reflection-heavy patterns unless the upstream SDK requires them.
 - Do not hardcode package versions in project files if centralized package management is used.
 
