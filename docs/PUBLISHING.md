@@ -4,95 +4,118 @@
 
 Use latest Microsoft Learn / PowerToys docs for packaging + publishing.
 
-## Local publish
+## Package build
 
 ```bash
-dotnet publish UnityExtension/UnityExtension.csproj -c Debug -p:Platform=x64
-dotnet publish UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:TrimmerSingleWarn=false
+dotnet build UnityExtension/UnityExtension.csproj \
+  -c Release -p:Platform=x64 \
+  -p:GenerateAppxPackageOnBuild=true \
+  -p:AppxBundle=Always \
+  -p:AppxBundlePlatforms="x64|arm64" \
+  -p:SuppressSdkNoise=true
 ```
 
-CsWinRT / linker noise suppressed by default for local publish commands. To inspect full trim output:
+Output: `AppPackages/<version>_Test/*.msixbundle`
+
+For full trim/AOT warnings before submission:
 
 ```bash
-dotnet publish UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:TrimmerSingleWarn=false -p:SuppressSdkNoise=false
+# omit SuppressSdkNoise and add TrimmerSingleWarn=false
+dotnet build UnityExtension/UnityExtension.csproj \
+  -c Release -p:Platform=x64 \
+  -p:GenerateAppxPackageOnBuild=true \
+  -p:AppxBundle=Always \
+  -p:AppxBundlePlatforms="x64|arm64" \
+  -p:SuppressSdkNoise=false \
+  -p:TrimmerSingleWarn=false
 ```
 
-Keep default suppression for local smoke tests; turn off for warning review + compatibility checks.
+## Package identity
 
-Package directly:
+`Package.appxmanifest` Identity values **must** match Partner Center:
 
-```bash
-dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:GenerateAppxPackageOnBuild=true -p:TrimmerSingleWarn=false
+- `Name` — the reserved Partner Center identity name
+- `Publisher` — `CN=<GUID>` from Partner Center
+- `Version` — four-part, fourth segment always `.0`
+
+`.csproj` properties mirror these:
+
+```xml
+<AppxPackageIdentityName>PartnerCenterName</AppxPackageIdentityName>
+<AppxPackagePublisher>CN=<GUID></AppxPackagePublisher>
 ```
 
-Clean reinstall of packaged build - remove previous MSIX first:
+## Signing
+
+### Local dev
+
+`GenerateTemporaryStoreCertificate=True` in `.csproj` auto-creates a temp cert matching the manifest `Publisher`. No thumbprint needed for `dotnet build`.
+
+### Store submission
+
+The Store re-signs your package — a self-signed cert whose `Subject` matches the manifest `Publisher` is sufficient for build.
+
+Create once:
 
 ```powershell
-Get-AppxPackage *UnityForCmdPal* | Remove-AppxPackage
+New-SelfSignedCertificate -Type Custom -KeyUsage DigitalSignature `
+  -Subject "CN=<PublisherGUID>" `
+  -FriendlyName "YourApp Store Signing" `
+  -CertStoreLocation "Cert:\CurrentUser\My" `
+  -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3","2.5.29.19={text}")
 ```
 
-Install latest bundle:
+Build with matching cert:
+
+```powershell
+$thumb = Get-ChildItem Cert:\CurrentUser\My | Where-Object { $_.Subject -like '*<PublisherGUID>*' } | Select-Object -First 1 -ExpandProperty Thumbprint
+dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:GenerateAppxPackageOnBuild=true -p:AppxBundle=Always -p:AppxBundlePlatforms="x64|arm64" -p:SuppressSdkNoise=true -p:PackageCertificateThumbprint=$thumb
+```
+
+## Install for testing
+
+Remove old package first:
+
+```powershell
+Get-AppxPackage *CommandPalette-Unity* | Remove-AppxPackage
+```
+
+Install the bundle:
 
 ```powershell
 Add-AppxPackage -Path "AppPackages\UnityExtension_*\UnityExtension_*.msixbundle"
 ```
 
-After install, reload Command Palette or restart PowerToys.
+Reload Command Palette or restart PowerToys after install.
 
 ## Release checks
 
-- manifest identity values correct
+- manifest identity values match Partner Center
 - CLSID matches across `UnityExtension.cs` + `Package.appxmanifest`
-- signing configured correctly
-- x64 / arm64 outputs correct if shipping both
+- cert `Subject` matches manifest `Publisher`
+- x64 / arm64 outputs present in bundle
 - extension loads after install
 - debug deployment uses `Add-AppxPackage -Register` with `AppxManifest.xml`
-- if `GenerateAppxPackageOnBuild=true`, avoid forcing `WindowsPackageType=None`
 
 ## Distribution
 
-Options: WinGet, Microsoft Store, or self-hosted GitHub Releases.
+Options: Microsoft Store, WinGet, or self-hosted GitHub Releases.
 
-### GitHub Releases release flow
+### GitHub Releases flow
 
-The repository uses a tag-triggered workflow on `v*` tags. On release, GitHub Actions:
+Tag-triggered workflow on `v*` tags. GitHub Actions builds the MSIX bundle, signs with a PFX from secrets, and uploads the `.msixbundle` + public `.cer` as release assets.
 
-1. builds the MSIX bundle into `UnityExtension\BundleArtifacts`
-2. restores the reusable local-dev PFX from secrets
-3. signs the `.msixbundle`
-4. verifies the signature
-5. uploads the bundle and the public `.cer` as release assets
+For local-dev tester trust, keep one reusable signing cert and store the private key in GitHub Actions secrets:
+- `MSIX_PFX_BASE64` — the `.pfx` as base64
+- `MSIX_PFX_PASSWORD` — the PFX password
+- `UnityExtension\BundleArtifacts\Maoyeedy-MSIX-LocalDev.cer` — public certificate for testers
 
-### Local-dev tester trust flow
+## CmdPal gallery submission
 
-For sideloading tests, keep one reusable signing cert and store the private key in GitHub Actions secrets:
-
-- private key: store in GitHub Actions secrets as `MSIX_PFX_BASE64`
-- password: store in GitHub Actions secrets as `MSIX_PFX_PASSWORD`
-- public certificate: keep `UnityExtension\BundleArtifacts\Maoyeedy-MSIX-LocalDev.cer` for testers
-
-If you need to create or refresh the secrets from a local `.pfx`, run:
-
-```powershell
-[Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\Signing\UnityExtension-CI-Signing.pfx")) |
-  gh secret set MSIX_PFX_BASE64
-
-gh secret set MSIX_PFX_PASSWORD
-```
-
-For local install, remove the existing package first:
-
-```powershell
-Get-AppxPackage *UnityForCmdPal* | Remove-AppxPackage
-Add-AppxPackage -Path "AppPackages\UnityExtension_*\UnityExtension_*.msixbundle"
-```
-
-## CmdPal gallery submission prep
-
-The gallery submission files are prepared under:
+Gallery metadata lives at:
 
 - `gallery/maoyeedy/cmdpal-unity-extension/extension.json`
 - `gallery/maoyeedy/cmdpal-unity-extension/icon.png`
 - `gallery/maoyeedy/cmdpal-unity-extension/screenshots/01-main.png`
 
-The gallery metadata uses a `url` install source pointing at the GitHub Releases page. Update it if the release URL changes.
+The `url` install source points at the GitHub Releases page. Update it if the release URL changes.

@@ -13,7 +13,7 @@ Local debug: rebuild with `-p:Platform=x64`, re-register with `Add-AppxPackage -
 Release validation: remove old version first:
 
 ```powershell
-Get-AppxPackage *UnityForCmdPal* | Remove-AppxPackage
+Get-AppxPackage *CommandPalette-Unity* | Remove-AppxPackage
 ```
 
 Install produced bundle:

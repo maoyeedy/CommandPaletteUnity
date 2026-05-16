@@ -355,3 +355,6 @@ src/common/Telemetry/*.etl
 /MSBuildCacheLogs/
 
 /scripts/
+
+# Local Store identity (private partner center data)
+docs/store-identity.md

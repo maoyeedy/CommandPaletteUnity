@@ -7,6 +7,12 @@ dotnet build UnityExtension/UnityExtension.csproj -c Debug -p:Platform=x64
 dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64
 ```
 
+For packaged MSIX output (local dev — no thumbprint needed, `GenerateTemporaryStoreCertificate` in csproj handles it):
+
+```bash
+dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:GenerateAppxPackageOnBuild=true -p:AppxBundle=Always -p:AppxBundlePlatforms="x64|arm64" -p:SuppressSdkNoise=true
+```
+
 Trim / AOT notes:
 
 - `IL2081` / `IL2104` from `ABI.Windows.Foundation.*`, `ABI.System.Collections.Generic.*`, `WinRT.Marshaler<...>` — known CsWinRT / Windows SDK projection warnings.
@@ -40,7 +46,8 @@ Watch VS Output window, use temp logging if needed.
 
 - Keep `UnityExtension.cs` + `Package.appxmanifest` aligned
 - CLSID must match in COM server + app extension registration
-- Use `dotnet publish` or `dotnet build ... -p:GenerateAppxPackageOnBuild=true` for packaged output
+- Package identity (`Name`, `Publisher`) must match Partner Center reserved values
+- `GenerateTemporaryStoreCertificate=True` in csproj for local dev; pass `PackageCertificateThumbprint` for Store-signing cert
 - If `GenerateAppxPackageOnBuild=true`, do not force `WindowsPackageType=None`
 - Local deployment: `Add-AppxPackage -Register` against debug `AppxManifest.xml`
 - Prefer current Microsoft Learn packaging guidance over old repo scripts
