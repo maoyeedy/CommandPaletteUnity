@@ -8,7 +8,7 @@
     IgnorableNamespaces="uap uap3 rescap"
 >
 
-  <Identity Name="UnityForCmdPal" Publisher="CN=Yidi Mao" Version="0.1.0.0" />
+  <Identity Name="UnityForCmdPal" Publisher="CN=Yidi Mao" Version="0.1.1.0" />
 
   <Properties>
     <DisplayName>Command Palette - Unity</DisplayName>
