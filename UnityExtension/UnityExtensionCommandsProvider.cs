@@ -15,7 +15,7 @@ public partial class UnityExtensionCommandsProvider : CommandProvider
     public UnityExtensionCommandsProvider()
     {
         DisplayName = "Unity Projects";
-        Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.png");
+        Icon = Resources.IconUnity;
 
         Settings = _settingsManager.Settings;
         _commands =

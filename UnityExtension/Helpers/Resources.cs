@@ -14,5 +14,4 @@ public static class Resources
 
     public static IconInfo IconUrl => new("\uE8A7");
     public static IconInfo IconUnity => IconHelpers.FromRelativePath("Assets\\UnityLogo.png");
-    public static IconInfo IconUnityHub => IconHelpers.FromRelativePath("Assets\\StoreLogo.png");
 }
