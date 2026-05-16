@@ -1,7 +1,7 @@
 # Command Palette (CmdPal) Unity Extension
 
 ## Overview
-Command Palette extension for opening Unity Hub recent projects.
+Command Palette extension for opening Unity Hub recent projects.[^1]
 
 ![Screenshot](docs/assets/Screenshot.png)
 
@@ -33,8 +33,6 @@ Local workflow:
 2. Register: `Add-AppxPackage -Register` against debug `AppxManifest.xml`
 3. Restart PowerToys
 
-SDK trim noise suppressed by default for local publishes. To see full CsWinRT / linker output, pass `-p:SuppressSdkNoise=false`.
-
 Supporting docs:
 
 - [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)
@@ -48,3 +46,5 @@ Supporting docs:
 - [ ] Open project with another Unity version
 - [ ] Sub-command to list installed Unity versions + paths
 - [ ] Overwrite timestamp in Unity Hub JSON
+
+[^1]: Not affiliated with Unity Technologies. This extension only uses local Unity Hub json metadata.
