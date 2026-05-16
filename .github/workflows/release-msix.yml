@@ -1,0 +1,146 @@
+name: Release MSIX
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-sign-release:
+    runs-on: windows-2022
+
+    defaults:
+      run:
+        shell: pwsh
+
+    env:
+      PROJECT_PATH: UnityExtension\UnityExtension.csproj
+      PACKAGE_DIR: UnityExtension\BundleArtifacts
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore signing certificate from secret
+        env:
+          MSIX_PFX_BASE64: ${{ secrets.MSIX_PFX_BASE64 }}
+          MSIX_PFX_PASSWORD: ${{ secrets.MSIX_PFX_PASSWORD }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:MSIX_PFX_BASE64)) {
+            throw 'MSIX_PFX_BASE64 secret is missing.'
+          }
+
+          if ([string]::IsNullOrWhiteSpace($env:MSIX_PFX_PASSWORD)) {
+            throw 'MSIX_PFX_PASSWORD secret is missing.'
+          }
+
+          New-Item -ItemType Directory -Force -Path $env:PACKAGE_DIR | Out-Null
+
+          $pfxPath = Join-Path $env:PACKAGE_DIR 'Maoyeedy-MSIX-LocalDev.pfx'
+          [IO.File]::WriteAllBytes($pfxPath, [Convert]::FromBase64String($env:MSIX_PFX_BASE64))
+          "PFX_PATH=$pfxPath" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+          $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new(
+            $pfxPath,
+            $env:MSIX_PFX_PASSWORD,
+            [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable
+          )
+
+          $cerPath = Join-Path $env:PACKAGE_DIR 'Maoyeedy-MSIX-LocalDev.cer'
+          [IO.File]::WriteAllBytes(
+            $cerPath,
+            $cert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert)
+          )
+
+          "CER_PATH=$cerPath" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Build MSIX bundle
+        env:
+          MSIX_PFX_PASSWORD: ${{ secrets.MSIX_PFX_PASSWORD }}
+        run: |
+          dotnet build $env:PROJECT_PATH `
+            -c Release `
+            -p:Platform=x64 `
+            -p:GenerateAppxPackageOnBuild=true `
+            -p:AppxBundle=Always `
+            -p:AppxBundlePlatforms='x64|arm64' `
+            -p:AppxPackageDir=$env:PACKAGE_DIR\ `
+            -p:AppxPackageSigningEnabled=true `
+            -p:PackageCertificateKeyFile=$env:PFX_PATH `
+            -p:PackageCertificatePassword=$env:MSIX_PFX_PASSWORD
+
+      - name: Find MSIX bundle
+        id: bundle
+        run: |
+          $bundle = Get-ChildItem -Path $env:PACKAGE_DIR -Recurse -Filter *.msixbundle |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -First 1
+
+          if (-not $bundle) {
+            throw "No .msixbundle found under $env:PACKAGE_DIR"
+          }
+
+          "path=$($bundle.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "name=$($bundle.Name)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: Locate SignTool
+        run: |
+          $signtool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin" -Recurse -Filter signtool.exe -ErrorAction SilentlyContinue |
+            Where-Object { $_.FullName -match '\\x64\\signtool\.exe$' } |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1
+
+          if (-not $signtool) {
+            throw 'signtool.exe not found. Install the Windows SDK or use a runner image that includes it.'
+          }
+
+          "SIGNTOOL=$($signtool.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Sign MSIX bundle
+        env:
+          MSIX_PFX_PASSWORD: ${{ secrets.MSIX_PFX_PASSWORD }}
+        run: |
+          & $env:SIGNTOOL sign `
+            /fd SHA256 `
+            /f $env:PFX_PATH `
+            /p $env:MSIX_PFX_PASSWORD `
+            /tr http://timestamp.digicert.com `
+            /td SHA256 `
+            ${{ steps.bundle.outputs.path }}
+
+          if ($LASTEXITCODE -ne 0) {
+            throw "SignTool signing failed with exit code $LASTEXITCODE"
+          }
+
+      - name: Verify MSIX bundle
+        run: |
+          & $env:SIGNTOOL verify /pa /v ${{ steps.bundle.outputs.path }}
+
+          if ($LASTEXITCODE -ne 0) {
+            throw "SignTool verification failed with exit code $LASTEXITCODE"
+          }
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed-msix
+          path: |
+            ${{ steps.bundle.outputs.path }}
+            ${{ env.CER_PATH }}
+          if-no-files-found: error
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ github.ref_name }}"
+
+          gh release view $tag 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $tag --title $tag --notes "Automated MSIX release for $tag"
+          }
+
+          gh release upload $tag ${{ steps.bundle.outputs.path }} $env:CER_PATH --clobber

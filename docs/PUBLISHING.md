@@ -52,6 +52,34 @@ After install, reload Command Palette or restart PowerToys.
 ## Distribution
 
 Options: WinGet, Microsoft Store, or self-hosted GitHub Releases.
+
+### GitHub Releases release flow
+
+The repository uses a tag-triggered workflow on `v*` tags. On release, GitHub Actions:
+
+1. builds the MSIX bundle into `UnityExtension\BundleArtifacts`
+2. restores the reusable local-dev PFX from secrets
+3. signs the `.msixbundle`
+4. verifies the signature
+5. uploads the bundle and the public `.cer` as release assets
+
+### Local-dev tester trust flow
+
+For sideloading tests, keep one reusable signing cert and store the private key in GitHub Actions secrets:
+
+- private key: store in GitHub Actions secrets as `MSIX_PFX_BASE64`
+- password: store in GitHub Actions secrets as `MSIX_PFX_PASSWORD`
+- public certificate: keep `UnityExtension\BundleArtifacts\Maoyeedy-MSIX-LocalDev.cer` for testers
+
+If you need to create or refresh the secrets from a local `.pfx`, run:
+
+```powershell
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\Signing\UnityExtension-CI-Signing.pfx")) |
+  gh secret set MSIX_PFX_BASE64
+
+gh secret set MSIX_PFX_PASSWORD
+```
+
 For local install, remove the existing package first:
 
 ```powershell
