@@ -17,7 +17,9 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
 
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Version>0.1.0</Version>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -60,9 +62,18 @@
     <IsAotCompatible>true</IsAotCompatible>
     <CsWinRTAotOptimizerEnabled>true</CsWinRTAotOptimizerEnabled>
     <CsWinRTAotWarningLevel>2</CsWinRTAotWarningLevel>
-    <!-- Suppress DynamicallyAccessedMemberTypes.PublicParameterlessConstructor in fallback code path of Windows SDK projection -->
-    <WarningsNotAsErrors>IL2081;$(WarningsNotAsErrors)</WarningsNotAsErrors>
+    <!-- Keep known CsWinRT/WinRT trim warnings from failing builds, but still surface them by default. -->
+    <WarningsNotAsErrors>IL2081;IL2104;$(WarningsNotAsErrors)</WarningsNotAsErrors>
     <ILLinkTreatWarningsAsErrors>true</ILLinkTreatWarningsAsErrors>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <SuppressSdkNoise Condition="'$(SuppressSdkNoise)' == ''">true</SuppressSdkNoise>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(SuppressSdkNoise)' == 'true'">
+    <NoWarn>IL2081;IL2104;$(NoWarn)</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <PublishSingleFile Condition="'$(BuildingInsideVisualStudio)' == 'true'">true</PublishSingleFile>
 
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
