@@ -1,0 +1,44 @@
+default_install_hook_types: [pre-commit, pre-push]
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-json
+      - id: check-xml
+        files: \.(xml|csproj|props|targets|appxmanifest)$
+        types: [file]
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+
+  - repo: local
+    hooks:
+      - id: csharpier
+        name: csharpier check
+        language: system
+        entry: dotnet tool run csharpier check .
+        pass_filenames: false
+        files: \.cs$
+
+      - id: dotnet-format-analyzers
+        name: dotnet format analyzers
+        language: system
+        entry: dotnet format analyzers UnityExtension/UnityExtension.csproj --verify-no-changes
+        pass_filenames: false
+        files: \.cs$
+        stages: [pre-push]
+
+      - id: dotnet-vuln
+        name: dotnet list vulnerabilities
+        language: system
+        entry: dotnet list UnityExtension/UnityExtension.csproj package --vulnerable --include-transitive
+        pass_filenames: false
+        files: \.csproj$
+        stages: [pre-push]

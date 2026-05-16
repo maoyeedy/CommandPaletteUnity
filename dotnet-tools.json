@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "csharpier": {
+      "version": "1.2.6",
+      "commands": [
+        "csharpier"
+      ],
+      "rollForward": false
+    },
+    "minver-cli": {
+      "version": "7.0.0",
+      "commands": [
+        "minver"
+      ],
+      "rollForward": false
+    }
+  }
+}

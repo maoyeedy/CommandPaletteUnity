@@ -1,0 +1,6 @@
+**/*.csproj
+**/*.props
+**/*.targets
+**/*.config
+**/*.appxmanifest
+**/*.xml
