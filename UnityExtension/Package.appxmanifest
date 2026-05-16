@@ -8,11 +8,11 @@
     IgnorableNamespaces="uap uap3 rescap"
 >
 
-  <Identity Name="UnityForCmdPal" Publisher="CN=Yidi Mao" Version="0.1.1.0" />
+  <Identity Name="YidiMao.CommandPalette-Unity" Publisher="CN=14082027-D5E5-4961-AD08-D8C58587DB71" Version="0.1.1.0" />
 
   <Properties>
     <DisplayName>Command Palette - Unity</DisplayName>
-    <PublisherDisplayName>Maoyeedy</PublisherDisplayName>
+    <PublisherDisplayName>Yidi Mao</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -95,7 +95,6 @@
   </Applications>
 
   <Capabilities>
-    <Capability Name="internetClient" />
     <rescap:Capability Name="runFullTrust" />
   </Capabilities>
 </Package>

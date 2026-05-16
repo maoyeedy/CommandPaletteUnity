@@ -20,7 +20,7 @@ Download releases from [Releases page](https://github.com/maoyeedy/CmdPalUnityEx
 Before sideloading new bundle, remove current package:
 
 ```powershell
-Get-AppxPackage *UnityForCmdPal* | Remove-AppxPackage
+Get-AppxPackage *CommandPalette-Unity* | Remove-AppxPackage
 ```
 
 ## Contributing and development
