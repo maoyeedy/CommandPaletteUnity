@@ -1,6 +1,6 @@
-# Privacy Policy for Unity Project Launcher for PowerToys
+# Privacy Policy for Project Launcher for Unity
 
-Unity Project Launcher for PowerToys is a Microsoft PowerToys Command Palette extension for finding and opening local Unity projects.
+Project Launcher for Unity is a Microsoft PowerToys Command Palette extension for finding and opening local Unity projects.
 
 ## Data accessed by the app
 
@@ -16,7 +16,7 @@ The app uses this local Unity Hub project information only to display Unity proj
 
 ## Data collection and transmission
 
-Unity Project Launcher for PowerToys does not collect, upload, sell, share, or transmit Unity project information to the developer or to any third party.
+Project Launcher for Unity does not collect, upload, sell, share, or transmit Unity project information to the developer or to any third party.
 
 The app does not require a user account and does not include analytics, advertising, or telemetry.
 

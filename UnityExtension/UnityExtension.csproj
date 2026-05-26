@@ -17,9 +17,9 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
 
-    <Version>0.1.2</Version>
-    <AssemblyVersion>0.1.2.0</AssemblyVersion>
-    <FileVersion>0.1.2.0</FileVersion>
+    <Version>0.1.3</Version>
+    <AssemblyVersion>0.1.3.0</AssemblyVersion>
+    <FileVersion>0.1.3.0</FileVersion>
     <AppxPackageIdentityName>YidiMao.CommandPalette-Unity</AppxPackageIdentityName>
     <AppxPackagePublisher>CN=14082027-D5E5-4961-AD08-D8C58587DB71</AppxPackagePublisher>
   </PropertyGroup>
