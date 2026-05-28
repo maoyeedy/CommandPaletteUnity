@@ -13,15 +13,17 @@ Command Palette extension for opening Unity Hub recent projects.[^1]
 
 > Unity Hub not required in background - extension launches editor directly.
 
-### Via GitHub
+### Recommended: Microsoft Store
 
-Download releases from [Releases page](https://github.com/maoyeedy/CmdPalUnityExtension/releases).
+Get it from the [Microsoft Store](https://apps.microsoft.com/store/detail/app/9NVSJZ72LTZ3).
 
-Before sideloading new bundle, remove current package:
+### Via GitHub Releases
 
-```powershell
-Get-AppxPackage *CommandPalette-Unity* | Remove-AppxPackage
-```
+1. Remove any existing package:
+   ```powershell
+   Get-AppxPackage *CommandPalette-Unity* | Remove-AppxPackage
+   ```
+2. Download the `.msixbundle` from [Releases](https://github.com/maoyeedy/CmdPalUnityExtension/releases) and install.
 
 ## Contributing and development
 
