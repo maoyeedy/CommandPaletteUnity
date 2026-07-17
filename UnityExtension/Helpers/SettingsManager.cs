@@ -9,6 +9,9 @@ internal sealed class SettingsManager : JsonSettingsManager
     private ToggleSetting GroupFavoritesFirstSetting { get; }
     public bool GroupFavoritesFirst => GroupFavoritesFirstSetting.Value;
 
+    private ToggleSetting HideMissingProjectsSetting { get; }
+    public bool HideMissingProjects => HideMissingProjectsSetting.Value;
+
     private static string SettingsJsonPath()
     {
         var directory = Utilities.BaseSettingsPath("UnityExtension");
@@ -27,7 +30,15 @@ internal sealed class SettingsManager : JsonSettingsManager
             defaultValue: true
         );
 
+        HideMissingProjectsSetting = new ToggleSetting(
+            key: "hideMissingProjects",
+            label: "Hide projects missing from disk",
+            description: "Don't list Unity projects whose folder no longer exists on disk",
+            defaultValue: false
+        );
+
         Settings.Add(GroupFavoritesFirstSetting);
+        Settings.Add(HideMissingProjectsSetting);
 
         LoadSettings();
 
