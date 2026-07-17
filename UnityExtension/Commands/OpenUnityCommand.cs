@@ -24,6 +24,14 @@ internal sealed partial class OpenUnityCommand : InvokableCommand
 
     public override CommandResult Invoke()
     {
+        // Dead reference: the project's folder no longer exists on disk. Don't try to
+        // launch Unity against a missing path (also guards against the folder being
+        // deleted after the list was built).
+        if (!Directory.Exists(_projectPath))
+        {
+            return CommandResult.ShowToast($"Project folder no longer exists:\n{_projectPath}");
+        }
+
         // Lazy-load only when invoking
         _editorPath ??= EditorParser.GetExecutablePathForVersion(_projectVersion);
 
