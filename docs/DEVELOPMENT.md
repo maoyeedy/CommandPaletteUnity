@@ -23,11 +23,7 @@ Trim / AOT notes:
 
 ## Test
 
-```bash
-dotnet test -p:Platform=x64
-```
-
-After rebuild, reload Command Palette or restart PowerToys.
+There is no automated test project; verify manually in PowerToys. After a rebuild, reload Command Palette or restart PowerToys.
 
 ## Debug
 
@@ -54,66 +50,28 @@ Watch VS Output window, use temp logging if needed.
 
 ## Dependency updates
 
-Update in order — NuGet first (highest-impact, affects compilation and SDK targets), then local tools, then pre-commit hooks.
-
-### NuGet packages
-
-All version pins live in `Directory.Packages.props` (central package management).
+NuGet first (affects compilation), then local tools, then pre-commit hooks. All package versions live in `Directory.Packages.props`.
 
 ```bash
-dotnet-outdated.exe UnityExtension/UnityExtension.csproj --upgrade --pre-release Auto --include-auto-references --include-up-to-date
-```
-
-Review the diff before moving on: `git diff -- Directory.Packages.props`
-
-Package-specific notes:
-
-| Package | Note |
-|---------|------|
-| `Microsoft.CommandPalette.Extensions` | Date-versioned, tied to installed PowerToys build. Only bump when targeting a newer PowerToys release. |
-| `Microsoft.WindowsAppSDK` | Major bumps may require WinUI/packaging changes. Check release notes. |
-| `Microsoft.Windows.CsWinRT` | Must stay compatible with `Microsoft.WindowsAppSDK`. Bumping either without the other can break AOT/trim. |
-| `Microsoft.Windows.SDK.BuildTools` | New SDK major (e.g. `10.0.26100.x` → `10.0.27000.x`) triggers SDK target updates — see below. |
-| `StyleCop.Analyzers` | Pre-release track; `--pre-release Auto` picks up new betas automatically. |
-
-### Dotnet local tools
-
-`--local` is required. Without it, `dotnet tool update` targets the global manifest, not `dotnet-tools.json`.
-
-```bash
-dotnet tool update --local csharpier
+dotnet package list --outdated --project UnityExtension/UnityExtension.csproj
+dotnet package update <PackageId>@<version> --project UnityExtension/UnityExtension.csproj
+dotnet tool update --local csharpier   # --local is required, else the global manifest is updated
 dotnet tool update --local minver-cli
 dotnet tool restore
+pre-commit autoupdate && pre-commit run --all-files   # reject any hook rev downgrade
 ```
 
-Adapt the list if new tools appear in `dotnet-tools.json`.
+Rules:
 
-### Pre-commit hooks
+- The extension runs inside PowerToys, so keep `Microsoft.CommandPalette.Extensions`, `Microsoft.WindowsAppSDK`, `Microsoft.Windows.CsWinRT` and `Microsoft.Windows.SDK.BuildTools` at or below the versions in [PowerToys' `Directory.Packages.props`](https://github.com/microsoft/PowerToys/blob/main/Directory.Packages.props). Do not use prerelease versions.
+- `Microsoft.WindowsAppSDK` and `Microsoft.Windows.CsWinRT` must stay mutually compatible, or AOT/trim can break.
+- `Microsoft.CommandPalette.Extensions` is date-versioned; bump only when targeting a newer PowerToys release.
+- A new `Microsoft.Windows.SDK.BuildTools` base (e.g. `10.0.26100.x` to `10.0.27000.x`) also needs the `windows10.0.NNNNN.0` suffix of `TargetFramework` in `UnityExtension.csproj` and `MaxVersionTested` in `Package.appxmanifest` updated. Leave `MinVersion` and `Identity Version` alone.
 
-```bash
-pre-commit autoupdate
-pre-commit run --all-files
-```
-
-Inspect the diff — major hook version bumps (especially gitleaks) can introduce breaking config changes.
-
-### SDK targets (only when SDK.BuildTools major changes)
-
-Only needed when `Microsoft.Windows.SDK.BuildTools` moves to a new Windows SDK major (e.g. `10.0.26100.x` → `10.0.27000.x`). Minor/patch bumps within the same base: no action needed.
-
-- **`UnityExtension/UnityExtension.csproj`**: update the `windows10.0.NNNNN.0` suffix in `TargetFramework`. Leave `SupportedOSPlatformVersion` alone.
-- **`UnityExtension/Package.appxmanifest`**: update `MaxVersionTested` on each `<TargetDeviceFamily>`. Leave `MinVersion` and `Identity Version` alone.
-
-### Validation
-
-Always run a debug build after updates:
+Validate after updates:
 
 ```bash
 dotnet build UnityExtension/UnityExtension.csproj -c Debug -p:Platform=x64
-```
-
-If `Microsoft.WindowsAppSDK` or `Microsoft.Windows.CsWinRT` changed, also run a release build to catch trim/AOT regressions:
-
-```bash
-dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:SuppressSdkNoise=false
+dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:SuppressSdkNoise=false --no-incremental   # when WindowsAppSDK or CsWinRT changed
+dotnet tool run csharpier check .
 ```

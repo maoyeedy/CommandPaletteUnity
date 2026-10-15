@@ -23,7 +23,7 @@ Get it from the [Microsoft Store](https://apps.microsoft.com/store/detail/app/9N
    ```powershell
    Get-AppxPackage *CommandPalette-Unity* | Remove-AppxPackage
    ```
-2. Download the `.msixbundle` from [Releases](https://github.com/maoyeedy/CmdPalUnityExtension/releases) and install.
+2. Download the `.msixbundle` from [Releases](https://github.com/maoyeedy/CommandPaletteUnity/releases) and install.
 
 ## Contributing and development
 
