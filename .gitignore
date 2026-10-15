@@ -359,3 +359,10 @@ src/common/Telemetry/*.etl
 # Local Store identity (private partner center data)
 docs/store-identity.md
 AppPackages*
+
+# Claude Code: .claude/ is committed; ignore only personal state
+.claude/settings.local.json
+.claude/worktrees/
+!.claude/skills/release/
+
+HANDOFF.md

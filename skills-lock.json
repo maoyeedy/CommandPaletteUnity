@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "skills": {
+    "add-dock-band": {
+      "source": "microsoft/PowerToys",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-dock-band/SKILL.md",
+      "computedHash": "59a9bdc6652617477fb2cf95858533e7331ef547e6a3c6a3b113926cc668a348"
+    },
+    "add-extension-settings": {
+      "source": "microsoft/PowerToys",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-extension-settings/SKILL.md",
+      "computedHash": "3b1218e3752556f73790747a49392e49842a44b81e9a05cc55ab9d1d3b3a9f5e"
+    },
+    "microsoft-code-reference": {
+      "source": "MicrosoftDocs/mcp",
+      "sourceType": "github",
+      "skillPath": "skills/microsoft-code-reference/SKILL.md",
+      "computedHash": "b8f19fa71bfbb9b6c6e586c9135fbc4baa4df4aa3e2da2398d7db4add6fde1c3"
+    },
+    "microsoft-docs": {
+      "source": "MicrosoftDocs/mcp",
+      "sourceType": "github",
+      "skillPath": "skills/microsoft-docs/SKILL.md",
+      "computedHash": "0acd8d2629937e021d605fd1426e641295909e13bab47cad1153793f5564e85e"
+    },
+    "publish-extension": {
+      "source": "microsoft/PowerToys",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/publish-extension/SKILL.md",
+      "computedHash": "e59af4bf154f11f014775a8a17327de87440700da7c5094257ba3d4619c3958c"
+    }
+  }
+}
