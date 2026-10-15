@@ -13,6 +13,11 @@ repos:
         files: \.(xml|csproj|props|targets|appxmanifest)$
         types: [file]
 
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.12
+    hooks:
+      - id: actionlint
+
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.30.1
     hooks:
