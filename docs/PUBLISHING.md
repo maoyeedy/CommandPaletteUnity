@@ -112,10 +112,4 @@ For local-dev tester trust, keep one reusable signing cert and store the private
 
 ## CmdPal gallery submission
 
-Gallery metadata lives at:
-
-- `gallery/maoyeedy/cmdpal-unity-extension/extension.json`
-- `gallery/maoyeedy/cmdpal-unity-extension/icon.png`
-- `gallery/maoyeedy/cmdpal-unity-extension/screenshots/01-main.png`
-
-The `url` install source points at the GitHub Releases page. Update it if the release URL changes.
+Gallery metadata lives in the `microsoft/CmdPal-Extensions` repo, not here: `extensions/maoyeedy/cmdpal-unity-extension/` (`extension.json`, `icon.png`, `screenshots/`). The install source is `msstore` with ID `9NVSJZ72LTZ3`. Update that repo when the title, description, icon or screenshots change.

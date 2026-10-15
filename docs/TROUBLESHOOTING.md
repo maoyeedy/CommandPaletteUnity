@@ -10,17 +10,7 @@ Stale package or PowerToys needs reload / restart.
 
 Local debug: rebuild with `-p:Platform=x64`, re-register with `Add-AppxPackage -Register`, restart PowerToys.
 
-Release validation: remove old version first:
-
-```powershell
-Get-AppxPackage *CommandPalette-Unity* | Remove-AppxPackage
-```
-
-Install produced bundle:
-
-```powershell
-Add-AppxPackage -Path "AppPackages\UnityExtension_*\UnityExtension_*.msixbundle"
-```
+Release validation: remove the old package and install the new bundle as described in [`PUBLISHING.md`](PUBLISHING.md#install-for-testing).
 
 If stale after install, reload Command Palette or restart PowerToys.
 
@@ -46,7 +36,7 @@ Known non-fatal warnings:
 - `mspdbcmf.exe could not be found` means symbols package not generated; app bundle still valid.
 - Local publish commands suppress trim warnings by default; use `-p:SuppressSdkNoise=false` to inspect.
 
-If `dotnet-outdated.exe` suggests newer `Microsoft.WindowsAppSDK`, treat as compatibility check, not automatic upgrade.
+If an outdated-package check suggests a newer `Microsoft.WindowsAppSDK`, treat it as a compatibility check, not an automatic upgrade; stay at or below PowerToys' version.
 
 If Release packaging fails with `WindowsPackageType=None` + `GenerateAppxPackageOnBuild=true`, remove hard `None` for build path.
 

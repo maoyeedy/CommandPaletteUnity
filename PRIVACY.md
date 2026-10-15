@@ -28,4 +28,4 @@ When a user selects a Unity project, the app launches the local Unity Editor ins
 
 For support, questions, or privacy-related requests, please use the project's GitHub repository:
 
-https://github.com/Maoyeedy/CmdPalUnityExtension
+https://github.com/Maoyeedy/CommandPaletteUnity
