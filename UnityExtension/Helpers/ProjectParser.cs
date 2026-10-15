@@ -52,7 +52,8 @@ public static class ProjectParser
         }
 
         if (
-            !projectsRoot.TryGetProperty("data", out var data)
+            projectsRoot.ValueKind != JsonValueKind.Object
+            || !projectsRoot.TryGetProperty("data", out var data)
             || data.ValueKind != JsonValueKind.Object
         )
         {
