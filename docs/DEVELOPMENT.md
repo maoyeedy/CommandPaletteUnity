@@ -23,7 +23,7 @@ Trim / AOT notes:
 
 ## Test
 
-There is no automated test project; verify manually in PowerToys. After a rebuild, reload Command Palette or restart PowerToys.
+`UnityExtension.Tests` (xunit) covers `ProjectParser`: `dotnet test UnityExtension.Tests/UnityExtension.Tests.csproj -p:Platform=x64`. UI and command behavior is still verified manually in PowerToys. After a rebuild, reload Command Palette or restart PowerToys.
 
 ## Debug
 
