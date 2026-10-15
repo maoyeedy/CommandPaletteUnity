@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git ls-files *)",
+      "Bash(git check-ignore *)",
+      "Bash(dotnet build *)",
+      "Bash(dotnet package list *)",
+      "Bash(dotnet list *)",
+      "Bash(dotnet tool run csharpier check *)",
+      "Bash(pre-commit run *)",
+      "Bash(bunx skills list *)",
+      "Bash(claude mcp list)",
+      "Bash(npx @microsoft/learn-cli *)",
+      "mcp__microsoft-learn"
+    ]
+  }
+}
