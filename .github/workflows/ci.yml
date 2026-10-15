@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    runs-on: windows-2022
+    timeout-minutes: 30
+
+    steps:
+      # .editorconfig requires CRLF for .cs; match a Windows checkout so csharpier passes
+      - name: Use CRLF checkout
+        run: git config --global core.autocrlf true
+
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          dotnet-version: 10.0.x
+          cache: true
+          cache-dependency-path: |
+            **/Directory.Packages.props
+            **/*.csproj
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Check formatting
+        run: dotnet tool run csharpier check .
+
+      - name: Build (Release, x64)
+        run: dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:SuppressSdkNoise=false
+
+      - name: Test
+        run: dotnet test UnityExtension.Tests/UnityExtension.Tests.csproj -c Release -p:Platform=x64
+
+  validate-version:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Check csproj and manifest versions agree
+        run: |
+          v=$(grep -oP '(?<=<Version>)[^<]+' UnityExtension/UnityExtension.csproj | head -1)
+          a=$(grep -oP '(?<=<AssemblyVersion>)[^<]+' UnityExtension/UnityExtension.csproj | head -1)
+          f=$(grep -oP '(?<=<FileVersion>)[^<]+' UnityExtension/UnityExtension.csproj | head -1)
+          m=$(grep -oP '<Identity[^>]*\sVersion="\K[^"]+' UnityExtension/Package.appxmanifest | head -1)
+          echo "csproj=$v assembly=$a file=$f manifest=$m"
+          test "$a" = "$v.0" && test "$f" = "$v.0" && test "$m" = "$v.0"
