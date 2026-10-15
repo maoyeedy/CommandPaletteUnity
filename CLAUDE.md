@@ -16,7 +16,7 @@ Store identity: `YidiMao.CommandPalette-Unity` (private values in git-ignored `d
 - `Directory.Packages.props` = all package versions; `dotnet-tools.json` = csharpier, minver-cli; `.pre-commit-config.yaml` = hooks
 - No Markdown under `UnityExtension/`; contributor guidance -> `CONTRIBUTING.md`; user docs -> `docs/`
 - Local-only (git-ignored, do not commit): `.claude/settings.local.json`, `docs/store-identity.md`, `scripts/` (`sign.ps1`, `pfx.ps1`, Unity path helpers)
-- No test project exists; verify manually in PowerToys
+- `UnityExtension.Tests/` (xunit) covers `ProjectParser` only; verify UI and commands manually in PowerToys
 - Gallery metadata lives in `microsoft/CmdPal-Extensions` (`extensions/maoyeedy/cmdpal-unity-extension/`), not in this repo
 
 ## Docs and tooling (use before answering from memory)
