@@ -41,3 +41,9 @@ If an outdated-package check suggests a newer `Microsoft.WindowsAppSDK`, treat i
 If Release packaging fails with `WindowsPackageType=None` + `GenerateAppxPackageOnBuild=true`, remove hard `None` for build path.
 
 If packaging fails with `IL2104` / `NETSDK1144`, check trimming enabled for packaging build path, temporarily disable if needed.
+
+## Build fails: file is locked
+
+`MSB3021` / `MSB3027` "locked by: Unity Extension for Command Palette" means the extension is running inside Command Palette and holds `UnityExtension.exe`. It is not a code error.
+
+Close or unregister the extension (`winapp unregister`) for a normal build, or compile-check into another folder: `dotnet build UnityExtension/UnityExtension.csproj -c Debug -p:Platform=x64 -p:OutDir=<other dir>/`. `-p:UseAppHost=false` fails with `NETSDK1067`.
