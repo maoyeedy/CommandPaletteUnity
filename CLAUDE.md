@@ -38,6 +38,9 @@ Store identity: `YidiMao.CommandPalette-Unity` (private values in git-ignored `d
 - Keep code trim-safe / AOT-compatible; preserve `sealed partial` where SDK/source generators require
 - Central package versions only (`Directory.Packages.props`); no versions in `.csproj`
 - Avoid reflection-heavy patterns unless upstream API requires
+- Line endings: all text is LF (`.gitattributes` `* text=auto eol=lf`, `.editorconfig` `end_of_line = lf`); csharpier reports CRLF `.cs` files as unformatted. Keep `.csharpierignore` (csharpier would otherwise also format csproj/props/config)
+- `.editorconfig` holds only what tools read: csharpier uses indent/`end_of_line`; Roslyn reads the naming rules (severity `warning`); `IDE0055` is off so it does not fight csharpier. Do not re-add `csharp_space_*` / `csharp_new_line_*` keys
+- `skills-lock.json` stays tracked (the skills CLI fixes it at the root and designs it to be committed); do not git-ignore it
 - Formatting is enforced by pre-commit (csharpier, actionlint, gitleaks), not by Claude hooks: hooks only fire on Edit/Write, not on shell bulk edits. Run `pre-commit run --all-files` after bulk changes
 
 ## Build and verify
@@ -51,6 +54,7 @@ dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:
 - CLI `Register` deploys need `-p:WindowsPackageType=MSIX`; MSIX bundle builds need `-p:GenerateAppxPackageOnBuild=true` (see `deploy` skill)
 - `IL2081` / `IL2104` from CsWinRT projections are known and non-fatal
 - After rebuild, reload Command Palette or restart PowerToys; test in the real host
+- MSB3021/MSB3027 "file is locked by: Unity Extension for Command Palette" = the extension is running inside Command Palette and holds `bin/.../UnityExtension.exe`; not a code error. For a compile-only check build to another dir: `dotnet build UnityExtension/UnityExtension.csproj -c Debug -p:Platform=x64 -p:OutDir=<scratch dir>/out/` (`-p:UseAppHost=false` fails with NETSDK1067). Do not kill the process; for a real deploy close/unregister it first (see `deploy` skill)
 
 ## Gotchas
 
