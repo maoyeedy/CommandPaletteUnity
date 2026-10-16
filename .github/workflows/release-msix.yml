@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - "v[0-9]*"
+  # Dry run: builds, signs and verifies the bundle and uploads the artifact, but publishes nothing.
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -52,8 +54,6 @@ jobs:
 
       - name: Validate release version
         run: |
-          $tagVersion = "${{ github.ref_name }}" -replace '^v', ''
-
           [xml]$project = Get-Content -LiteralPath $env:PROJECT_PATH -Raw
           $versionGroup = @($project.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1)
           if (-not $versionGroup) {
@@ -63,6 +63,9 @@ jobs:
           $projectVersion = [string]$versionGroup.Version
           $assemblyVersion = [string]$versionGroup.AssemblyVersion
           $fileVersion = [string]$versionGroup.FileVersion
+
+          # Dry runs (workflow_dispatch) have no tag; check the files against each other only.
+          $tagVersion = if ('${{ github.ref_type }}' -eq 'tag') { "${{ github.ref_name }}" -replace '^v', '' } else { $projectVersion }
 
           $manifestPath = Join-Path (Split-Path -Parent $env:PROJECT_PATH) 'Package.appxmanifest'
           [xml]$manifest = Get-Content -LiteralPath $manifestPath -Raw
@@ -181,6 +184,9 @@ jobs:
 
       - name: Verify MSIX bundle
         run: |
+          # The signing cert is self-signed, so a clean runner only accepts it once trusted.
+          Import-Certificate -FilePath $env:CER_PATH -CertStoreLocation Cert:\LocalMachine\TrustedPeople | Out-Null
+
           & $env:SIGNTOOL verify /pa /v ${{ steps.bundle.outputs.path }}
 
           if ($LASTEXITCODE -ne 0) {
@@ -197,6 +203,7 @@ jobs:
           if-no-files-found: error
 
       - name: Create or update GitHub Release
+        if: github.ref_type == 'tag'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -219,7 +226,7 @@ jobs:
   store-publish:
     # Opt-in: set repo variable STORE_PUBLISH=true after adding the Partner Center secrets.
     # Put required reviewers on the "microsoft-store" environment to gate each submission.
-    if: vars.STORE_PUBLISH == 'true'
+    if: github.ref_type == 'tag' && vars.STORE_PUBLISH == 'true'
     needs: build-sign-release
     runs-on: windows-latest
     timeout-minutes: 30
