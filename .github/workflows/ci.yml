@@ -11,7 +11,8 @@ permissions:
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  # Only supersede PR runs; pushes to master each keep their own result.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build-test:
@@ -48,6 +49,38 @@ jobs:
       - name: Test
         timeout-minutes: 10
         run: dotnet test UnityExtension.Tests/UnityExtension.Tests.csproj -c Release -p:Platform=x64 -p:WindowsAppSdkBootstrapInitialize=false --blame-hang --blame-hang-timeout 2m
+
+  # Packaging check: mirrors the build step of release-msix.yml (unsigned) so publish-profile or
+  # runtime-pack problems surface on the PR instead of on the tag build.
+  bundle-build:
+    runs-on: windows-2022
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          dotnet-version: 10.0.x
+          cache: true
+          cache-dependency-path: |
+            **/Directory.Packages.props
+            **/*.csproj
+
+      - name: Restore
+        run: dotnet restore UnityExtension/UnityExtension.csproj
+
+      - name: Build MSIX bundle (unsigned)
+        run: dotnet build UnityExtension/UnityExtension.csproj --no-restore -c Release -p:Platform=x64 -p:GenerateAppxPackageOnBuild=true -p:AppxBundle=Always -p:AppxBundlePlatforms="x64|arm64" -p:AppxPackageSigningEnabled=false -p:SuppressSdkNoise=false
+
+      - name: Check bundle exists
+        shell: pwsh
+        run: |
+          $bundle = Get-ChildItem -Path AppPackages -Recurse -Filter *.msixbundle | Select-Object -First 1
+          if (-not $bundle) { throw 'No .msixbundle produced under AppPackages' }
+          Write-Host "Built $($bundle.Name) ($([math]::Round($bundle.Length / 1MB, 1)) MB)"
 
   validate-version:
     runs-on: ubuntu-latest

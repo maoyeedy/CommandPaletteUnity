@@ -66,7 +66,7 @@ dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:
 dotnet tool run csharpier check .
 ```
 
-Run the Release build whenever WindowsAppSDK or CsWinRT changed; it is what catches trim/AOT regressions. Also run the MSIX bundle build from `docs/PUBLISHING.md` ("Package build"): PR CI never builds the bundle, and packaging problems (publish profiles, runtime packs) only show up there. If an upgrade breaks the build, pin one step back and say why. Loading the result in PowerToys (`deploy` skill) is the only check that proves runtime compatibility; say when it was not done.
+Run the Release build whenever WindowsAppSDK or CsWinRT changed; it is what catches trim/AOT regressions. Also run the MSIX bundle build from `docs/PUBLISHING.md` ("Package build"); the `bundle-build` CI job runs the same command, and packaging problems (publish profiles, runtime packs) only show up there. If an upgrade breaks the build, pin one step back and say why. Loading the result in PowerToys (`deploy` skill) is the only check that proves runtime compatibility; say when it was not done.
 
 ## Report
 
