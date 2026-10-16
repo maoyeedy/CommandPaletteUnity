@@ -7,11 +7,7 @@ dotnet build UnityExtension/UnityExtension.csproj -c Debug -p:Platform=x64
 dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64
 ```
 
-For packaged MSIX output (local dev — no thumbprint needed, `GenerateTemporaryStoreCertificate` in csproj handles it):
-
-```bash
-dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:GenerateAppxPackageOnBuild=true -p:AppxBundle=Always -p:AppxBundlePlatforms="x64|arm64" -p:SuppressSdkNoise=true
-```
+For packaged MSIX output (restore first, build unsigned, sign afterwards), see "Package build" and "Signing" in [`PUBLISHING.md`](PUBLISHING.md#package-build). A plain signed `dotnet build ... -p:GenerateAppxPackageOnBuild=true` fails with `APPX0101` without a certificate thumbprint.
 
 Trim / AOT notes:
 
@@ -43,7 +39,8 @@ Watch VS Output window, use temp logging if needed.
 - Keep `UnityExtension.cs` + `Package.appxmanifest` aligned
 - CLSID must match in COM server + app extension registration
 - Package identity (`Name`, `Publisher`) must match Partner Center reserved values
-- `GenerateTemporaryStoreCertificate=True` in csproj for local dev; pass `PackageCertificateThumbprint` for Store-signing cert
+- Bundle builds need either `-p:AppxPackageSigningEnabled=false` (then sign the bundle) or `-p:PackageCertificateThumbprint=<thumb>`; `GenerateTemporaryStoreCertificate` alone is not enough
+- `Properties/PublishProfiles/win-x64.pubxml` and `win-arm64.pubxml` must stay in sync (e.g. both set or both omit `PublishReadyToRun`)
 - If `GenerateAppxPackageOnBuild=true`, do not force `WindowsPackageType=None`
 - Local deployment: `Add-AppxPackage -Register` against debug `AppxManifest.xml`
 - Prefer current Microsoft Learn packaging guidance over old repo scripts

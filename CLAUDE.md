@@ -13,7 +13,8 @@ Published on the Microsoft Store as "Project Launcher for Unity", product ID `9N
 
 - `UnityExtension/` = C# project (`Commands/`, `Data/`, `Helpers/`, `Pages/`, `Program.cs`, `UnityExtension.cs`, `Package.appxmanifest`)
 - `docs/` = DEVELOPMENT, PUBLISHING, TROUBLESHOOTING (+ local-only, git-ignored `store-identity.md`); screenshots in `docs/assets/`
-- `.github/workflows/release-msix.yml` = tag `v*` -> validate versions -> build -> sign -> GitHub release
+- `.github/workflows/ci.yml` = PR checks (format, unpackaged Release build, tests, version agreement); it does not build the MSIX bundle
+- `.github/workflows/release-msix.yml` = tag `v*` -> validate versions -> build -> sign -> GitHub release -> opt-in `store-publish` (repo var `STORE_PUBLISH`, environment `microsoft-store` needs reviewer approval)
 - `Directory.Packages.props` = all package versions; `dotnet-tools.json` = csharpier, minver-cli; `.pre-commit-config.yaml` = hooks
 - No Markdown under `UnityExtension/`; contributor guidance -> `CONTRIBUTING.md`; user docs -> `docs/`
 - Local-only (git-ignored, do not commit): `.claude/settings.local.json`, `docs/store-identity.md`, `scripts/` (`sign.ps1`, `pfx.ps1`, Unity path helpers)
@@ -29,7 +30,7 @@ Published on the Microsoft Store as "Project Launcher for Unity", product ID `9N
 - Third-party skills (managed by `bunx skills`, tracked in `skills-lock.json`; never hand-edit or refactor): `microsoft-docs`, `microsoft-code-reference` (`MicrosoftDocs/mcp`); `msstore-cli` (`github/awesome-copilot`); `publish-extension`, `add-extension-settings`, `add-dock-band` (official PowerToys extension template)
   - Add: `bunx skills add <owner/repo> -s <skill> -a claude-code --copy -y`; update: `bunx skills update -p -y`; list: `bunx skills list`; restore: `bunx skills experimental_install`
 - Rule `.claude/rules/cmdpal-extension.md` (vendored from the PowerToys extension template, path-scoped to `UnityExtension/**/*.cs`; never hand-edit): Command Palette API reference and common mistakes
-- CLIs (winget): `winapp` (Microsoft.WinAppCli: `run`/`unregister` dev registration, `cert`, `package`, `sign`, `ui` inspects the live Command Palette window) `actionlint` (also a pre-commit hook for `.github/workflows/`), and `msstore` (Store submissions; needs Partner Center credentials via `msstore reconfigure`, not configured locally; see skill `msstore-cli`)
+- CLIs (winget): `winapp` (Microsoft.WinAppCli: `run`/`unregister` dev registration, `cert`, `package`, `sign`, `ui` inspects the live Command Palette window) `actionlint` (also a pre-commit hook for `.github/workflows/`), and `msstore` (Store submissions; configured locally via `msstore reconfigure` with flags, credentials live in the CLI's own store, never in the repo; see skill `msstore-cli` and `docs/PUBLISHING.md`)
 - Recent Learn docs cover newer SDK surface (e.g. Dock bands); check them before assuming an API is missing
 
 ## Code rules
@@ -62,6 +63,9 @@ dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:
 - Identity `Name`/`Publisher` must match Partner Center exactly
 - After identity/name changes delete `bin`, `obj`, `AppPackages` before rebuilding
 - Debug builds get `.Debug` package suffix and `(Dev)` display name; a release package blocks debug `-Register` (0x80073CFB), remove it first
+- Bundle builds: restore first, then `--no-restore ... -p:AppxPackageSigningEnabled=false` (exact command in `docs/PUBLISHING.md`); `win-x64.pubxml` and `win-arm64.pubxml` must set the same properties or the build fails with `NETSDK1094`; output lands in repo-root `AppPackages/`
+- Local signing/sideload of a bundle needs an elevated shell (cert trusted in `LocalMachine\TrustedPeople`); `scripts/sign.ps1` needs `-Subject` set to the manifest Publisher
+- `msstore` cannot touch a draft created in the Partner Center web UI; `msstore publish` discards any existing API draft
 - `Package.appxmanifest` `MaxVersionTested` is still 10.0.19041.0; only change via `bump-deps` Step 4
 
 ## Do not

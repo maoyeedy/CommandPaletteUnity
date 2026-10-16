@@ -6,29 +6,24 @@ Use latest Microsoft Learn / PowerToys docs for packaging + publishing.
 
 ## Package build
 
+This is the same sequence CI runs. Restore first, then build with `--no-restore`; the unsigned build avoids `APPX0101` ("A signing key is required"), and you sign afterwards.
+
 ```bash
-dotnet build UnityExtension/UnityExtension.csproj \
+dotnet restore UnityExtension/UnityExtension.csproj
+dotnet build UnityExtension/UnityExtension.csproj --no-restore \
   -c Release -p:Platform=x64 \
   -p:GenerateAppxPackageOnBuild=true \
   -p:AppxBundle=Always \
   -p:AppxBundlePlatforms="x64|arm64" \
-  -p:SuppressSdkNoise=true
+  -p:AppxPackageSigningEnabled=false \
+  -p:SuppressSdkNoise=false
 ```
 
-Output: `AppPackages/<version>_Test/*.msixbundle`
+Output (repo root, git-ignored): `AppPackages/UnityExtension_<version>.0_Test/UnityExtension_<version>.0_x64_arm64.msixbundle`
 
-For full trim/AOT warnings before submission:
+`win-x64.pubxml` and `win-arm64.pubxml` must set the same properties. If only one sets `PublishReadyToRun`, restore skips the other architecture's ReadyToRun runtime pack and the build fails with `NETSDK1094`.
 
-```bash
-# omit SuppressSdkNoise and add TrimmerSingleWarn=false
-dotnet build UnityExtension/UnityExtension.csproj \
-  -c Release -p:Platform=x64 \
-  -p:GenerateAppxPackageOnBuild=true \
-  -p:AppxBundle=Always \
-  -p:AppxBundlePlatforms="x64|arm64" \
-  -p:SuppressSdkNoise=false \
-  -p:TrimmerSingleWarn=false
-```
+Add `-p:TrimmerSingleWarn=false` to see every trim/AOT warning before submission. To sign for sideloading, see "Signing" below.
 
 ## Package identity
 
@@ -49,7 +44,9 @@ dotnet build UnityExtension/UnityExtension.csproj \
 
 ### Local dev
 
-`GenerateTemporaryStoreCertificate=True` in `.csproj` auto-creates a temp cert matching the manifest `Publisher`. No thumbprint needed for `dotnet build`.
+Build unsigned (see "Package build"), then sign the bundle with a self-signed cert whose `Subject` equals the manifest `Publisher` exactly (`CN=<GUID>`). Windows only installs it if that cert is trusted in `Cert:\LocalMachine\TrustedPeople`; importing there and verifying the signature both need an **elevated** shell (`CurrentUser` trust is not enough). Sideload with `Add-AppxPackage -Path <bundle> -ForceApplicationShutdown`.
+
+Building with signing on (no `AppxPackageSigningEnabled=false`) fails with `APPX0101` unless you pass `-p:PackageCertificateThumbprint=<thumb>`; `GenerateTemporaryStoreCertificate` in the `.csproj` does not cover the bundle build.
 
 ### Store submission
 
@@ -65,11 +62,11 @@ New-SelfSignedCertificate -Type Custom -KeyUsage DigitalSignature `
   -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3","2.5.29.19={text}")
 ```
 
-Build with matching cert:
+Build with matching cert (or build unsigned and sign afterwards, as above):
 
 ```powershell
 $thumb = Get-ChildItem Cert:\CurrentUser\My | Where-Object { $_.Subject -like '*<PublisherGUID>*' } | Select-Object -First 1 -ExpandProperty Thumbprint
-dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:GenerateAppxPackageOnBuild=true -p:AppxBundle=Always -p:AppxBundlePlatforms="x64|arm64" -p:SuppressSdkNoise=true -p:PackageCertificateThumbprint=$thumb
+dotnet build UnityExtension/UnityExtension.csproj --no-restore -c Release -p:Platform=x64 -p:GenerateAppxPackageOnBuild=true -p:AppxBundle=Always -p:AppxBundlePlatforms="x64|arm64" -p:SuppressSdkNoise=true -p:PackageCertificateThumbprint=$thumb
 ```
 
 ## Install for testing
@@ -80,10 +77,10 @@ Remove old package first:
 Get-AppxPackage *CommandPalette-Unity* | Remove-AppxPackage
 ```
 
-Install the bundle:
+Install the signed bundle (the cert must be trusted, see "Signing"):
 
 ```powershell
-Add-AppxPackage -Path "AppPackages\UnityExtension_*\UnityExtension_*.msixbundle"
+Add-AppxPackage -Path "AppPackages\UnityExtension_*\UnityExtension_*.msixbundle" -ForceApplicationShutdown
 ```
 
 Reload Command Palette or restart PowerToys after install.
@@ -125,6 +122,12 @@ One-time setup:
 7. Locally: `msstore reconfigure --tenantId ... --sellerId ... --clientId ... --clientSecret ...`. The interactive form can fail with "Error while retrieving Organization"; the flags work.
 
 On a `v*` tag the job downloads the built bundle and runs `msstore publish <bundle> -id 9NVSJZ72LTZ3`, then `msstore submission poll`. The Store re-signs the package, so the self-signed PFX does not matter. Only free apps are supported by the CLI; the version must be higher than the last published one, so bump the version before tagging. A `.msixbundle` path works with `publish` (verified with `--noCommit`).
+
+Before tagging a release:
+
+1. Bump the version via a PR and merge it, so `master` carries both the new version and the `store-publish` job.
+2. Make sure no draft is open in the Partner Center web UI, and that the new version is higher than the last published one.
+3. Tag `vX.Y.Z` from `master`. The job pauses in the `microsoft-store` environment until a required reviewer approves; rejecting it skips the Store but keeps the GitHub release.
 
 Gotchas:
 

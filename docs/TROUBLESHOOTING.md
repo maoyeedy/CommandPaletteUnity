@@ -42,6 +42,17 @@ If Release packaging fails with `WindowsPackageType=None` + `GenerateAppxPackage
 
 If packaging fails with `IL2104` / `NETSDK1144`, check trimming enabled for packaging build path, temporarily disable if needed.
 
+## Bundle build errors
+
+- `APPX0101` "A signing key is required": pass `-p:AppxPackageSigningEnabled=false` (sign afterwards) or `-p:PackageCertificateThumbprint=<thumb>`. See "Package build" in [`PUBLISHING.md`](PUBLISHING.md#package-build).
+- `NETSDK1094` "Unable to optimize assemblies for performance": the two publish profiles disagree on `PublishReadyToRun`, so restore skipped one architecture's runtime pack. Make `win-x64.pubxml` and `win-arm64.pubxml` match, delete `bin`/`obj`/`AppPackages`, then restore and build again. The ILLink crash (exit code `-1073741819`) showed up in the same state.
+- Signing verification says "root certificate not trusted" or install fails: trust the cert in `Cert:\LocalMachine\TrustedPeople` from an elevated shell; `CurrentUser` is not enough.
+
+## Store publishing errors
+
+- "Ingestion API can only update, delete, and commit submissions that are created through the API": a draft made in the Partner Center web UI blocks `msstore`. Delete or submit it in the portal first (CI would hang on the browser prompt).
+- `msstore reconfigure` "Error while retrieving Organization": use the flag form (`--tenantId --sellerId --clientId --clientSecret`) instead of the interactive prompts. See [`PUBLISHING.md`](PUBLISHING.md#microsoft-store-updates-automated).
+
 ## Build fails: file is locked
 
 `MSB3021` / `MSB3027` "locked by: Unity Extension for Command Palette" means the extension is running inside Command Palette and holds `UnityExtension.exe`. It is not a code error.
