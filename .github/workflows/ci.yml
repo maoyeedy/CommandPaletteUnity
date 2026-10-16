@@ -48,7 +48,8 @@ jobs:
         run: dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:SuppressSdkNoise=false
 
       - name: Test
-        run: dotnet test UnityExtension.Tests/UnityExtension.Tests.csproj -c Release -p:Platform=x64
+        timeout-minutes: 10
+        run: dotnet test UnityExtension.Tests/UnityExtension.Tests.csproj -c Release -p:Platform=x64 --blame-hang --blame-hang-timeout 2m --logger "console;verbosity=detailed"
 
   validate-version:
     runs-on: ubuntu-latest
