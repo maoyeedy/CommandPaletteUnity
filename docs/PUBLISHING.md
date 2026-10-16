@@ -110,6 +110,34 @@ For local-dev tester trust, keep one reusable signing cert and store the private
 - `MSIX_PFX_PASSWORD` — the PFX password
 - `UnityExtension\BundleArtifacts\Maoyeedy-MSIX-LocalDev.cer` — public certificate for testers
 
+### Microsoft Store updates (automated)
+
+The first Store submission was done in Partner Center; updates can use the `store-publish` job in `release-msix.yml`. It is off until you opt in.
+
+One-time setup:
+
+1. Partner Center > Account settings > Tenants: create or associate a Microsoft Entra tenant, then sign in again.
+2. Account settings > User management > Microsoft Entra applications: add an app (any name and reply URL, e.g. `https://localhost`), give it the **Manager** role, then **Add new key**. Copy the client ID and the client secret (shown once).
+3. Seller ID: Account settings > Organization profile > Legal info.
+4. Repo secrets: `PARTNER_CENTER_TENANT_ID`, `PARTNER_CENTER_SELLER_ID`, `PARTNER_CENTER_CLIENT_ID`, `PARTNER_CENTER_CLIENT_SECRET`.
+5. Repo variable `STORE_PUBLISH=true` (set it to `false` to pause the job).
+6. Settings > Environments > `microsoft-store`: add yourself as required reviewer so each submission waits for approval.
+7. Locally: `msstore reconfigure --tenantId ... --sellerId ... --clientId ... --clientSecret ...`. The interactive form can fail with "Error while retrieving Organization"; the flags work.
+
+On a `v*` tag the job downloads the built bundle and runs `msstore publish <bundle> -id 9NVSJZ72LTZ3`, then `msstore submission poll`. The Store re-signs the package, so the self-signed PFX does not matter. Only free apps are supported by the CLI; the version must be higher than the last published one, so bump the version before tagging. A `.msixbundle` path works with `publish` (verified with `--noCommit`).
+
+Gotchas:
+
+- The API cannot touch a draft created in the Partner Center web UI. If one is open, `publish` stops on "Ingestion API can only update, delete, and commit submissions that are created through the API", and in CI it would hang. Delete or submit the web draft first, and do not leave drafts open in the portal.
+- `publish` discards any existing API draft, so run it before editing listing metadata.
+- Never put the client secret in chat, docs, or commits; keep it in the GitHub secret and your password manager.
+
+Local equivalent: `msstore publish <bundle> -id 9NVSJZ72LTZ3 --noCommit` (draft), `msstore submission get 9NVSJZ72LTZ3`, `msstore submission publish 9NVSJZ72LTZ3`. `msstore submission delete 9NVSJZ72LTZ3` removes an API draft.
+
+### WinGet
+
+The Store listing is already installable with `winget install 9NVSJZ72LTZ3 -s msstore`; no extra setup is needed. Submitting to `microsoft/winget-pkgs` (the `windows-commandpalette-extension` tag route in the `publish-extension` skill) needs a separate unpackaged EXE installer (Inno Setup, `WindowsPackageType=None`) and is not set up.
+
 ## CmdPal gallery submission
 
 Gallery metadata lives in the `microsoft/CmdPal-Extensions` repo, not here: `extensions/maoyeedy/cmdpal-unity-extension/` (`extension.json`, `icon.png`, `screenshots/`). The install source is `msstore` with ID `9NVSJZ72LTZ3`. Update that repo when the title, description, icon or screenshots change.
