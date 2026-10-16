@@ -52,7 +52,7 @@ jobs:
         run: |
           foreach ($f in 'Unusable_input','Incomplete_entry','Missing_fields','Exists_reflects') {
             Write-Host "=== $f"
-            dotnet test UnityExtension.Tests/UnityExtension.Tests.csproj -c Release -p:Platform=x64 --no-build --filter "FullyQualifiedName~$f" --blame-hang --blame-hang-timeout 40s
+            dotnet test UnityExtension.Tests/UnityExtension.Tests.csproj -c Release -p:Platform=x64 --filter "FullyQualifiedName~$f" --blame-hang --blame-hang-timeout 40s
           }
           exit 0
 
