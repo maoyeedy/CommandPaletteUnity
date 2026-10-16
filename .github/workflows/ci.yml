@@ -47,9 +47,11 @@ jobs:
       - name: Build (Release, x64)
         run: dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:SuppressSdkNoise=false
 
+      # The unpackaged exe auto-initializes the Windows App SDK bootstrapper, which hangs the
+      # test host on runners without the Windows App Runtime; tests only need ProjectParser.
       - name: Test
         timeout-minutes: 10
-        run: dotnet test UnityExtension.Tests/UnityExtension.Tests.csproj -c Release -p:Platform=x64 --blame-hang --blame-hang-timeout 2m
+        run: dotnet test UnityExtension.Tests/UnityExtension.Tests.csproj -c Release -p:Platform=x64 -p:WindowsAppSdkBootstrapInitialize=false --blame-hang --blame-hang-timeout 2m
 
   validate-version:
     runs-on: ubuntu-latest
