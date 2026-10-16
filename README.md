@@ -38,7 +38,6 @@ Local workflow:
 Supporting docs:
 
 - [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)
-- [`docs/PUBLISHING.md`](docs/PUBLISHING.md)
 - [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md)
 
 ## TODO

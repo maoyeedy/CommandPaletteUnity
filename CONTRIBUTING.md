@@ -6,7 +6,6 @@ Start here if you want to work on the project.
 
 - `README.md` for the project overview and installation notes
 - `docs/DEVELOPMENT.md` for build and debug flow
-- `docs/PUBLISHING.md` for packaging and release flow
 - `docs/TROUBLESHOOTING.md` for common issues
 
 ## What to keep in mind
