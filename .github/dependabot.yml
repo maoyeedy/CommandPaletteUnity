@@ -1,0 +1,18 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: weekly
+    ignore:
+      # Date-versioned and tied to the PowerToys target; see CLAUDE.md (bump-deps skill)
+      - dependency-name: Microsoft.CommandPalette.Extensions
+      - dependency-name: Microsoft.WindowsAppSDK
+      - dependency-name: Microsoft.Windows.CsWinRT

@@ -16,7 +16,7 @@ Store identity: `YidiMao.CommandPalette-Unity` (private values in git-ignored `d
 - `Directory.Packages.props` = all package versions; `dotnet-tools.json` = csharpier, minver-cli; `.pre-commit-config.yaml` = hooks
 - No Markdown under `UnityExtension/`; contributor guidance -> `CONTRIBUTING.md`; user docs -> `docs/`
 - Local-only (git-ignored, do not commit): `.claude/settings.local.json`, `docs/store-identity.md`, `scripts/` (`sign.ps1`, `pfx.ps1`, Unity path helpers)
-- No test project exists; verify manually in PowerToys
+- `UnityExtension.Tests/` (xunit) covers `ProjectParser` only; verify UI and commands manually in PowerToys
 - Gallery metadata lives in `microsoft/CmdPal-Extensions` (`extensions/maoyeedy/cmdpal-unity-extension/`), not in this repo
 
 ## Docs and tooling (use before answering from memory)
@@ -47,19 +47,17 @@ dotnet build UnityExtension/UnityExtension.csproj -c Debug -p:Platform=x64
 dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:SuppressSdkNoise=false   # trim/AOT review
 ```
 
-- Debug CLI build is green (0 warnings, 0 errors) as of this refresh
 - CLI `Register` deploys need `-p:WindowsPackageType=MSIX`; MSIX bundle builds need `-p:GenerateAppxPackageOnBuild=true` (see `deploy` skill)
 - `IL2081` / `IL2104` from CsWinRT projections are known and non-fatal
 - After rebuild, reload Command Palette or restart PowerToys; test in the real host
+- Build fails with MSB3021/MSB3027 "locked by: Unity Extension for Command Palette" = extension is running, not a code error. Compile-check with `-p:OutDir=<other dir>/` and never kill it (see `docs/TROUBLESHOOTING.md`)
 
 ## Gotchas
 
 - `ProjectParser` swallows exceptions and may silently return an empty list
-- Extension not loading: check manifest registration and CLSID first
-- Breakpoints not hit: attach VS to the extension process, not the host shell
-- `Microsoft.CommandPalette.Extensions` is date-versioned (currently 0.9.260303001); bump only for a newer PowerToys target
-- `Microsoft.WindowsAppSDK` (2.2.0, matches PowerToys) and `Microsoft.Windows.CsWinRT` (2.2.0) must stay mutually compatible; keep <= PowerToys' pins
-- Version sync: `Package.appxmanifest` Identity Version <-> `.csproj` `<Version>`/`<AssemblyVersion>`/`<FileVersion>` (currently 0.1.3 / 0.1.3.0); 4th segment `.0`. CI fails the tag build on mismatch
+- `Microsoft.CommandPalette.Extensions` is date-versioned; bump only for a newer PowerToys target
+- `Microsoft.WindowsAppSDK` and `Microsoft.Windows.CsWinRT` must stay mutually compatible; keep <= PowerToys' pins
+- Version sync: `Package.appxmanifest` Identity Version <-> `.csproj` `<Version>`/`<AssemblyVersion>`/`<FileVersion>`; 4th segment `.0`. CI fails the tag build on mismatch
 - Identity `Name`/`Publisher` must match Partner Center exactly
 - After identity/name changes delete `bin`, `obj`, `AppPackages` before rebuilding
 - Debug builds get `.Debug` package suffix and `(Dev)` display name; a release package blocks debug `-Register` (0x80073CFB), remove it first
