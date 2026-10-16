@@ -73,13 +73,13 @@ jobs:
         run: dotnet restore UnityExtension/UnityExtension.csproj
 
       - name: Build MSIX bundle (unsigned)
-        run: dotnet build UnityExtension/UnityExtension.csproj --no-restore -c Release -p:Platform=x64 -p:GenerateAppxPackageOnBuild=true -p:AppxBundle=Always -p:AppxBundlePlatforms="x64|arm64" -p:AppxPackageSigningEnabled=false -p:SuppressSdkNoise=false
+        run: dotnet build UnityExtension/UnityExtension.csproj --no-restore -c Release -p:Platform=x64 -p:GenerateAppxPackageOnBuild=true -p:AppxBundle=Always -p:AppxBundlePlatforms="x64|arm64" -p:AppxPackageDir=${{ github.workspace }}\UnityExtension\BundleArtifacts\ -p:AppxPackageSigningEnabled=false -p:SuppressSdkNoise=false
 
       - name: Check bundle exists
         shell: pwsh
         run: |
-          $bundle = Get-ChildItem -Path AppPackages -Recurse -Filter *.msixbundle | Select-Object -First 1
-          if (-not $bundle) { throw 'No .msixbundle produced under AppPackages' }
+          $bundle = Get-ChildItem -Path UnityExtension\BundleArtifacts -Recurse -Filter *.msixbundle | Select-Object -First 1
+          if (-not $bundle) { throw 'No .msixbundle produced under UnityExtension\BundleArtifacts' }
           Write-Host "Built $($bundle.Name) ($([math]::Round($bundle.Length / 1MB, 1)) MB)"
 
   validate-version:
