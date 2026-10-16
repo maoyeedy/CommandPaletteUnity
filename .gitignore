@@ -221,6 +221,9 @@ ClientBin/
 *.dbproj.schemaview
 *.jfm
 *.pfx
+*.p12
+*.pem
+*.snk
 *.publishsettings
 orleans.codegen.cs
 
@@ -334,35 +337,12 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder
 .mfractor/
 
-# Temp build files
-src/settings/settings-html/200.html
-src/settings/settings-html/404.html
-
-# Temp telemetry files.
-src/common/Telemetry/*.etl
-
-# Don't ignore MergeModules
-!**/MergeModules/Release/
-!**/MergeModules/Debug/
-/src/modules/previewpane/SvgThumbnailProvider/$(SolutionDir)$(Platform)/$(Configuration)/modules/FileExplorerPreview/SvgThumbnailProvider.xml
-/src/modules/powerrename/ui/RCa24464
-/src/modules/powerrename/ui/RCb24464
-
-# Generated installer file for Monaco source files.
-/installer/PowerToysSetup/MonacoSRC.wxs
-
 # MSBuildCache
 /MSBuildCacheLogs/
 
-/scripts/
-
-# Local Store identity (private partner center data)
-docs/store-identity.md
 AppPackages*
 
-# Claude Code: .claude/ is committed; ignore only personal state
-.claude/settings.local.json
-.claude/worktrees/
-!.claude/skills/release/
-
-HANDOFF.md
+# Secrets / local env
+.env
+*.key
+*.local.*
