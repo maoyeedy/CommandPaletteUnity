@@ -4,8 +4,11 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
+      # Vendored skills and rules are kept byte-for-byte as installed (lock hashes in skills-lock.json).
       - id: trailing-whitespace
+        exclude: ^\.claude/(skills/(add-dock-band|add-extension-settings|microsoft-code-reference|microsoft-docs|msstore-cli|publish-extension)|rules)/
       - id: end-of-file-fixer
+        exclude: ^\.claude/(skills/(add-dock-band|add-extension-settings|microsoft-code-reference|microsoft-docs|msstore-cli|publish-extension)|rules)/
       - id: check-merge-conflict
       - id: check-case-conflict
       - id: check-json
