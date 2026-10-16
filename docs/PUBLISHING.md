@@ -107,6 +107,12 @@ For local-dev tester trust, keep one reusable signing cert and store the private
 - `MSIX_PFX_PASSWORD` — the PFX password
 - `UnityExtension\BundleArtifacts\Maoyeedy-MSIX-LocalDev.cer` — public certificate for testers
 
+The workflow's `PACKAGE_DIR` must stay absolute (`${{ github.workspace }}\...`): MSBuild resolves a relative `AppxPackageDir` against the project folder, so the bundle would otherwise land where the "Find MSIX bundle" step does not look. The verify step imports the `.cer` into `LocalMachine\TrustedPeople` first, because a clean runner does not trust the self-signed cert.
+
+**Dry run:** `gh workflow run release-msix.yml --ref <branch>` (or Actions > Release MSIX > Run workflow) builds, signs, verifies and uploads the artifact without creating a release or touching the Store. Use it to test workflow changes (including action bumps) before tagging; the GitHub release and `store-publish` steps run only for tags.
+
+**Re-pointing a tag:** the `protect-release-tags` ruleset blocks deleting or updating `v*` tags, and a run that fails at startup cannot be retried. To redo a tag, temporarily set the ruleset's enforcement to Disabled (repo Settings > Rules > Rulesets, not the read-only Rules page), then `git tag -f vX.Y.Z && git push origin :refs/tags/vX.Y.Z && git push origin vX.Y.Z`, then set it back to Active. Prefer the dry run so this is rarely needed.
+
 ### Microsoft Store updates (automated)
 
 The first Store submission was done in Partner Center; updates can use the `store-publish` job in `release-msix.yml`. It is off until you opt in.
@@ -120,8 +126,9 @@ One-time setup:
 5. Repo variable `STORE_PUBLISH=true` (set it to `false` to pause the job).
 6. Settings > Environments > `microsoft-store`: add yourself as required reviewer so each submission waits for approval.
 7. Locally: `msstore reconfigure --tenantId ... --sellerId ... --clientId ... --clientSecret ...`. The interactive form can fail with "Error while retrieving Organization"; the flags work.
+8. Settings > Actions > General: the repo restricts allowed actions, so add `microsoft/microsoft-store-apppublisher@*` to the allow list. Without it the whole release workflow fails at startup (`startup_failure`, zero jobs, no rerun possible), including the build job.
 
-On a `v*` tag the job downloads the built bundle and runs `msstore publish <bundle> -id 9NVSJZ72LTZ3`, then `msstore submission poll`. The Store re-signs the package, so the self-signed PFX does not matter. Only free apps are supported by the CLI; the version must be higher than the last published one, so bump the version before tagging. A `.msixbundle` path works with `publish` (verified with `--noCommit`).
+On a `v*` tag the job downloads the built bundle and runs `msstore publish <bundle> -id 9NVSJZ72LTZ3`, then `msstore submission poll`. The poll step returns once the submission is committed and in certification; it does not wait for it to go live, so a green run means "accepted", not "published". Check `msstore submission status 9NVSJZ72LTZ3` or Partner Center for the result. The Store re-signs the package, so the self-signed PFX does not matter. Only free apps are supported by the CLI; the version must be higher than the last published one, so bump the version before tagging. A `.msixbundle` path works with `publish` (verified with `--noCommit`).
 
 Before tagging a release:
 
