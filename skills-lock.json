@@ -27,6 +27,12 @@
       "skillPath": "skills/microsoft-docs/SKILL.md",
       "computedHash": "0acd8d2629937e021d605fd1426e641295909e13bab47cad1153793f5564e85e"
     },
+    "msstore-cli": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/msstore-cli/SKILL.md",
+      "computedHash": "abaef9913fe8c0d039ed3a6966d513656882c538cc3088d9c709ad78c00c3c7e"
+    },
     "publish-extension": {
       "source": "microsoft/PowerToys",
       "ref": "main",

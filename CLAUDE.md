@@ -7,6 +7,7 @@ AI agent instructions for this repo. Verified against the tree on 2026-10-16.
 Command Palette (PowerToys) extension that lists Unity Hub projects and opens them in the Unity Editor.
 Reads `%APPDATA%\UnityHub\projects-v1.json`. .NET 10 (`net10.0-windows10.0.26100.0`), MSIX-packaged, trimmed/AOT-compatible.
 Store identity: `YidiMao.CommandPalette-Unity` (private values in git-ignored `docs/store-identity.md`).
+Published on the Microsoft Store as "Project Launcher for Unity", product ID `9NVSJZ72LTZ3` (https://apps.microsoft.com/detail/9nvsjz72ltz3). Also installable via `winget install 9NVSJZ72LTZ3 -s msstore`. Updates go through `msstore` / the opt-in `store-publish` job in `release-msix.yml` (see `docs/PUBLISHING.md`); first submission was via Partner Center.
 
 ## Layout
 
@@ -25,10 +26,10 @@ Store identity: `YidiMao.CommandPalette-Unity` (private values in git-ignored `d
 - Microsoft Learn MCP `microsoft-learn` (`https://learn.microsoft.com/api/mcp`, shared via `.mcp.json`): `microsoft_docs_search`, `microsoft_docs_fetch`, `microsoft_code_sample_search`
   - Fallback CLI: `npx @microsoft/learn-cli search|fetch|code-search`; `doctor` checks connectivity
 - Own skills (`.claude/skills/`, editable, in scope for refactors): `deploy`, `release`, `bump-deps`
-- Third-party skills (managed by `bunx skills`, tracked in `skills-lock.json`; never hand-edit or refactor): `microsoft-docs`, `microsoft-code-reference` (`MicrosoftDocs/mcp`); `publish-extension`, `add-extension-settings`, `add-dock-band` (official PowerToys extension template)
+- Third-party skills (managed by `bunx skills`, tracked in `skills-lock.json`; never hand-edit or refactor): `microsoft-docs`, `microsoft-code-reference` (`MicrosoftDocs/mcp`); `msstore-cli` (`github/awesome-copilot`); `publish-extension`, `add-extension-settings`, `add-dock-band` (official PowerToys extension template)
   - Add: `bunx skills add <owner/repo> -s <skill> -a claude-code --copy -y`; update: `bunx skills update -p -y`; list: `bunx skills list`; restore: `bunx skills experimental_install`
 - Rule `.claude/rules/cmdpal-extension.md` (vendored from the PowerToys extension template, path-scoped to `UnityExtension/**/*.cs`; never hand-edit): Command Palette API reference and common mistakes
-- CLIs (winget): `winapp` (Microsoft.WinAppCli: `run`/`unregister` dev registration, `cert`, `package`, `sign`, `ui` inspects the live Command Palette window) `actionlint` (also a pre-commit hook for `.github/workflows/`), and `msstore` (Store submissions; needs Partner Center credentials via `msstore reconfigure`, not configured)
+- CLIs (winget): `winapp` (Microsoft.WinAppCli: `run`/`unregister` dev registration, `cert`, `package`, `sign`, `ui` inspects the live Command Palette window) `actionlint` (also a pre-commit hook for `.github/workflows/`), and `msstore` (Store submissions; needs Partner Center credentials via `msstore reconfigure`, not configured locally; see skill `msstore-cli`)
 - Recent Learn docs cover newer SDK surface (e.g. Dock bands); check them before assuming an API is missing
 
 ## Code rules

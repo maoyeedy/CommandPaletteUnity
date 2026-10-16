@@ -214,3 +214,60 @@ jobs:
           }
 
           gh release upload $tag ${{ steps.bundle.outputs.path }} $env:CER_PATH --clobber
+
+  store-publish:
+    # Opt-in: set repo variable STORE_PUBLISH=true after adding the Partner Center secrets.
+    # Put required reviewers on the "microsoft-store" environment to gate each submission.
+    if: vars.STORE_PUBLISH == 'true'
+    needs: build-sign-release
+    runs-on: windows-latest
+    timeout-minutes: 30
+    environment: microsoft-store
+
+    defaults:
+      run:
+        shell: pwsh
+
+    env:
+      STORE_PRODUCT_ID: 9NVSJZ72LTZ3
+
+    steps:
+      - name: Download signed bundle
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: signed-msix
+          path: bundle
+
+      - name: Find MSIX bundle
+        id: bundle
+        run: |
+          $bundle = Get-ChildItem -Path bundle -Recurse -Filter *.msixbundle | Select-Object -First 1
+          if (-not $bundle) {
+            throw 'No .msixbundle in the signed-msix artifact.'
+          }
+          "path=$($bundle.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: Setup Microsoft Store CLI
+        uses: microsoft/microsoft-store-apppublisher@15abd1c50fcc164b19cb240fb04ef3c49bf715a2 # v1.1
+
+      - name: Configure Store credentials
+        env:
+          TENANT_ID: ${{ secrets.PARTNER_CENTER_TENANT_ID }}
+          SELLER_ID: ${{ secrets.PARTNER_CENTER_SELLER_ID }}
+          CLIENT_ID: ${{ secrets.PARTNER_CENTER_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.PARTNER_CENTER_CLIENT_SECRET }}
+        run: |
+          msstore reconfigure `
+            --tenantId $env:TENANT_ID `
+            --sellerId $env:SELLER_ID `
+            --clientId $env:CLIENT_ID `
+            --clientSecret $env:CLIENT_SECRET
+          if ($LASTEXITCODE -ne 0) { throw "msstore reconfigure failed ($LASTEXITCODE)" }
+
+      - name: Publish to Microsoft Store
+        run: |
+          msstore publish '${{ steps.bundle.outputs.path }}' -id $env:STORE_PRODUCT_ID
+          if ($LASTEXITCODE -ne 0) { throw "msstore publish failed ($LASTEXITCODE)" }
+
+      - name: Wait for certification
+        run: msstore submission poll $env:STORE_PRODUCT_ID
