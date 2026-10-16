@@ -23,7 +23,8 @@ jobs:
 
     env:
       PROJECT_PATH: UnityExtension\UnityExtension.csproj
-      PACKAGE_DIR: UnityExtension\BundleArtifacts
+      # Absolute: MSBuild resolves a relative AppxPackageDir against the project folder, not the repo root.
+      PACKAGE_DIR: ${{ github.workspace }}\UnityExtension\BundleArtifacts
       DOTNET_VERSION: 10.0.x
 
     steps:
