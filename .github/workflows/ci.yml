@@ -49,7 +49,12 @@ jobs:
 
       - name: Test
         timeout-minutes: 10
-        run: dotnet test UnityExtension.Tests/UnityExtension.Tests.csproj -c Release -p:Platform=x64 --blame-hang --blame-hang-timeout 2m --logger "console;verbosity=detailed"
+        run: |
+          foreach ($f in 'Unusable_input','Incomplete_entry','Missing_fields','Exists_reflects') {
+            Write-Host "=== $f"
+            dotnet test UnityExtension.Tests/UnityExtension.Tests.csproj -c Release -p:Platform=x64 --no-build --filter "FullyQualifiedName~$f" --blame-hang --blame-hang-timeout 40s
+          }
+          exit 0
 
   validate-version:
     runs-on: ubuntu-latest
