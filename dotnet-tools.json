@@ -9,10 +9,10 @@
       ],
       "rollForward": false
     },
-    "minver-cli": {
-      "version": "8.0.0",
+    "dotnet-outdated-tool": {
+      "version": "4.8.1",
       "commands": [
-        "minver"
+        "dotnet-outdated"
       ],
       "rollForward": false
     }

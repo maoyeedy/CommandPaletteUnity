@@ -53,7 +53,7 @@ NuGet first (affects compilation), then local tools, then pre-commit hooks. All 
 dotnet package list --outdated --project UnityExtension/UnityExtension.csproj
 dotnet package update <PackageId>@<version> --project UnityExtension/UnityExtension.csproj
 dotnet tool update --local csharpier   # --local is required, else the global manifest is updated
-dotnet tool update --local minver-cli
+dotnet tool update --local dotnet-outdated-tool
 dotnet tool restore
 pre-commit autoupdate && pre-commit run --all-files   # reject any hook rev downgrade
 ```
