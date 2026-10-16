@@ -23,7 +23,7 @@ The fourth segment stays `.0` (Store rule). Then grep tracked files (not `bin/`,
 
 ## 2. Validate
 
-Delete `bin`, `obj` and `AppPackages` if identity, name or publish profiles changed, then run the restore + `--no-restore` unsigned bundle build from `docs/PUBLISHING.md` (the PR CI job does not build the bundle, so this is the only pre-tag packaging check). A bundle at repo-root `AppPackages/UnityExtension_<X.Y.Z.0>_Test/UnityExtension_<X.Y.Z.0>_x64_arm64.msixbundle` means it worked. Optionally sideload-test it via the `deploy` skill.
+Delete `bin`, `obj` and `AppPackages` if identity, name or publish profiles changed, then run the restore + `--no-restore` unsigned bundle build from `docs/PUBLISHING.md` (the `bundle-build` job in `ci.yml` runs the same command on every PR; run it locally to debug a failure). A bundle at repo-root `AppPackages/UnityExtension_<X.Y.Z.0>_Test/UnityExtension_<X.Y.Z.0>_x64_arm64.msixbundle` means it worked. Optionally sideload-test it via the `deploy` skill.
 
 The version must be higher than the one last published to the Store (`winget show` does not report it; ask the user or check Partner Center), and no draft may be open in the Partner Center web UI.
 

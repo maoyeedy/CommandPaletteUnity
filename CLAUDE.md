@@ -13,7 +13,7 @@ Published on the Microsoft Store as "Project Launcher for Unity", product ID `9N
 
 - `UnityExtension/` = C# project (`Commands/`, `Data/`, `Helpers/`, `Pages/`, `Program.cs`, `UnityExtension.cs`, `Package.appxmanifest`)
 - `docs/` = DEVELOPMENT, PUBLISHING, TROUBLESHOOTING (+ local-only, git-ignored `store-identity.md`); screenshots in `docs/assets/`
-- `.github/workflows/ci.yml` = PR checks (format, unpackaged Release build, tests, version agreement); it does not build the MSIX bundle
+- `.github/workflows/ci.yml` = PR/master checks: format, unpackaged Release build, tests, unsigned MSIX bundle build (`bundle-build`), version agreement
 - `.github/workflows/release-msix.yml` = tag `v*` -> validate versions -> build -> sign -> GitHub release -> opt-in `store-publish` (repo var `STORE_PUBLISH`, environment `microsoft-store` needs reviewer approval)
 - `Directory.Packages.props` = all package versions; `dotnet-tools.json` = csharpier, minver-cli; `.pre-commit-config.yaml` = hooks
 - No Markdown under `UnityExtension/`; contributor guidance -> `CONTRIBUTING.md`; user docs -> `docs/`
