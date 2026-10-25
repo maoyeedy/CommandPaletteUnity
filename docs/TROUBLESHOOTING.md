@@ -45,7 +45,7 @@ If packaging fails with `IL2104` / `NETSDK1144`, check trimming enabled for pack
 ## Bundle build errors
 
 - `APPX0101` "A signing key is required": pass `-p:AppxPackageSigningEnabled=false` (sign afterwards) or `-p:PackageCertificateThumbprint=<thumb>`. See "Package build" in [`PUBLISHING.md`](PUBLISHING.md#package-build).
-- `NETSDK1094` "Unable to optimize assemblies for performance": the two publish profiles disagree on `PublishReadyToRun`, so restore skipped one architecture's runtime pack. Make `win-x64.pubxml` and `win-arm64.pubxml` match, delete `bin`/`obj`/`AppPackages`, then restore and build again. The ILLink crash (exit code `-1073741819`) showed up in the same state.
+- `NETSDK1094` "Unable to optimize assemblies for performance": the two publish profiles disagree on `PublishReadyToRun`, so restore skipped one architecture's runtime pack. Make `win-x64.pubxml` and `win-arm64.pubxml` match, then `just clean` and `just bundle`. The ILLink crash (exit code `-1073741819`) showed up in the same state.
 - Signing verification says "root certificate not trusted" or install fails: trust the cert in `Cert:\LocalMachine\TrustedPeople` from an elevated shell; `CurrentUser` is not enough.
 
 ## Release workflow errors
@@ -64,4 +64,4 @@ If packaging fails with `IL2104` / `NETSDK1144`, check trimming enabled for pack
 
 `MSB3021` / `MSB3027` "locked by: Unity Extension for Command Palette" means the extension is running inside Command Palette and holds `UnityExtension.exe`. It is not a code error.
 
-Close or unregister the extension (`winapp unregister`) for a normal build, or compile-check into another folder: `dotnet build UnityExtension/UnityExtension.csproj -c Debug -p:Platform=x64 -p:OutDir=<other dir>/`. `-p:UseAppHost=false` fails with `NETSDK1067`.
+Close or unregister the extension (`winapp unregister`) for a normal build, or compile-check into another folder: `just build <other dir>`. `-p:UseAppHost=false` fails with `NETSDK1067`.

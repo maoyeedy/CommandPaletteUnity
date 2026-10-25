@@ -2,12 +2,13 @@
 
 ## Build
 
-```bash
-dotnet build UnityExtension/UnityExtension.csproj -c Debug -p:Platform=x64
-dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64
-```
+Commands live in the root `justfile` ([just](https://just.systems)); run `just` to list them. On a new machine run `just doctor` first.
 
-For packaged MSIX output (restore first, build unsigned, sign afterwards), see "Package build" and "Signing" in [`PUBLISHING.md`](PUBLISHING.md#package-build). A plain signed `dotnet build ... -p:GenerateAppxPackageOnBuild=true` fails with `APPX0101` without a certificate thumbprint.
+- `just build` (Debug x64), `just trim` (Release with full trim/AOT warnings), `just bundle` (unsigned x64+arm64 MSIX bundle, as CI), `just clean`
+- `just test`, `just check` (csharpier + pre-commit), `just versions`, `just pins`
+- `just register` registers the Debug build in Command Palette
+
+A plain signed `dotnet build ... -p:GenerateAppxPackageOnBuild=true` fails with `APPX0101` without a certificate thumbprint; build unsigned and sign afterwards.
 
 Trim / AOT notes:
 
@@ -19,7 +20,7 @@ Trim / AOT notes:
 
 ## Test
 
-`UnityExtension.Tests` (xunit) covers `ProjectParser`: `dotnet test UnityExtension.Tests/UnityExtension.Tests.csproj -p:Platform=x64`. UI and command behavior is still verified manually in PowerToys. After a rebuild, reload Command Palette or restart PowerToys.
+`UnityExtension.Tests` (xunit) covers `ProjectParser`: `just test`. UI and command behavior is still verified manually in PowerToys. After a rebuild, reload Command Palette or restart PowerToys.
 
 ## Debug
 
@@ -60,15 +61,9 @@ pre-commit autoupdate && pre-commit run --all-files   # reject any hook rev down
 
 Rules:
 
-- The extension runs inside PowerToys, so keep `Microsoft.CommandPalette.Extensions`, `Microsoft.WindowsAppSDK`, `Microsoft.Windows.CsWinRT` and `Microsoft.Windows.SDK.BuildTools` at or below the versions in [PowerToys' `Directory.Packages.props`](https://github.com/microsoft/PowerToys/blob/main/Directory.Packages.props). Do not use prerelease versions.
+- The extension runs inside PowerToys (`just pins` checks this), so keep `Microsoft.CommandPalette.Extensions`, `Microsoft.WindowsAppSDK`, `Microsoft.Windows.CsWinRT` and `Microsoft.Windows.SDK.BuildTools` at or below the versions in [PowerToys' `Directory.Packages.props`](https://github.com/microsoft/PowerToys/blob/main/Directory.Packages.props). Do not use prerelease versions.
 - `Microsoft.WindowsAppSDK` and `Microsoft.Windows.CsWinRT` must stay mutually compatible, or AOT/trim can break.
 - `Microsoft.CommandPalette.Extensions` is date-versioned; bump only when targeting a newer PowerToys release.
 - A new `Microsoft.Windows.SDK.BuildTools` base (e.g. `10.0.26100.x` to `10.0.27000.x`) also needs the `windows10.0.NNNNN.0` suffix of `TargetFramework` in `UnityExtension.csproj` and `MaxVersionTested` in `Package.appxmanifest` updated. Leave `MinVersion` and `Identity Version` alone.
 
-Validate after updates:
-
-```bash
-dotnet build UnityExtension/UnityExtension.csproj -c Debug -p:Platform=x64
-dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:SuppressSdkNoise=false --no-incremental   # when WindowsAppSDK or CsWinRT changed
-dotnet tool run csharpier check .
-```
+Validate after updates: `just build`, `just check`, `just pins`, and `just trim` when WindowsAppSDK or CsWinRT changed.
