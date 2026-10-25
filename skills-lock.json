@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "skills": {
+    "add-dock-band": {
+      "source": "microsoft/PowerToys",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-dock-band/SKILL.md",
+      "computedHash": "59a9bdc6652617477fb2cf95858533e7331ef547e6a3c6a3b113926cc668a348"
+    },
+    "add-extension-settings": {
+      "source": "microsoft/PowerToys",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-extension-settings/SKILL.md",
+      "computedHash": "3b1218e3752556f73790747a49392e49842a44b81e9a05cc55ab9d1d3b3a9f5e"
+    },
+    "binlog-failure-analysis": {
+      "source": "dotnet/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/dotnet-msbuild/skills/binlog-failure-analysis/SKILL.md",
+      "computedHash": "2edd46eb36c80caca28eba526402a6c738a6e0aa6887692de82988baa5420c12"
+    },
+    "context7-cli": {
+      "source": "upstash/context7",
+      "sourceType": "github",
+      "skillPath": "skills/context7-cli/SKILL.md",
+      "computedHash": "93a9bd051b94a55b0e69054ab30bdc4343102872f69158bf8334fde578e7cf99"
+    },
+    "dotnet-aot-compat": {
+      "source": "dotnet/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/dotnet-upgrade/skills/dotnet-aot-compat/SKILL.md",
+      "computedHash": "71e462a0382d3d07a858d466e8465a2faa62dc2bf7526e7b9928db13b9961602"
+    },
+    "microsoft-code-reference": {
+      "source": "MicrosoftDocs/mcp",
+      "sourceType": "github",
+      "skillPath": "skills/microsoft-code-reference/SKILL.md",
+      "computedHash": "b8f19fa71bfbb9b6c6e586c9135fbc4baa4df4aa3e2da2398d7db4add6fde1c3"
+    },
+    "microsoft-docs": {
+      "source": "MicrosoftDocs/mcp",
+      "sourceType": "github",
+      "skillPath": "skills/microsoft-docs/SKILL.md",
+      "computedHash": "0acd8d2629937e021d605fd1426e641295909e13bab47cad1153793f5564e85e"
+    },
+    "msstore-cli": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/msstore-cli/SKILL.md",
+      "computedHash": "abaef9913fe8c0d039ed3a6966d513656882c538cc3088d9c709ad78c00c3c7e"
+    },
+    "winapp-package": {
+      "source": "microsoft/winappcli",
+      "sourceType": "github",
+      "skillPath": "plugins/winapp/skills/winapp-package/SKILL.md",
+      "computedHash": "f2043da4897d825aad164f4184bd4b770373b9d86a3911d1db64a73aa6e93fbd"
+    },
+    "winapp-troubleshoot": {
+      "source": "microsoft/winappcli",
+      "sourceType": "github",
+      "skillPath": "plugins/winapp/skills/winapp-troubleshoot/SKILL.md",
+      "computedHash": "02abf47923d336f1bcc609f78c5ebfbb9283fa37d51f91c05d7ee725ef619441"
+    },
+    "winapp-ui-automation": {
+      "source": "microsoft/winappcli",
+      "sourceType": "github",
+      "skillPath": "plugins/winapp/skills/winapp-ui-automation/SKILL.md",
+      "computedHash": "3e25d306c79afbe3b2f7f2c8183a237de3f80d86e8c52e760e901e7a7e076721"
+    }
+  }
+}
