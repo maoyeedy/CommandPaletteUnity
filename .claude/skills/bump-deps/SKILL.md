@@ -18,7 +18,7 @@ dotnet package list --outdated --project UnityExtension/UnityExtension.csproj
 
 Apply capped bumps one package at a time with the built-in SDK 10 verb, which accepts an exact version: `dotnet package update <Id>@<version> --project UnityExtension/UnityExtension.csproj`. It rewrites `Directory.Packages.props` formatting (drops blank lines and the trailing newline), so check `git diff` and restore them. `dotnet tool run dotnet-outdated` (local tool, `--upgrade --version-lock Minor --exclude <Id>`) is the alternative for bulk upgrades; it does not know about PowerToys' pins, so never accept its result unreviewed.
 
-**Cap shared packages at PowerToys' pins.** The extension runs inside the PowerToys host, so never exceed what it ships. `just pins` prints ours next to PowerToys' and fails on any package above its pin; if the latest NuGet version is above the pin, use the pin. Do not move to prerelease or experimental versions.
+**Cap runtime-shared packages at PowerToys' pins.** The extension runs inside the PowerToys host, so `Microsoft.CommandPalette.Extensions`, `Microsoft.WindowsAppSDK` and `Microsoft.Windows.CsWinRT` never exceed what it ships. `Microsoft.Windows.SDK.BuildTools` and `Microsoft.Windows.CsWin32` are build-time only and may go higher. `just pins` prints ours next to PowerToys' and fails on any package above its pin; if the latest NuGet version is above the pin, use the pin. Do not move to prerelease or experimental versions.
 
 Package notes:
 

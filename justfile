@@ -53,12 +53,12 @@ versions:
     "csproj Version=$v AssemblyVersion=$a FileVersion=$f; manifest Identity Version=$m"
     if ($a -ne "$v.0" -or $f -ne "$v.0" -or $m -ne "$v.0") { "MISMATCH: expected $v.0 for all three"; exit 1 }
 
-# Shared packages must not exceed PowerToys' pins (the extension runs in its host)
+# Runtime-shared packages must not exceed PowerToys' pins (build-only SDK.BuildTools/CsWin32 may)
 [group('check')]
 [script('pwsh', '-NoLogo', '-NoProfile')]
 pins:
     $ErrorActionPreference = 'Stop'
-    $ids = 'Microsoft.CommandPalette.Extensions', 'Microsoft.WindowsAppSDK', 'Microsoft.Windows.CsWinRT', 'Microsoft.Windows.SDK.BuildTools', 'Microsoft.Windows.CsWin32'
+    $ids = 'Microsoft.CommandPalette.Extensions', 'Microsoft.WindowsAppSDK', 'Microsoft.Windows.CsWinRT'
     $upstream = gh api repos/microsoft/PowerToys/contents/Directory.Packages.props --jq .content
     if ($LASTEXITCODE) { exit 1 }
     $theirs = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String(($upstream -join '')))

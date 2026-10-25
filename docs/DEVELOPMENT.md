@@ -61,7 +61,7 @@ pre-commit autoupdate && pre-commit run --all-files   # reject any hook rev down
 
 Rules:
 
-- The extension runs inside PowerToys (`just pins` checks this), so keep `Microsoft.CommandPalette.Extensions`, `Microsoft.WindowsAppSDK`, `Microsoft.Windows.CsWinRT` and `Microsoft.Windows.SDK.BuildTools` at or below the versions in [PowerToys' `Directory.Packages.props`](https://github.com/microsoft/PowerToys/blob/main/Directory.Packages.props). Do not use prerelease versions.
+- The extension runs inside PowerToys (`just pins` checks this), so keep `Microsoft.CommandPalette.Extensions`, `Microsoft.WindowsAppSDK` and `Microsoft.Windows.CsWinRT` (runtime-shared) at or below the versions in [PowerToys' `Directory.Packages.props`](https://github.com/microsoft/PowerToys/blob/main/Directory.Packages.props). Do not use prerelease versions.
 - `Microsoft.WindowsAppSDK` and `Microsoft.Windows.CsWinRT` must stay mutually compatible, or AOT/trim can break.
 - `Microsoft.CommandPalette.Extensions` is date-versioned; bump only when targeting a newer PowerToys release.
 - A new `Microsoft.Windows.SDK.BuildTools` base (e.g. `10.0.26100.x` to `10.0.27000.x`) also needs the `windows10.0.NNNNN.0` suffix of `TargetFramework` in `UnityExtension.csproj` and `MaxVersionTested` in `Package.appxmanifest` updated. Leave `MinVersion` and `Identity Version` alone.
