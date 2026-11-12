@@ -53,26 +53,12 @@ versions:
     "csproj Version=$v AssemblyVersion=$a FileVersion=$f; manifest Identity Version=$m"
     if ($a -ne "$v.0" -or $f -ne "$v.0" -or $m -ne "$v.0") { "MISMATCH: expected $v.0 for all three"; exit 1 }
 
-# Runtime-shared packages must not exceed PowerToys' pins (build-only SDK.BuildTools/CsWin32 may)
+# Runtime-shared packages must not exceed the latest PowerToys release (build-only SDK.BuildTools/CsWin32 may)
 [group('check')]
 [script('pwsh', '-NoLogo', '-NoProfile')]
 pins:
-    $ErrorActionPreference = 'Stop'
-    $ids = 'Microsoft.CommandPalette.Extensions', 'Microsoft.WindowsAppSDK', 'Microsoft.Windows.CsWinRT'
-    $upstream = gh api repos/microsoft/PowerToys/contents/Directory.Packages.props --jq .content
-    if ($LASTEXITCODE) { exit 1 }
-    $theirs = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String(($upstream -join '')))
-    $ours = Get-Content Directory.Packages.props -Raw
-    $bad = 0
-    foreach ($id in $ids) {
-        $re = 'Include="' + [regex]::Escape($id) + '"\s+Version="([^"]+)"'
-        $o = [regex]::Match($ours, $re).Groups[1].Value
-        $t = [regex]::Match($theirs, $re).Groups[1].Value
-        $over = $o -and $t -and ([version]($o -replace '-.*') -gt [version]($t -replace '-.*'))
-        if ($over) { $bad++ }
-        '{0,-40} ours {1,-16} PowerToys {2,-16} {3}' -f $id, $o, $t, $(if ($over) { 'ABOVE PIN' } elseif (-not $t) { '(not pinned)' } else { 'ok' })
-    }
-    exit $bad
+    ./.github/scripts/CheckPins.ps1
+    exit $LASTEXITCODE
 
 # Fresh clone / new PC: audit SDKs, tools, hooks and host setup
 [group('setup')]
