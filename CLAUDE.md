@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+Solo-developer repo, no collaborators: skip reviewer/CODEOWNERS/approval workflows; keep process lightweight.
+
 PowerToys Command Palette extension: lists Unity Hub projects (`%APPDATA%\UnityHub\projects-v1.json`) and opens them in the Unity Editor. Out-of-process COM server, MSIX-packaged, trimmed/AOT.
 
 Read before acting: `docs/DEVELOPMENT.md` (build, tooling), `docs/TROUBLESHOOTING.md` (errors), `docs/PUBLISHING.md` (packaging, signing, Store).
