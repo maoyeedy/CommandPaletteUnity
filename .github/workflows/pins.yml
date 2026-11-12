@@ -1,0 +1,32 @@
+name: PowerToys pins
+
+# PRs: fail if a runtime-shared package is newer than the latest PowerToys release.
+# Weekly: also fail when PowerToys moved ahead, as a reminder to run bump-deps.
+
+on:
+  pull_request:
+    branches: [master]
+    paths: [Directory.Packages.props, .github/scripts/CheckPins.ps1, .github/workflows/pins.yml]
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pins:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Compare with latest PowerToys release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STRICT: ${{ github.event_name != 'pull_request' }}
+        run: |
+          ./.github/scripts/CheckPins.ps1 -Strict:($env:STRICT -eq 'true')
+          exit $LASTEXITCODE

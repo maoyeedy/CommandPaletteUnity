@@ -1,13 +1,38 @@
 # Development Guide
 
-## Build
+## Machine setup
 
-```bash
-dotnet build UnityExtension/UnityExtension.csproj -c Debug -p:Platform=x64
-dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64
+Core dev tools via winget, then `just doctor`. Windows App Runtime, VCLibs and UI.Xaml framework packages arrive as MSIX dependencies; do not install them by hand.
+
+```powershell
+# Windows SDK: keep in step with Microsoft.Windows.SDK.BuildTools in Directory.Packages.props; the pin stops `winget upgrade --all` from moving it
+winget install --exact --id Microsoft.WindowsSDK.10.0.26100 --version 10.0.26100.7705 --source winget
+winget pin add --exact --id Microsoft.WindowsSDK.10.0.26100 --version 10.0.26100.7705
+
+# Build toolchain and shell (the justfile runs its scripts in pwsh)
+winget install --exact --id Microsoft.DotNet.SDK.10 --source winget
+winget install --exact --id Microsoft.PowerShell --source winget
+winget install --exact --id Git.Git --source winget
+
+# Host: Command Palette ships with PowerToys
+winget install --exact --id Microsoft.PowerToys --source winget
+
+# Deploy and publish: winapp (dev registration, MSIX), msstore (Store submissions)
+winget install --exact --id Microsoft.WinAppCli --source winget
+winget install --exact --id 9P53PC5S0PHJ --source msstore
 ```
 
-For packaged MSIX output (restore first, build unsigned, sign afterwards), see "Package build" and "Signing" in [`PUBLISHING.md`](PUBLISHING.md#package-build). A plain signed `dotnet build ... -p:GenerateAppxPackageOnBuild=true` fails with `APPX0101` without a certificate thumbprint.
+When `Microsoft.Windows.SDK.BuildTools` moves to a new version, update both SDK lines (`winget pin remove` the old pin first). Remove side-by-side .NET SDKs nothing pins to, so `dotnet --list-sdks` stays clean.
+
+## Build
+
+Commands live in the root `justfile` ([just](https://just.systems)); run `just` to list them. On a new machine run `just doctor` first.
+
+- `just build` (Debug x64), `just trim` (Release with full trim/AOT warnings), `just bundle` (unsigned x64+arm64 MSIX bundle, as CI), `just clean`
+- `just test`, `just check` (csharpier + pre-commit), `just versions`, `just pins`
+- `just register` registers the Debug build in Command Palette
+
+A plain signed `dotnet build ... -p:GenerateAppxPackageOnBuild=true` fails with `APPX0101` without a certificate thumbprint; build unsigned and sign afterwards.
 
 Trim / AOT notes:
 
@@ -19,7 +44,7 @@ Trim / AOT notes:
 
 ## Test
 
-`UnityExtension.Tests` (xunit) covers `ProjectParser`: `dotnet test UnityExtension.Tests/UnityExtension.Tests.csproj -p:Platform=x64`. UI and command behavior is still verified manually in PowerToys. After a rebuild, reload Command Palette or restart PowerToys.
+`UnityExtension.Tests` (xunit) covers `ProjectParser`: `just test`. UI and command behavior is still verified manually in PowerToys. After a rebuild, reload Command Palette or restart PowerToys.
 
 ## Debug
 
@@ -53,22 +78,16 @@ NuGet first (affects compilation), then local tools, then pre-commit hooks. All 
 dotnet package list --outdated --project UnityExtension/UnityExtension.csproj
 dotnet package update <PackageId>@<version> --project UnityExtension/UnityExtension.csproj
 dotnet tool update --local csharpier   # --local is required, else the global manifest is updated
-dotnet tool update --local minver-cli
+dotnet tool update --local dotnet-outdated-tool
 dotnet tool restore
 pre-commit autoupdate && pre-commit run --all-files   # reject any hook rev downgrade
 ```
 
 Rules:
 
-- The extension runs inside PowerToys, so keep `Microsoft.CommandPalette.Extensions`, `Microsoft.WindowsAppSDK`, `Microsoft.Windows.CsWinRT` and `Microsoft.Windows.SDK.BuildTools` at or below the versions in [PowerToys' `Directory.Packages.props`](https://github.com/microsoft/PowerToys/blob/main/Directory.Packages.props). Do not use prerelease versions.
+- The extension runs inside PowerToys (`just pins` checks this), so keep `Microsoft.CommandPalette.Extensions`, `Microsoft.WindowsAppSDK` and `Microsoft.Windows.CsWinRT` (runtime-shared) at or below the versions in `Directory.Packages.props` of the [latest PowerToys release](https://github.com/microsoft/PowerToys/releases/latest), not PowerToys `main` (which runs ahead of what users have). Do not use prerelease versions. The `PowerToys pins` workflow runs this check on PRs that touch packages, and weekly in strict mode, where it also fails when PowerToys has moved ahead (run `bump-deps`).
 - `Microsoft.WindowsAppSDK` and `Microsoft.Windows.CsWinRT` must stay mutually compatible, or AOT/trim can break.
 - `Microsoft.CommandPalette.Extensions` is date-versioned; bump only when targeting a newer PowerToys release.
 - A new `Microsoft.Windows.SDK.BuildTools` base (e.g. `10.0.26100.x` to `10.0.27000.x`) also needs the `windows10.0.NNNNN.0` suffix of `TargetFramework` in `UnityExtension.csproj` and `MaxVersionTested` in `Package.appxmanifest` updated. Leave `MinVersion` and `Identity Version` alone.
 
-Validate after updates:
-
-```bash
-dotnet build UnityExtension/UnityExtension.csproj -c Debug -p:Platform=x64
-dotnet build UnityExtension/UnityExtension.csproj -c Release -p:Platform=x64 -p:SuppressSdkNoise=false --no-incremental   # when WindowsAppSDK or CsWinRT changed
-dotnet tool run csharpier check .
-```
+Validate after updates: `just build`, `just check`, `just pins`, and `just trim` when WindowsAppSDK or CsWinRT changed.
