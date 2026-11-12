@@ -1,5 +1,29 @@
 # Development Guide
 
+## Machine setup
+
+Core dev tools via winget, then `just doctor`. Windows App Runtime, VCLibs and UI.Xaml framework packages arrive as MSIX dependencies; do not install them by hand.
+
+```powershell
+# Windows SDK: keep in step with Microsoft.Windows.SDK.BuildTools in Directory.Packages.props; the pin stops `winget upgrade --all` from moving it
+winget install --exact --id Microsoft.WindowsSDK.10.0.26100 --version 10.0.26100.7705 --source winget
+winget pin add --exact --id Microsoft.WindowsSDK.10.0.26100 --version 10.0.26100.7705
+
+# Build toolchain and shell (the justfile runs its scripts in pwsh)
+winget install --exact --id Microsoft.DotNet.SDK.10 --source winget
+winget install --exact --id Microsoft.PowerShell --source winget
+winget install --exact --id Git.Git --source winget
+
+# Host: Command Palette ships with PowerToys
+winget install --exact --id Microsoft.PowerToys --source winget
+
+# Deploy and publish: winapp (dev registration, MSIX), msstore (Store submissions)
+winget install --exact --id Microsoft.WinAppCli --source winget
+winget install --exact --id 9P53PC5S0PHJ --source msstore
+```
+
+When `Microsoft.Windows.SDK.BuildTools` moves to a new version, update both SDK lines (`winget pin remove` the old pin first). Remove side-by-side .NET SDKs nothing pins to, so `dotnet --list-sdks` stays clean.
+
 ## Build
 
 Commands live in the root `justfile` ([just](https://just.systems)); run `just` to list them. On a new machine run `just doctor` first.
