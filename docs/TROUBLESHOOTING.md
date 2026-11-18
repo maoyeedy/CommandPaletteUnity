@@ -2,13 +2,16 @@
 
 ## Extension not visible
 
-Check PowerToys, Command Palette, package install, manifest registration, CLSID consistency.
+Check Command Palette (runs standalone; PowerToys need not be open), package install, manifest registration, CLSID consistency.
 
 ## Changes not showing
 
-Stale package, or PowerToys needs a reload.
+Stale package, or Command Palette has not reloaded extensions.
 
-- Local debug: `just register`, then Command Palette's `Reload`.
+- Local debug: `just register` (reloads extensions itself). Manual reload: `Start-Process x-cmdpal://reload`,
+  or `Reload` in Command Palette.
+- Restart Command Palette: `Stop-Process -Name Microsoft.CmdPal.UI`, then
+  `Start-Process 'shell:AppsFolder\Microsoft.CommandPalette_8wekyb3d8bbwe!App'`.
 - Release validation: remove the old package and install the new bundle
   ([PUBLISHING.md](PUBLISHING.md#install-for-testing)).
 

@@ -86,14 +86,14 @@ doctor:
     Check 'Unity Hub projects-v1.json' (Test-Path "$env:APPDATA\UnityHub\projects-v1.json") 'install Unity Hub and add a project' -Optional
     if ($missing) { "$missing required item(s) missing"; exit 1 }
 
-# Debug build + dev registration into Command Palette; then run Command Palette's Reload
+# Debug build + dev registration into Command Palette, then reload its extensions
 [group('deploy')]
 [script('pwsh', '-NoLogo', '-NoProfile')]
 register:
     $ErrorActionPreference = 'Stop'
     # Uninstall first: a release install blocks -Register (0x80073CFB), and a running dev
-    # registration locks bin/ (MSB3021). Removal also stops the extension, so PowerToys can stay
-    # open. Dev data (settings) is kept; a release install's settings are not.
+    # registration locks bin/ (MSB3021). Removal also stops the extension, so Command Palette can
+    # stay open. Dev data (settings) is kept; a release install's settings are not.
     foreach ($installed in Get-AppxPackage YidiMao.CommandPalette-Unity) {
         if ($installed.IsDevelopmentMode) {
             "Removing dev registration $($installed.Version) (settings kept)"
@@ -110,4 +110,12 @@ register:
     $assets = New-Item -ItemType Directory -Force (Join-Path $manifest.DirectoryName 'Assets')
     Copy-Item -Recurse -Force UnityExtension/Assets/* $assets
     Add-AppxPackage -Register $manifest.FullName -ForceUpdateFromAnyVersion
-    "Registered $($manifest.FullName). In Command Palette run Reload."
+    "Registered $($manifest.FullName)."
+    # Needs Command Palette running and "Enable external command links" on (General settings,
+    # on by default); the first request asks to confirm unless "Always allow" was chosen.
+    if (Get-Process Microsoft.CmdPal.UI -ErrorAction SilentlyContinue) {
+        Start-Process x-cmdpal://reload
+        "Sent x-cmdpal://reload; confirm in Command Palette if it asks."
+    } else {
+        "Command Palette is not running; start it to load the extension."
+    }
