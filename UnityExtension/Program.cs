@@ -31,7 +31,8 @@ public class Program
             // Since we have single instance of the extension object, we exit as soon as it is disposed.
             extensionDisposedEvent.WaitOne();
 
-            // Stop + UnsafeDispose, as in the PowerToys template. DisposeAsync would wait for every
+            // Stop + UnsafeDispose, as in the PowerToys template
+            // (src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.../Program.cs). DisposeAsync would wait for every
             // served object to be garbage collected, but the class factory above keeps
             // extensionInstance alive, so the process would never exit after the host disposes it.
             server.Stop();

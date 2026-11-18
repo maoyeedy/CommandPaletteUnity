@@ -9,6 +9,11 @@ The dev loop: setup, build, test, debug. Each other topic has one home:
 | NuGet, tool, hook and Windows SDK updates | [DEPENDENCIES.md](DEPENDENCIES.md) |
 | Packaging, signing, releases, Store | [PUBLISHING.md](PUBLISHING.md) |
 | Errors and known warnings | [TROUBLESHOOTING.md](TROUBLESHOOTING.md) |
+| Upstream extension template | [PowerToys `ExtensionTemplate`](https://github.com/microsoft/PowerToys/tree/main/src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension) |
+
+The project started from that template. `Program.cs`, `UnityExtension.cs`, the publish profiles
+and the packaging parts of the csproj should stay close to it; diff against it when bumping
+`Microsoft.CommandPalette.Extensions` and when the extension misbehaves on start or exit.
 
 ## Machine setup
 
