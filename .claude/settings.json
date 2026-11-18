@@ -19,5 +19,8 @@
       "Bash(claude mcp list)",
       "Bash(npx @microsoft/learn-cli *)"
     ]
+  },
+  "enabledPlugins": {
+    "csharp-lsp@claude-plugins-official": true
   }
 }
