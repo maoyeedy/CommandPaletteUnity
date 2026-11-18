@@ -7,36 +7,60 @@ namespace UnityExtension;
 
 public static class ProjectParser
 {
-    internal static List<UnityProject> GetUnityProjects()
+    internal static List<UnityProject> GetUnityProjects() => LoadProjects(Resources.UnityHubDir);
+
+    /// <summary>
+    /// Loads the project list from a Unity Hub data folder. Hub 4: hub.db when
+    /// meta.projects_json_migrated = '1', unless projects-v1.json is newer (Hub 3 after a
+    /// downgrade). Otherwise projects-v1.json minus excludedProjectFolders.json.
+    /// Never throws; any failure gives an empty list.
+    /// </summary>
+    internal static List<UnityProject> LoadProjects(string hubDir)
     {
-        var projectsJsonFilePath = Resources.ProjectsJsonPath;
-
-        if (!File.Exists(projectsJsonFilePath))
-        {
-            return new List<UnityProject>();
-        }
-
-        string jsonContent;
         try
         {
-            jsonContent = File.ReadAllText(projectsJsonFilePath);
+            var dbPath = Path.Combine(hubDir, "hub.db");
+            var jsonPath = Path.Combine(hubDir, "projects-v1.json");
+
+            if (File.Exists(dbPath) && !IsJsonNewer(jsonPath, dbPath))
+            {
+                switch (HubDatabase.TryReadProjects(dbPath, out var rows))
+                {
+                    case HubDbStatus.Ok:
+                        return ParseDbRows(rows);
+                    case HubDbStatus.Failed:
+                        return [];
+                    case HubDbStatus.NotMigrated:
+                    default:
+                        break;
+                }
+            }
+
+            if (!File.Exists(jsonPath))
+            {
+                return [];
+            }
+
+            var excluded = ReadExcluded(Path.Combine(hubDir, "excludedProjectFolders.json"));
+            return ParseProjects(File.ReadAllText(jsonPath), excluded);
         }
         catch (Exception)
         {
-            // File exists but couldn't be read (locked, permissions, etc.)
-            return new List<UnityProject>();
+            // Unreadable file, bad path, ...: the page shows "No projects found".
+            return [];
         }
-
-        return ParseProjects(jsonContent);
     }
 
     /// <summary>
     /// Parses the contents of Unity Hub's projects-v1.json into a list of projects.
     /// Each entry is parsed independently: a single malformed or incomplete entry
     /// (e.g. a dead reference to a moved/deleted project) is skipped rather than
-    /// aborting the whole list.
+    /// aborting the whole list. Paths in <paramref name="excluded"/> are dropped.
     /// </summary>
-    internal static List<UnityProject> ParseProjects(string jsonContent)
+    internal static List<UnityProject> ParseProjects(
+        string jsonContent,
+        HashSet<string>? excluded = null
+    )
     {
         var result = new List<UnityProject>();
 
@@ -47,7 +71,6 @@ public static class ProjectParser
         }
         catch (JsonException)
         {
-            // Corrupt/unreadable JSON → empty list; the page shows "No projects found".
             return result;
         }
 
@@ -62,59 +85,176 @@ public static class ProjectParser
 
         foreach (var property in data.EnumerateObject())
         {
-            try
+            if (excluded is not null && excluded.Contains(NormalizePath(property.Name)))
             {
-                var projectPath = property.Name;
-                var projectInfo = property.Value;
-
-                var fallbackTitle = Path.GetFileName(projectPath.TrimEnd('/', '\\'));
-
-                var title =
-                    projectInfo.TryGetProperty("title", out var titleEl)
-                    && titleEl.ValueKind == JsonValueKind.String
-                    && !string.IsNullOrEmpty(titleEl.GetString())
-                        ? titleEl.GetString()!
-                        : fallbackTitle;
-
-                var version =
-                    projectInfo.TryGetProperty("version", out var versionEl)
-                    && versionEl.ValueKind == JsonValueKind.String
-                        ? versionEl.GetString()!
-                        : "Unknown";
-
-                long lastModified = 0;
-                if (
-                    projectInfo.TryGetProperty("lastModified", out var lastModifiedEl)
-                    && lastModifiedEl.ValueKind == JsonValueKind.Number
-                    && lastModifiedEl.TryGetInt64(out var parsedLastModified)
-                )
-                {
-                    lastModified = parsedLastModified;
-                }
-
-                var isFavorite =
-                    projectInfo.TryGetProperty("isFavorite", out var isFavoriteEl)
-                    && isFavoriteEl.ValueKind == JsonValueKind.True;
-
-                result.Add(
-                    new UnityProject
-                    {
-                        Path = projectPath,
-                        Title = title,
-                        Version = version,
-                        LastModified = lastModified,
-                        IsFavorite = isFavorite,
-                        Exists = SafeDirectoryExists(projectPath),
-                    }
-                );
+                continue;
             }
-            catch (Exception)
+
+            var project = TryParseEntry(property.Name, property.Value);
+            if (project is not null)
             {
-                // Skip only this malformed entry; keep parsing the rest.
+                result.Add(project);
             }
         }
 
         return result;
+    }
+
+    /// <summary>Parses hub.db rows (path, data JSON); a malformed row is skipped.</summary>
+    internal static List<UnityProject> ParseDbRows(IEnumerable<KeyValuePair<string, string>> rows)
+    {
+        var result = new List<UnityProject>();
+        foreach (var (path, data) in rows)
+        {
+            try
+            {
+                using var doc = JsonDocument.Parse(data);
+                var project = TryParseEntry(path, doc.RootElement);
+                if (project is not null)
+                {
+                    result.Add(project);
+                }
+            }
+            catch (Exception)
+            {
+                // Skip only this row.
+            }
+        }
+
+        return result;
+    }
+
+    internal static HashSet<string> ReadExcluded(string excludedJsonPath)
+    {
+        var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        try
+        {
+            if (!File.Exists(excludedJsonPath))
+            {
+                return result;
+            }
+
+            using var doc = JsonDocument.Parse(File.ReadAllText(excludedJsonPath));
+            if (
+                doc.RootElement.ValueKind == JsonValueKind.Object
+                && doc.RootElement.TryGetProperty("data", out var data)
+                && data.ValueKind == JsonValueKind.Array
+            )
+            {
+                foreach (var item in data.EnumerateArray())
+                {
+                    if (item.ValueKind == JsonValueKind.String)
+                    {
+                        result.Add(NormalizePath(item.GetString()!));
+                    }
+                }
+            }
+        }
+        catch (Exception)
+        {
+            // Unreadable exclusions: show everything rather than nothing.
+        }
+
+        return result;
+    }
+
+    private static string NormalizePath(string path) => path.Replace('/', '\\').TrimEnd('\\');
+
+    private static UnityProject? TryParseEntry(string projectPath, JsonElement projectInfo)
+    {
+        try
+        {
+            if (projectInfo.ValueKind != JsonValueKind.Object)
+            {
+                return null;
+            }
+
+            var fallbackTitle = Path.GetFileName(projectPath.TrimEnd('/', '\\'));
+
+            var title =
+                projectInfo.TryGetProperty("title", out var titleEl)
+                && titleEl.ValueKind == JsonValueKind.String
+                && !string.IsNullOrEmpty(titleEl.GetString())
+                    ? titleEl.GetString()!
+                    : fallbackTitle;
+
+            var version =
+                projectInfo.TryGetProperty("version", out var versionEl)
+                && versionEl.ValueKind == JsonValueKind.String
+                    ? versionEl.GetString()!
+                    : "Unknown";
+
+            // lastModified is null for projects never opened.
+            long lastModified = 0;
+            if (
+                projectInfo.TryGetProperty("lastModified", out var lastModifiedEl)
+                && lastModifiedEl.ValueKind == JsonValueKind.Number
+                && lastModifiedEl.TryGetInt64(out var parsedLastModified)
+            )
+            {
+                lastModified = parsedLastModified;
+            }
+
+            var isFavorite =
+                projectInfo.TryGetProperty("isFavorite", out var isFavoriteEl)
+                && isFavoriteEl.ValueKind == JsonValueKind.True;
+
+            var tags = new List<string>();
+            if (
+                projectInfo.TryGetProperty("tags", out var tagsEl)
+                && tagsEl.ValueKind == JsonValueKind.Array
+            )
+            {
+                foreach (var tag in tagsEl.EnumerateArray())
+                {
+                    if (
+                        tag.ValueKind == JsonValueKind.String
+                        && !string.IsNullOrEmpty(tag.GetString())
+                    )
+                    {
+                        tags.Add(tag.GetString()!);
+                    }
+                }
+            }
+
+            return new UnityProject
+            {
+                Path = projectPath,
+                Title = title,
+                Version = version,
+                LastModified = lastModified,
+                IsFavorite = isFavorite,
+                Tags = tags,
+                Exists = SafeDirectoryExists(projectPath),
+            };
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
+    // Hub 4 never writes projects-v1.json after migration, so a JSON newer than hub.db
+    // (and its WAL) means Hub 3 is in use again.
+    private static bool IsJsonNewer(string jsonPath, string dbPath)
+    {
+        if (!File.Exists(jsonPath))
+        {
+            return false;
+        }
+
+        var dbTime = File.GetLastWriteTimeUtc(dbPath);
+        var walPath = dbPath + "-wal";
+        if (File.Exists(walPath))
+        {
+            var walTime = File.GetLastWriteTimeUtc(walPath);
+            if (walTime > dbTime)
+            {
+                dbTime = walTime;
+            }
+        }
+
+        return File.GetLastWriteTimeUtc(jsonPath) > dbTime;
     }
 
     private static bool SafeDirectoryExists(string path)

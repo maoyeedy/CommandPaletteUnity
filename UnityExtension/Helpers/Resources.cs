@@ -6,10 +6,10 @@ namespace UnityExtension;
 
 public static class Resources
 {
-    public static string ProjectsJsonPath =>
+    public static string UnityHubDir =>
         Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "UnityHub\\projects-v1.json"
+            "UnityHub"
         );
 
     public static IconInfo IconUrl => new("\uE8A7");

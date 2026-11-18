@@ -1,0 +1,1266 @@
+{
+ "cliCommands": [
+  "analytics",
+  "analytics opt-in",
+  "analytics opt-out",
+  "analytics status",
+  "assets",
+  "assets export",
+  "assets import",
+  "assets inspect",
+  "auth",
+  "auth accounts",
+  "auth broker",
+  "auth broker ensure",
+  "auth consumers",
+  "auth default",
+  "auth login",
+  "auth logout",
+  "auth revoke",
+  "auth status",
+  "auth switch",
+  "auth token",
+  "bug",
+  "bug mcp",
+  "build",
+  "build run",
+  "cache",
+  "cache clean",
+  "cache info",
+  "cache key",
+  "changelog",
+  "ci",
+  "ci init",
+  "close",
+  "cloud",
+  "cloud org",
+  "cloud org clear-default",
+  "cloud org create",
+  "cloud org current",
+  "cloud org set-default",
+  "cloud project",
+  "cloud project clear-default",
+  "cloud project current",
+  "cloud project set-default",
+  "cloud status",
+  "collaboration",
+  "collaboration annotations",
+  "collaboration annotations count",
+  "collaboration annotations create",
+  "collaboration annotations delete",
+  "collaboration annotations delete-fields",
+  "collaboration annotations export",
+  "collaboration annotations get",
+  "collaboration annotations replies",
+  "collaboration annotations resolve",
+  "collaboration annotations status",
+  "collaboration annotations unresolve",
+  "collaboration annotations update",
+  "collaboration attachments",
+  "collaboration attachments add",
+  "collaboration attachments add file",
+  "collaboration attachments add sketch",
+  "collaboration attachments add spatial",
+  "collaboration attachments delete",
+  "collaboration attachments download",
+  "collaboration attachments update",
+  "collaboration attachments update file",
+  "collaboration attachments update sketch",
+  "collaboration attachments update spatial",
+  "collaboration attachments upload",
+  "collaboration jira",
+  "collaboration jira configs",
+  "collaboration jira issues",
+  "collaboration jira issues create",
+  "collaboration jira issues get",
+  "collaboration jira issues link",
+  "collaboration jira issues search",
+  "collaboration jira issues types",
+  "collaboration jira issues unlink",
+  "collaboration jira project",
+  "collaboration jira project add",
+  "collaboration jira project delete",
+  "collaboration jira project link",
+  "collaboration jira project unlink",
+  "collaboration jira project update",
+  "collaboration jira server",
+  "collaboration jira server add",
+  "collaboration jira server delete",
+  "collaboration jira server permissions",
+  "collaboration jira server projects",
+  "collaboration jira server test",
+  "collaboration jira server update",
+  "collaboration jira server users",
+  "collaboration reactions",
+  "collaboration reactions add",
+  "collaboration reactions remove",
+  "collaboration read",
+  "collaboration subscribe",
+  "collaboration thumbnail",
+  "collaboration thumbnail download",
+  "collaboration thumbnail upload",
+  "collaboration unsubscribe",
+  "command",
+  "commands",
+  "completion",
+  "config",
+  "config accelerator",
+  "config get",
+  "config path",
+  "config proxy",
+  "config resolve",
+  "config set",
+  "config unset",
+  "config update-check",
+  "context",
+  "context current",
+  "context delete",
+  "context save",
+  "context use",
+  "diagnose",
+  "diagnose accelerator",
+  "diagnose proxy",
+  "diagnose update",
+  "docs",
+  "docs cache",
+  "docs cache add",
+  "docs cache clear",
+  "docs toc",
+  "doctor",
+  "editor",
+  "editor add",
+  "editor module",
+  "editor module add",
+  "editor module refresh",
+  "editor module remove",
+  "editors",
+  "editors add",
+  "editors default",
+  "editors info",
+  "editors install-path",
+  "editors module",
+  "editors module add",
+  "editors module refresh",
+  "editors module remove",
+  "editors path",
+  "editors prune",
+  "editors running",
+  "editors upgrade",
+  "editors verify",
+  "env",
+  "hub",
+  "hub install",
+  "install",
+  "install-modules",
+  "install-path",
+  "job",
+  "job cancel",
+  "job status",
+  "job wait",
+  "language",
+  "license",
+  "license activate",
+  "license return",
+  "license server",
+  "license server health",
+  "license server status",
+  "license status",
+  "logs",
+  "mcp",
+  "mcp configure",
+  "modules",
+  "open",
+  "pipeline",
+  "pipeline automation",
+  "pipeline automation apps",
+  "pipeline automation apps actions",
+  "pipeline automation apps actions create",
+  "pipeline automation apps create",
+  "pipeline automation apps get",
+  "pipeline automation apps versions",
+  "pipeline automation apps versions create",
+  "pipeline automation apps versions get",
+  "pipeline automation automations",
+  "pipeline automation automations get",
+  "pipeline automation bots",
+  "pipeline automation bots get",
+  "pipeline automation jobs",
+  "pipeline automation jobs approve",
+  "pipeline automation jobs get",
+  "pipeline automation jobs logs",
+  "pipeline automation jobs reject",
+  "pipeline automation jobs resume",
+  "pipeline automation jobs stats",
+  "pipeline automation jobs terminate",
+  "pipeline automation jobs watch",
+  "pipeline automation pipelines",
+  "pipeline automation pipelines create",
+  "pipeline automation pipelines get",
+  "pipeline automation pipelines trigger",
+  "pipeline automation pipelines versions",
+  "pipeline automation pipelines versions get",
+  "pipeline automation profiles",
+  "pipeline automation profiles get",
+  "pipeline automation templates",
+  "pipeline automation templates get",
+  "pipeline cloud-build",
+  "pipeline cloud-build builds",
+  "pipeline cloud-build builds artifacts",
+  "pipeline cloud-build builds cancel",
+  "pipeline cloud-build builds download",
+  "pipeline cloud-build builds failures",
+  "pipeline cloud-build builds get",
+  "pipeline cloud-build builds log",
+  "pipeline cloud-build builds start",
+  "pipeline cloud-build builds steps",
+  "pipeline cloud-build builds timeline",
+  "pipeline cloud-build connections",
+  "pipeline cloud-build connections create",
+  "pipeline cloud-build credentials",
+  "pipeline cloud-build credentials android",
+  "pipeline cloud-build credentials android upload",
+  "pipeline cloud-build credentials ios",
+  "pipeline cloud-build credentials ios upload",
+  "pipeline cloud-build credentials osx",
+  "pipeline cloud-build credentials osx upload",
+  "pipeline cloud-build credentials uwp",
+  "pipeline cloud-build credentials uwp upload",
+  "pipeline cloud-build org",
+  "pipeline cloud-build org free-tier",
+  "pipeline cloud-build project",
+  "pipeline cloud-build project get",
+  "pipeline cloud-build project stats",
+  "pipeline cloud-build scm",
+  "pipeline cloud-build scm check-url",
+  "pipeline cloud-build targets",
+  "pipeline cloud-build targets auditlog",
+  "pipeline cloud-build targets create",
+  "pipeline cloud-build targets get",
+  "pipeline cloud-build targets groups",
+  "pipeline cloud-build targets update",
+  "pipeline cloud-build tooling",
+  "pipeline cloud-build tooling machine-types",
+  "pipeline cloud-build tooling os",
+  "pipeline cloud-build tooling os get",
+  "pipeline cloud-build tooling platforms",
+  "pipeline cloud-build tooling unity",
+  "pipeline cloud-build tooling unity get",
+  "pipeline cloud-build tooling visual-studio",
+  "pipeline cloud-build tooling xcode",
+  "pipeline editors",
+  "pipeline install",
+  "pipeline list-versions",
+  "pipeline upgrade",
+  "plugin",
+  "plugin changelog",
+  "plugin install",
+  "plugin remove",
+  "plugin upgrade",
+  "projects",
+  "projects add",
+  "projects audit",
+  "projects clean",
+  "projects clone",
+  "projects close",
+  "projects create",
+  "projects exec",
+  "projects export",
+  "projects import",
+  "projects info",
+  "projects link",
+  "projects link cloud",
+  "projects link vcs",
+  "projects open",
+  "projects pin",
+  "projects remove",
+  "projects report",
+  "projects require",
+  "projects size",
+  "projects unlink",
+  "projects unlink cloud",
+  "projects unlink vcs",
+  "projects unpin",
+  "projects upgrade",
+  "projects verify",
+  "recompile",
+  "releases",
+  "run",
+  "self-uninstall",
+  "self-update",
+  "setup",
+  "setup all",
+  "setup antigravity",
+  "setup claude",
+  "setup codex",
+  "setup copilot",
+  "setup grok",
+  "setup opencode",
+  "setup qwen",
+  "setup vscode",
+  "shell",
+  "skill",
+  "skill disable",
+  "skill enable",
+  "skill install",
+  "skill refresh",
+  "skill show",
+  "skill sync",
+  "status",
+  "templates",
+  "templates create",
+  "templates delete",
+  "templates edit",
+  "templates info",
+  "templates location",
+  "templates pack",
+  "terms",
+  "terms accept",
+  "terms status",
+  "test",
+  "uninstall",
+  "vcs",
+  "vcs affected",
+  "vcs blame",
+  "vcs conflicts",
+  "vcs diff",
+  "vcs doctor",
+  "vcs explain",
+  "vcs git",
+  "vcs git migrate-lfs",
+  "vcs git worktree",
+  "vcs git worktree add",
+  "vcs git worktree remove",
+  "vcs guid",
+  "vcs hooks",
+  "vcs hooks install",
+  "vcs hooks status",
+  "vcs hooks uninstall",
+  "vcs merge-setup",
+  "vcs providers",
+  "vcs resolve",
+  "vcs setup",
+  "vcs status",
+  "vcs summarize",
+  "vcs switch",
+  "vcs sync",
+  "vcs uvcs",
+  "vcs uvcs changesets",
+  "vcs uvcs locks",
+  "vcs uvcs review",
+  "vcs uvcs review comments",
+  "vcs uvcs review create",
+  "vcs uvcs review reply",
+  "vcs uvcs review request",
+  "vcs uvcs review resolve",
+  "vcs uvcs review reviewers",
+  "version",
+  "watch",
+  "watch test"
+ ],
+ "cliProjects": {
+  "count": 30,
+  "dataKeys": [
+   "items",
+   "nextPage",
+   "partial",
+   "total"
+  ],
+  "envelopeKeys": [
+   "command",
+   "data",
+   "errors",
+   "success",
+   "warnings"
+  ],
+  "fields": {
+   "architecture": {
+    "present": 30,
+    "types": [
+     "str"
+    ]
+   },
+   "buildTarget": {
+    "present": 24,
+    "types": [
+     "str"
+    ]
+   },
+   "changeset": {
+    "present": 30,
+    "types": [
+     "str"
+    ]
+   },
+   "cloudEnabled": {
+    "present": 24,
+    "types": [
+     "bool"
+    ]
+   },
+   "cloudProjectId": {
+    "present": 8,
+    "types": [
+     "str"
+    ]
+   },
+   "containingFolderPath": {
+    "present": 24,
+    "types": [
+     "str"
+    ]
+   },
+   "genesisOrgId": {
+    "present": 1,
+    "types": [
+     "str"
+    ]
+   },
+   "hasCustomDisplayName": {
+    "present": 24,
+    "types": [
+     "bool"
+    ]
+   },
+   "isCustomEditor": {
+    "present": 30,
+    "types": [
+     "bool"
+    ]
+   },
+   "isFavorite": {
+    "present": 30,
+    "types": [
+     "bool"
+    ]
+   },
+   "lastModified": {
+    "present": 30,
+    "types": [
+     "NoneType",
+     "int"
+    ]
+   },
+   "localProjectId": {
+    "present": 24,
+    "types": [
+     "str"
+    ]
+   },
+   "openInEditorUrl": {
+    "present": 30,
+    "types": [
+     "str"
+    ]
+   },
+   "organizationId": {
+    "present": 8,
+    "types": [
+     "str"
+    ]
+   },
+   "organizationName": {
+    "present": 11,
+    "types": [
+     "str"
+    ]
+   },
+   "path": {
+    "present": 30,
+    "types": [
+     "str"
+    ]
+   },
+   "projectName": {
+    "present": 9,
+    "types": [
+     "str"
+    ]
+   },
+   "projectPathInsideRepository": {
+    "present": 2,
+    "types": [
+     "str"
+    ]
+   },
+   "renderPipeline": {
+    "present": 24,
+    "types": [
+     "str"
+    ]
+   },
+   "repositoryName": {
+    "present": 11,
+    "types": [
+     "str"
+    ]
+   },
+   "sourceFingerprint": {
+    "present": 24,
+    "types": [
+     "str"
+    ]
+   },
+   "title": {
+    "present": 30,
+    "types": [
+     "str"
+    ]
+   },
+   "vcsConfigurationPath": {
+    "present": 18,
+    "types": [
+     "str"
+    ]
+   },
+   "vcsProvider": {
+    "present": 11,
+    "types": [
+     "str"
+    ]
+   },
+   "version": {
+    "present": 30,
+    "types": [
+     "str"
+    ]
+   }
+  },
+  "fingerprintSuffixes": {
+   "None": 6,
+   "spn:false;eds:": 24
+  },
+  "matches": {
+   "hubDb": true,
+   "projectsV1MinusExcluded": true
+  }
+ },
+ "cliVersion": "1.0.0",
+ "dataFolder": {
+  "": [
+   ".updaterId",
+   "Cache",
+   "Code Cache",
+   "Crashpad",
+   "DIPS",
+   "DawnCache",
+   "DawnGraphiteCache",
+   "DawnWebGPUCache",
+   "GPUCache",
+   "GPUPersistentCache",
+   "GrShaderCache",
+   "IndexedDB",
+   "Local State",
+   "Local Storage",
+   "Network",
+   "Preferences",
+   "Service Worker",
+   "Session Storage",
+   "Settings",
+   "ShaderCache",
+   "Shared Dictionary",
+   "SharedStorage",
+   "Templates",
+   "VideoDecodeStats",
+   "WebStorage",
+   "accounts.db",
+   "accounts.db-shm",
+   "accounts.db-wal",
+   "agent-hint-notified-skills",
+   "blob_storage",
+   "cachedFeatureFlags.json",
+   "cli-msix-repair",
+   "cli-plugin-registry.json",
+   "cli-skill-installs.json",
+   "cli-update-check.json",
+   "cloudConfig.json",
+   "declarative_performance_observer.db",
+   "declarative_performance_observer.db-journal",
+   "dismissedBanners.json",
+   "dismissedEditorWarningLabels.json",
+   "downloads",
+   "editors-v2.json",
+   "excludedEditorFolders.json",
+   "excludedProjectFolders.json",
+   "external-modules",
+   "firstTimeOpenKey.json",
+   "firstTimeSettings.json",
+   "graphqlCache",
+   "hideGetSetUp.json",
+   "hideHubOnEditorOpen.json",
+   "hub-gpui",
+   "hub-gpui-window-state.json",
+   "hub.db",
+   "hub.db-shm",
+   "hub.db-wal",
+   "hubConfig.json",
+   "hubInfo.json",
+   "install-state",
+   "installedEditorBinaryMetadata.json",
+   "keyringFallbackHarvestComplete.json",
+   "languageConfig.json",
+   "licenseVerification.json",
+   "logs",
+   "main-window.json",
+   "modulesPreference.json",
+   "native-crash-reports",
+   "notificationPreferences.json",
+   "paused-downloads.json",
+   "privacyPreferences.json",
+   "projectDir.json",
+   "projectOrganizationSetting.json",
+   "projectSortPreferences.json",
+   "projectTablePreferences.json",
+   "projects-v1.json",
+   "projectsInfo.json",
+   "releases.json",
+   "safeStorageMigrationComplete.json",
+   "secondaryInstallPath.json",
+   "sentry",
+   "shared_proto_db",
+   "skipRemoveConfirmation.json",
+   "storage",
+   "surveySettings.json",
+   "templatesSettings.json",
+   "themeSetting.json",
+   "user-settings.json"
+  ],
+  "hub-gpui": [
+   "amplitude-device-id",
+   "archive-cache.json",
+   "downloadable-editors-cache.json",
+   "editor-install-attempts.json",
+   "live-platform-releases-cache.json",
+   "updates"
+  ],
+  "install-state": [
+   "install-state.db",
+   "install-state.db-shm",
+   "install-state.db-wal"
+  ],
+  "logs": [
+   "broker-audit.json",
+   "cli-log.json",
+   "cli-log.json.1",
+   "hub-gpui-running-PID-ID.json",
+   "info-log.json",
+   "info-log.json.1",
+   "info-log1.json",
+   "info-log2.json",
+   "install-log.json"
+  ]
+ },
+ "editors": {
+  "cliDefaultListMixesReleases": true,
+  "cliInstalledCount": 3,
+  "cliInstalledItemKeys": [
+   "alias",
+   "architecture",
+   "default",
+   "location",
+   "moduleNames",
+   "modules",
+   "version"
+  ],
+  "cliMissesFolderEditors": 0,
+  "editorsV2Count": 0,
+  "folderScanCount": 3,
+  "installFolderIsDefault": true
+ },
+ "hubDb": {
+  "meta": {
+   "rows": 1,
+   "sql": "CREATE TABLE meta ( key TEXT PRIMARY KEY, value TEXT NOT NULL )"
+  },
+  "projects": {
+   "rows": 30,
+   "sql": "CREATE TABLE projects ( path TEXT PRIMARY KEY, data TEXT NOT NULL, updated_at INTEGER NOT NULL )"
+  }
+ },
+ "hubDbMeta": {
+  "projects_json_migrated": "1"
+ },
+ "hubDbProjects": {
+  "count": 30,
+  "fields": {
+   "architecture": {
+    "present": 30,
+    "types": [
+     "str"
+    ]
+   },
+   "buildTarget": {
+    "present": 24,
+    "types": [
+     "str"
+    ]
+   },
+   "changeset": {
+    "present": 30,
+    "types": [
+     "str"
+    ]
+   },
+   "cloudEnabled": {
+    "present": 28,
+    "types": [
+     "bool"
+    ]
+   },
+   "cloudProjectId": {
+    "present": 8,
+    "types": [
+     "str"
+    ]
+   },
+   "containingFolderPath": {
+    "present": 28,
+    "types": [
+     "str"
+    ]
+   },
+   "genesisOrgId": {
+    "present": 1,
+    "types": [
+     "str"
+    ]
+   },
+   "hasCustomDisplayName": {
+    "present": 28,
+    "types": [
+     "bool"
+    ]
+   },
+   "isCustomEditor": {
+    "present": 30,
+    "types": [
+     "bool"
+    ]
+   },
+   "isFavorite": {
+    "present": 30,
+    "types": [
+     "bool"
+    ]
+   },
+   "lastModified": {
+    "present": 30,
+    "types": [
+     "NoneType",
+     "int"
+    ]
+   },
+   "localProjectId": {
+    "present": 27,
+    "types": [
+     "str"
+    ]
+   },
+   "organizationId": {
+    "present": 8,
+    "types": [
+     "str"
+    ]
+   },
+   "organizationName": {
+    "present": 16,
+    "types": [
+     "str"
+    ]
+   },
+   "path": {
+    "present": 30,
+    "types": [
+     "str"
+    ]
+   },
+   "projectName": {
+    "present": 8,
+    "types": [
+     "str"
+    ]
+   },
+   "projectPathInsideRepository": {
+    "present": 6,
+    "types": [
+     "str"
+    ]
+   },
+   "renderPipeline": {
+    "present": 28,
+    "types": [
+     "str"
+    ]
+   },
+   "repositoryName": {
+    "present": 16,
+    "types": [
+     "str"
+    ]
+   },
+   "sourceFingerprint": {
+    "present": 28,
+    "types": [
+     "str"
+    ]
+   },
+   "tags": {
+    "present": 1,
+    "types": [
+     "list"
+    ]
+   },
+   "title": {
+    "present": 30,
+    "types": [
+     "str"
+    ]
+   },
+   "vcsConfigurationPath": {
+    "present": 23,
+    "types": [
+     "str"
+    ]
+   },
+   "vcsProvider": {
+    "present": 16,
+    "types": [
+     "str"
+    ]
+   },
+   "version": {
+    "present": 30,
+    "types": [
+     "str"
+    ]
+   }
+  },
+  "fingerprintSuffixes": {
+   "None": 2,
+   "hub-gpui-derive:N;spn:false;usn:N": 27,
+   "hub-gpui-partial;asset": 1
+  }
+ },
+ "hubVersion": "4.0.0",
+ "hubVsJson": {
+  "cliRowsWithTags": 0,
+  "onlyInDb": 0,
+  "onlyInJson": 1,
+  "rowsWithTags": 1
+ },
+ "jsonShapes": {
+  "cachedFeatureFlags.json": [
+   "amplitude"
+  ],
+  "cli-skill-installs.json": [
+   "installs",
+   "schema"
+  ],
+  "cli-update-check.json": [
+   "channel",
+   "checkedAt",
+   "latestVersion",
+   "packageManagers"
+  ],
+  "cloudConfig.json": [
+   "__cloudEnvironment",
+   "activation",
+   "activity-feed",
+   "ads",
+   "ai",
+   "analytics",
+   "analyticsOptOut",
+   "appLinking",
+   "asset_store_api",
+   "asset_store_url",
+   "build",
+   "build-api",
+   "build_upload_api_url",
+   "cdp-analytics",
+   "clouddata",
+   "collab",
+   "collab-accelerator",
+   "collab-max-files-per-commit",
+   "commenting",
+   "core",
+   "coreembedded",
+   "coreui",
+   "ecosystem_api_url",
+   "genesis_api_url",
+   "genesis_service_url",
+   "hub-disable-marketing-tips",
+   "hub_installer_location",
+   "identity",
+   "jump",
+   "license",
+   "livePlatform",
+   "login",
+   "muse",
+   "packages",
+   "packman_key",
+   "perf",
+   "perf-events",
+   "perf-max-batch-size",
+   "perf-max-events",
+   "perf-seconds-per-batch",
+   "portal",
+   "profileDashboard",
+   "pubnub_service_origin",
+   "seat_required",
+   "seatinfourl",
+   "services-gateway",
+   "servicesGateway",
+   "socialdashboard",
+   "sso",
+   "unauthenticatedurl",
+   "unet",
+   "waitlist",
+   "waitlist_api",
+   "webauth"
+  ],
+  "dismissedBanners.json": "list",
+  "dismissedEditorWarningLabels.json": "list",
+  "editors-v2.json": [
+   "data",
+   "schema_version"
+  ],
+  "excludedEditorFolders.json": [
+   "data",
+   "schema_version"
+  ],
+  "excludedProjectFolders.json": [
+   "data",
+   "schema_version"
+  ],
+  "firstTimeOpenKey.json": "bool",
+  "firstTimeSettings.json": [
+   "hasSeenUnityCliAnnouncement",
+   "hubLicenseEulaAcceptedAt",
+   "showEditorRecommendation",
+   "showLearnTemplates",
+   "showLicenseProvisioning",
+   "showPersonalLicenseEulaFirstTimeModal",
+   "showWelcomeModal"
+  ],
+  "hideGetSetUp.json": "bool",
+  "hideHubOnEditorOpen.json": "bool",
+  "hub-gpui-window-state.json": [
+   "fullscreen",
+   "height",
+   "maximized",
+   "width",
+   "x",
+   "y"
+  ],
+  "hubConfig.json": [
+   "analyticsHighlightUI",
+   "betaFeedbackUrl",
+   "connectivityConfig",
+   "hubDisableAnalytics",
+   "hubDisableAutoUpdate",
+   "hubDisableCommunity",
+   "hubDisableElevate",
+   "hubDisableLearn",
+   "hubDisablePersonalLicense",
+   "hubDisableSignInRequired",
+   "hubDisableSignin",
+   "hubDisableVisualStudioDownload",
+   "hubDisableWelcomeScreen",
+   "hubEnableWorkOffline",
+   "newUserOnboarding"
+  ],
+  "hubInfo.json": [
+   "executablePath",
+   "version"
+  ],
+  "installedEditorBinaryMetadata.json": "<path-keyed map>",
+  "keyringFallbackHarvestComplete.json": [
+   "harvestedAt",
+   "value"
+  ],
+  "languageConfig.json": [
+   "language"
+  ],
+  "licenseVerification.json": [
+   "lastVerifiedAt"
+  ],
+  "main-window.json": [
+   "displayBounds",
+   "height",
+   "isFullScreen",
+   "isMaximized",
+   "width",
+   "x",
+   "y"
+  ],
+  "modulesPreference.json": [
+   "deselected",
+   "selected"
+  ],
+  "notificationPreferences.json": [
+   "enabled",
+   "showPopups",
+   "silent"
+  ],
+  "paused-downloads.json": [
+   "downloads",
+   "version"
+  ],
+  "privacyPreferences.json": [
+   "1374877886700",
+   "anonymous"
+  ],
+  "projectDir.json": [
+   "directoryPath"
+  ],
+  "projectOrganizationSetting.json": [
+   "organization"
+  ],
+  "projectSortPreferences.json": [
+   "sortBy",
+   "sortDirection"
+  ],
+  "projectTablePreferences.json": [
+   "buildTarget",
+   "cloudServices",
+   "currentBranch",
+   "hideMissingProjects",
+   "isFavorite",
+   "isVersionControlConnected",
+   "lastModified",
+   "sizeInBytes",
+   "tags",
+   "version"
+  ],
+  "projectsInfo.json": "<path-keyed map>",
+  "safeStorageMigrationComplete.json": [
+   "migratedAt",
+   "value"
+  ],
+  "secondaryInstallPath.json": "str",
+  "skipRemoveConfirmation.json": [
+   "always",
+   "timestamp"
+  ],
+  "surveySettings.json": [
+   "uscSurveyCountdown"
+  ],
+  "templatesSettings.json": [
+   "defaultPath",
+   "sources"
+  ],
+  "themeSetting.json": [
+   "themeSource"
+  ],
+  "user-settings.json": [
+   "activeOrganizationId",
+   "cliAmplitudeDeviceId",
+   "cliAnalyticsNoticeShown",
+   "cliAutoInstallAttempted",
+   "cliConsentShown",
+   "cliPrivacyNoticeShown",
+   "cliUpdateCheckDisabled",
+   "deeplink",
+   "developerData",
+   "download",
+   "hideMacOsMenuBarIcon",
+   "minimizeToTray",
+   "privacyPreferences",
+   "projects",
+   "security",
+   "skipDeleteCustomTemplateConfirmation",
+   "skipSignOutConfirmation",
+   "skipUninstallConfirmation",
+   "sourceControl",
+   "templates",
+   "themeSource",
+   "updater",
+   "version"
+  ]
+ },
+ "otherDbs": {
+  "accounts.db": {
+   "accounts": {
+    "sql": "CREATE TABLE accounts ( foreign_key TEXT PRIMARY KEY, name TEXT NOT NULL DEFAULT '', email TEXT NOT NULL DEFAULT '', primary_org TEXT NOT NULL DEFAULT '', compliance_key TEXT NOT NULL DEFAULT '', created_at TEXT NOT NULL DEFAULT '', has_valid_unity_token INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL DEFAULT 0 , user_uuid TEXT)"
+   },
+   "active_account": {
+    "sql": "CREATE TABLE active_account ( consumer TEXT PRIMARY KEY, foreign_key TEXT )"
+   },
+   "meta": {
+    "sql": "CREATE TABLE meta ( key TEXT PRIMARY KEY, value TEXT NOT NULL )"
+   }
+  },
+  "install-state/install-state.db": {
+   "downloads": {
+    "rows": 1,
+    "sql": "CREATE TABLE downloads ( uid TEXT PRIMARY KEY, version TEXT NOT NULL, arch TEXT, modules_json TEXT NOT NULL DEFAULT '[]', state TEXT NOT NULL CHECK(state IN ('queued','downloading','complete','failed','cancelled')), bytes_total INTEGER NOT NULL DEFAULT 0, bytes_done INTEGER NOT NULL DEFAULT 0, pid INTEGER, started_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, error_code TEXT, error_msg TEXT , writer_kind TEXT CHECK(writer_kind IN ('hub','hub-native','cli')))"
+   },
+   "file_claims": {
+    "rows": 2,
+    "sql": "CREATE TABLE file_claims ( pid INTEGER NOT NULL, source TEXT NOT NULL CHECK(source IN ('downloads','installs','reservations')), path TEXT NOT NULL, updated_at INTEGER NOT NULL, PRIMARY KEY (pid, source, path) )"
+   },
+   "installs": {
+    "rows": 1,
+    "sql": "CREATE TABLE installs ( rowid INTEGER PRIMARY KEY CHECK(rowid = 1), uid TEXT NOT NULL, version TEXT NOT NULL, modules_json TEXT NOT NULL DEFAULT '[]', phase TEXT NOT NULL CHECK(phase IN ('queued','installing')), pid INTEGER NOT NULL, started_at INTEGER NOT NULL, updated_at INTEGER NOT NULL , writer_kind TEXT CHECK(writer_kind IN ('hub','hub-native','cli')))"
+   },
+   "schema_meta": {
+    "rows": 1,
+    "sql": "CREATE TABLE schema_meta ( key TEXT PRIMARY KEY, value TEXT NOT NULL )"
+   }
+  }
+ },
+ "projectsV1Json": {
+  "count": 31,
+  "fields": {
+   "architecture": {
+    "present": 31,
+    "types": [
+     "str"
+    ]
+   },
+   "buildTarget": {
+    "present": 24,
+    "types": [
+     "str"
+    ]
+   },
+   "changeset": {
+    "present": 31,
+    "types": [
+     "str"
+    ]
+   },
+   "cloudEnabled": {
+    "present": 29,
+    "types": [
+     "bool"
+    ]
+   },
+   "cloudProjectId": {
+    "present": 9,
+    "types": [
+     "str"
+    ]
+   },
+   "containingFolderPath": {
+    "present": 29,
+    "types": [
+     "str"
+    ]
+   },
+   "genesisOrgId": {
+    "present": 1,
+    "types": [
+     "str"
+    ]
+   },
+   "hasCustomDisplayName": {
+    "present": 29,
+    "types": [
+     "bool"
+    ]
+   },
+   "isCustomEditor": {
+    "present": 31,
+    "types": [
+     "bool"
+    ]
+   },
+   "isFavorite": {
+    "present": 31,
+    "types": [
+     "bool"
+    ]
+   },
+   "lastModified": {
+    "present": 31,
+    "types": [
+     "NoneType",
+     "int"
+    ]
+   },
+   "localProjectId": {
+    "present": 28,
+    "types": [
+     "str"
+    ]
+   },
+   "organizationId": {
+    "present": 8,
+    "types": [
+     "str"
+    ]
+   },
+   "organizationName": {
+    "present": 16,
+    "types": [
+     "str"
+    ]
+   },
+   "path": {
+    "present": 31,
+    "types": [
+     "str"
+    ]
+   },
+   "projectName": {
+    "present": 8,
+    "types": [
+     "int",
+     "str"
+    ]
+   },
+   "projectPathInsideRepository": {
+    "present": 6,
+    "types": [
+     "str"
+    ]
+   },
+   "renderPipeline": {
+    "present": 29,
+    "types": [
+     "str"
+    ]
+   },
+   "repositoryName": {
+    "present": 16,
+    "types": [
+     "str"
+    ]
+   },
+   "sourceFingerprint": {
+    "present": 29,
+    "types": [
+     "str"
+    ]
+   },
+   "title": {
+    "present": 31,
+    "types": [
+     "str"
+    ]
+   },
+   "vcsConfigurationPath": {
+    "present": 23,
+    "types": [
+     "str"
+    ]
+   },
+   "vcsProvider": {
+    "present": 16,
+    "types": [
+     "str"
+    ]
+   },
+   "version": {
+    "present": 31,
+    "types": [
+     "str"
+    ]
+   }
+  },
+  "fingerprintSuffixes": {
+   "None": 2,
+   "spn:false;eds:": 29
+  }
+ }
+}

@@ -9,7 +9,7 @@ Command Palette extension for opening Unity Hub recent projects.[^1]
 
 ### Requirements
 - [PowerToys](https://learn.microsoft.com/en-us/windows/powertoys/) with Command Palette enabled
-- Unity Hub with recent projects history
+- Unity Hub 3 or 4 with recent projects history
 
 > Unity Hub not required in background - extension launches editor directly.
 
@@ -27,26 +27,10 @@ Get it from the [Microsoft Store](https://apps.microsoft.com/store/detail/app/9N
 
 ## Contributing and development
 
-Start here: [`CONTRIBUTING.md`](CONTRIBUTING.md)
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
 
-Local workflow:
+## Features and roadmap
 
-1. Build: `dotnet build UnityExtension.sln -c Debug -p:Platform=x64`
-2. Register: `Add-AppxPackage -Register` against debug `AppxManifest.xml`
-3. Restart PowerToys
+See [`docs/PRODUCT.md`](docs/PRODUCT.md).
 
-Supporting docs:
-
-- [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)
-- [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md)
-
-## TODO
-
-- [x] Settings to sort/filter list output
-- [ ] Visual Polish: resolve $HOME/~; remove 'Favorite' text
-- [ ] Fallback dialog if editor not installed
-- [ ] Open project with another Unity version
-- [ ] Sub-command to list installed Unity versions + paths
-- [ ] Overwrite timestamp in Unity Hub JSON
-
-[^1]: Not affiliated with Unity Technologies. This extension only uses local Unity Hub json metadata.
+[^1]: Not affiliated with Unity Technologies. This extension only reads local Unity Hub data.
