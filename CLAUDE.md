@@ -4,7 +4,7 @@ Solo-developer repo, no collaborators: skip reviewer/CODEOWNERS/approval workflo
 
 PowerToys Command Palette extension: lists Unity Hub projects (`%APPDATA%\UnityHub\projects-v1.json`) and opens them in the Unity Editor. Out-of-process COM server, MSIX-packaged, trimmed/AOT.
 
-Read before acting: `docs/DEVELOPMENT.md` (build, tooling), `docs/TROUBLESHOOTING.md` (errors), `docs/PUBLISHING.md` (packaging, signing, Store).
+Read before acting: `docs/PRODUCT.md` (scope, UX, roadmap), `docs/DEVELOPMENT.md` (setup, dev loop, doc map), `docs/DEPENDENCIES.md` (updates), `docs/TROUBLESHOOTING.md` (errors, known warnings), `docs/PUBLISHING.md` (packaging, signing, Store).
 
 ## Commands
 

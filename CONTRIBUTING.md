@@ -1,36 +1,11 @@
 # Contributing to Command Palette (CmdPal) Unity Extension
 
-Start here if you want to work on the project.
+1. Read [`docs/PRODUCT.md`](docs/PRODUCT.md) (what the extension should do) and
+   [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) (setup, daily loop, code rules).
+2. Keep changes small and focused.
+3. Run `just build`, `just test`, `just check`, and try the change in PowerToys (`just register`).
+4. If it affects packaging: `just trim`, `just bundle` ([`docs/PUBLISHING.md`](docs/PUBLISHING.md)).
 
-## Read first
+Pull requests: say what changed and why, any packaging impact, and how you checked it by hand.
 
-- `README.md` for the project overview and installation notes
-- `docs/DEVELOPMENT.md` for build and debug flow
-- `docs/TROUBLESHOOTING.md` for common issues
-
-## What to keep in mind
-
-- Keep changes small and focused.
-- Preserve manifest / CLSID consistency between `UnityExtension.cs` and `Package.appxmanifest`.
-- Keep code trim-safe and AOT-compatible.
-- Treat CsWinRT / Windows SDK projection warnings (`IL2081` / `IL2104`) as non-fatal unless runtime issue proves otherwise. Local publish defaults suppress; use `SuppressSdkNoise=false` only for trim review.
-- Avoid reflection-heavy patterns unless the upstream SDK requires them.
-- Do not hardcode package versions in project files if centralized package management is used.
-
-## Workflow
-
-1. Make your change.
-2. Build locally.
-3. Test in PowerToys.
-4. Verify publish behavior if the change affects deployment.
-5. Check trimming, nullable, and packaging diagnostics.
-
-## Pull requests
-
-- Describe what changed and why.
-- Mention any packaging or debug impact.
-- Include manual validation notes when relevant.
-
-## Source of truth
-
-Use the latest Microsoft Learn / PowerToys docs for Command Palette, packaging, publishing, and debugging.
+Use current Microsoft Learn / PowerToys docs for Command Palette, packaging and publishing.

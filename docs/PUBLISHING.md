@@ -92,7 +92,7 @@ Reload Command Palette or restart PowerToys after install.
 - cert `Subject` matches manifest `Publisher`
 - x64 / arm64 outputs present in bundle
 - extension loads after install
-- debug deployment uses `Add-AppxPackage -Register` with `AppxManifest.xml`
+- debug deployment uses `just register`
 
 ## Distribution
 
