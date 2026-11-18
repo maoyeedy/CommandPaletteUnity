@@ -88,6 +88,14 @@ jobs:
             throw "Package.appxmanifest Identity Version '$manifestVersion' does not match expected '$expectedFourPartVersion'."
           }
 
+      # Shipping a runtime-shared package newer than the latest PowerToys release can break the extension for users.
+      - name: Check PowerToys pins
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ./.github/scripts/CheckPins.ps1
+          exit $LASTEXITCODE
+
       - name: Restore signing certificate from secret
         env:
           MSIX_PFX_BASE64: ${{ secrets.MSIX_PFX_BASE64 }}

@@ -20,7 +20,7 @@ dependencies; do not install them by hand.
 winget install --exact --id Microsoft.WindowsSDK.10.0.26100 --version 10.0.26100.7705 --source winget
 winget pin add --exact --id Microsoft.WindowsSDK.10.0.26100 --version 10.0.26100.7705
 
-# Build toolchain and shell (the justfile runs its scripts in pwsh)
+# Build toolchain and shell (the justfile runs its scripts in pwsh); any SDK >= 10 builds, CI uses 10.0.x
 winget install --exact --id Microsoft.DotNet.SDK.10 --source winget
 winget install --exact --id Microsoft.PowerShell --source winget
 winget install --exact --id Git.Git --source winget

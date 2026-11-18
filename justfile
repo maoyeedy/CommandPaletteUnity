@@ -71,7 +71,7 @@ doctor:
         else { "MISSING  $name -> $fix"; $script:missing++ }
     }
     function Has($cmd) { [bool](Get-Command $cmd -ErrorAction SilentlyContinue) }
-    Check '.NET 10 SDK' ((Has dotnet) -and (dotnet --list-sdks | Select-String '^10\.')) 'winget install Microsoft.DotNet.SDK.10'
+    Check '.NET SDK 10 or newer' ((Has dotnet) -and (dotnet --list-sdks | Where-Object { [int]($_ -split '[.]')[0] -ge 10 })) 'winget install Microsoft.DotNet.SDK.10'
     Check 'dotnet local tools' ((Has dotnet) -and ((dotnet tool restore *> $null) -or $LASTEXITCODE -eq 0)) 'dotnet tool restore'
     Check 'pre-commit' (Has pre-commit) 'uv tool install pre-commit'
     Check 'git hooks installed' ((Test-Path .git/hooks/pre-commit) -and (Test-Path .git/hooks/pre-push)) 'pre-commit install'
