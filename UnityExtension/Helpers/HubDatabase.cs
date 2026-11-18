@@ -17,7 +17,10 @@ internal enum HubDbStatus
     Failed,
 }
 
-/// <summary>Read-only access to Unity Hub 4's hub.db. Never writes, never takes write locks.</summary>
+/// <summary>
+/// Access to Unity Hub 4's hub.db. Reads never write or lock. The only write is
+/// <see cref="TryRemoveProject"/>, which deletes one projects row like `unity projects remove`.
+/// </summary>
 internal static class HubDatabase
 {
     static HubDatabase()
@@ -86,6 +89,60 @@ internal static class HubDatabase
         {
             // SqliteException (corrupt, missing table, busy), IO errors, ...
             return HubDbStatus.Failed;
+        }
+    }
+
+    /// <summary>
+    /// Deletes the projects row whose key is exactly <paramref name="projectPath"/>, the same
+    /// write `unity projects remove` makes. Writes nothing unless the db exists and is migrated.
+    /// Never throws; returns true only when one row was deleted.
+    /// </summary>
+    internal static bool TryRemoveProject(string dbPath, string projectPath)
+    {
+        try
+        {
+            if (!File.Exists(dbPath))
+            {
+                return false;
+            }
+
+            using var connection = new SqliteConnection(
+                new SqliteConnectionStringBuilder
+                {
+                    DataSource = dbPath,
+                    // ReadWrite, not ReadWriteCreate: never create a hub.db.
+                    Mode = SqliteOpenMode.ReadWrite,
+                    Pooling = false,
+                    DefaultTimeout = 2,
+                }.ToString()
+            );
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+
+            using var check = connection.CreateCommand();
+            check.Transaction = transaction;
+            check.CommandText = "SELECT value FROM meta WHERE key = 'projects_json_migrated'";
+            if (check.ExecuteScalar() is not "1")
+            {
+                return false;
+            }
+
+            using var delete = connection.CreateCommand();
+            delete.Transaction = transaction;
+            delete.CommandText = "DELETE FROM projects WHERE path = $path";
+            delete.Parameters.AddWithValue("$path", projectPath);
+            if (delete.ExecuteNonQuery() != 1)
+            {
+                return false;
+            }
+
+            transaction.Commit();
+            return true;
+        }
+        catch (Exception)
+        {
+            // Busy (Hub mid-write), missing table, read-only file, ...
+            return false;
         }
     }
 

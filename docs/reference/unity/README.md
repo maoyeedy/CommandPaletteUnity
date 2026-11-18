@@ -36,7 +36,7 @@ CLI manual: https://docs.unity.com/unity-cli
 | Package | MSIX `UnityTechnologies.UnityHub`, alias `unityhub.exe`, protocol `unityhub://`, `runFullTrust`, `allowElevation`, Windows 10 21H1+ | MSIX `UnityTechnologies.UnityCLI`, alias `unity.exe`, `runFullTrust` |
 | Contents | `Unity Hub.exe` (~76 MB), a copy of `unity.exe` (byte-identical to the CLI package), `UnityLicensingClient_V1\Unity.Licensing.Client.exe`, `assets\i18n` (10 locales), images | `unity.exe` (~45 MB), icons, `Update.appinstaller` |
 
-Hub ships its own copy of the CLI. The Hub 3 Electron/Chromium folders in `%APPDATA%\UnityHub` are
+Hub ships its own copy of the CLI at `<Hub package>\app\unity.exe`; it runs when started directly. The Hub 3 Electron/Chromium folders in `%APPDATA%\UnityHub` are
 leftovers.
 
 ## Key findings
@@ -45,7 +45,7 @@ leftovers.
    it imports `projects-v1.json`, sets `meta.projects_json_migrated = 1`, and never writes the JSON again.
 2. **The JSON goes stale.** Projects added, removed, starred or retagged in Hub 4 do not show up in it.
 3. **Tags are Hub 4 only.** They live in the `hub.db` row (`tags` array), nowhere else.
-4. **CLI 1.0.0 still reads `projects-v1.json`** (filtered by `excludedProjectFolders.json`), not
-   `hub.db`. `unity projects` shows the stale list without tags. The 1.0.1 changelog does not mention
-   a change. Hub and CLI share `%APPDATA%\UnityHub` but can disagree.
+4. **CLI 1.0.0 reads and writes `hub.db`** once Hub 4 has migrated. `unity projects` returns the
+   `hub.db` path set, including projects added after migration that the JSON lacks, still without tags. `projects add` / `remove` change only the `projects` row, not the JSON
+   or `excludedProjectFolders.json`.
 5. Branch, size, Git account and "missing editor" state are not stored. Hub computes them live.

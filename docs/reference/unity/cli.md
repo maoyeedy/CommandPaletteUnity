@@ -1,5 +1,8 @@
 # Unity CLI (`unity`)
 
+Reference only: the extension never runs it (see [PRODUCT.md](../../PRODUCT.md) scope). We read it
+for its commands, UX and how it changes Hub data, then implement what we need.
+
 Separate product from Hub, own MSIX (winget `Unity.CLI`), on PATH as an app execution alias
 (`%LOCALAPPDATA%\Microsoft\WindowsApps\unity`). Observed on 1.0.0; 1.0.1 notes from its changelog.
 Manual: https://docs.unity.com/unity-cli (not https://docs.unity.com/en-us/hub/hub-cli, which is the Hub 3 `--headless` CLI). Changelog:
@@ -13,7 +16,7 @@ Manual: https://docs.unity.com/unity-cli (not https://docs.unity.com/en-us/hub/h
 
   ```json
   {"success": true, "command": "projects list",
-   "data": {"items": [...], "total": 30, "nextPage": null, "partial": false},
+   "data": {"items": [...], "total": <n>, "nextPage": null, "partial": false},
    "errors": [{"code": "STATUS_NO_INSTANCES", "message": "..."}], "warnings": []}
   ```
 
@@ -25,9 +28,13 @@ Manual: https://docs.unity.com/unity-cli (not https://docs.unity.com/en-us/hub/h
 ## Data it reads
 
 - Config: `unity config path` -> `%APPDATA%\UnityHub\user-settings.json` (shared with Hub).
-- **Projects: `projects-v1.json` minus `excludedProjectFolders.json`** (1.0.0). Evidence: the output
-  has Hub 3 `sourceFingerprint` suffixes (`spn:false;eds:`, never `hub-gpui-derive`) and no `tags`,
-  while the same rows in `hub.db` have both. Path sets alone do not tell the stores apart.
+- **Projects: `hub.db`** (1.0.0): `unity projects --json --all` returns the `hub.db` path set,
+  including projects added after migration that the JSON lacks. Items have no `tags`.
+- **Writes: `projects add` / `remove` change the `hub.db` `projects` row only.** Checked with a dummy
+  project while Hub 4 was running: `add` inserts a row, `remove` deletes it (`"removed": true`),
+  `projects-v1.json` and `excludedProjectFolders.json` stay untouched. Files on disk are not deleted.
+- Location: PATH alias from the `Unity.CLI` package, or Hub 4's copy at `<Hub package>\app\unity.exe`
+  (same version).
 - `projects info` reads the project folder too: adds `scriptingBackend` and `packages` (resolved
   `Packages/manifest.json`), and `openInEditorUrl` appears in list items.
 - Editors: `unity editors` mixes installed editors (with `location`, `modules`, `upgradeTo`) and
@@ -63,6 +70,6 @@ Other groups (not launcher-relevant): `build`, `test`, `run`, `watch`, `ci`, `co
 
 ## Unverified
 
-- Which store `projects pin`/`add`/`remove` write in 1.0.x (JSON or `hub.db`). Not tested to avoid
-  changing real data.
-- Whether 1.0.1 reads `hub.db`; its changelog says nothing about it.
+- Which store `projects pin` writes.
+- What `projects remove` writes without `hub.db` (Hub 3 only).
+- Whether a running Hub 4 shows a CLI removal at once or after a restart.

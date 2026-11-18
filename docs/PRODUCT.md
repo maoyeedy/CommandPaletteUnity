@@ -17,8 +17,9 @@ Not affiliated with Unity Technologies. Local data only: no network, no Unity ac
 | Hub versions | **Hub 4 first, Hub 3 still supported** | Hub 4 is current, but the JSON reader already exists and costs little to keep |
 | Project source | `hub.db` if it exists and `meta.projects_json_migrated = '1'`, else `projects-v1.json` minus `excludedProjectFolders.json` | Hub 4 stops updating the JSON after it imports it |
 | Hub 4 -> Hub 3 downgrade | Use whichever of `hub.db` / `projects-v1.json` was modified more recently | Otherwise Hub 3 edits would be hidden behind a stale `hub.db` |
-| Writes to Hub data | **Never** | Hub overwrites outside edits, and a bad write could damage the user's project list. Dropped: "overwrite timestamp in Hub JSON" |
-| Unity CLI | Not a data source. Optional actions only, if `unity` is on PATH | CLI 1.0 reads the stale JSON, and starting it is slow |
+| Writes to Hub data | **One write only:** "Remove from list" deletes the project's `projects` row in `hub.db`, through `HubDatabase`. Nothing else under `%APPDATA%\UnityHub` | Same write as `unity projects remove` (verified, see [cli.md](reference/unity/cli.md)). Any wider write risks the user's project list |
+| Unity CLI | **Reference only.** The extension never runs, requires or bundles it | Most users have only Hub. We study its commands, UX and data writes, then implement what we need ourselves |
+| Hub 3 users | Read-only: list, open, Explorer. No remove | Hub 3 is end-of-life (3.22.6); its list lives in JSON we don't write |
 | Editor launch | `Unity.exe -projectPath "<path>"`, started directly | Hub does not need to be running |
 | Platform | Windows x64 and arm64, PowerToys Command Palette | |
 
@@ -34,7 +35,7 @@ One top-level command, **Unity Projects**, opens the page **Recent Unity Project
 | Tags | Star + "Favorite" (gold), "Missing" (red), editor version |
 | Icon | Unity logo, or a "missing" icon |
 | Enter | Opens the project in its matching editor. Toasts: "Project folder no longer exists", "Unity <version> not found. Please install through Unity Hub." |
-| More commands | Open in File Explorer |
+| More commands | Open in File Explorer. Hub 4 only: "Remove from Unity Hub list" (confirm, deletes the `hub.db` row), and on missing projects "Remove all missing projects (n)" |
 | Empty list | "No Unity projects found" with a hint to open projects in Hub |
 | Data source | `hub.db` (Hub 4), else `projects-v1.json` minus `excludedProjectFolders.json`; see scope decisions. Unreadable `hub.db` -> empty list |
 
@@ -54,6 +55,7 @@ Ordered by priority.
 
 | # | Item | Notes |
 |---|---|---|
+| 1 | Remove from Hub's list | Delete the `hub.db` row, after a confirm. Per project, plus "Remove all missing". Hub 4 only. Files on disk stay. Built; needs a manual check, including with Hub running |
 | 2 | Refresh when Hub data changes | Watch `hub.db`, `hub.db-wal` |
 | 3 | Show and search tags | `tag:` search, Hub 4 only |
 | 4 | Visual polish | Show `~` for the home folder; star without the word "Favorite" |
@@ -65,8 +67,19 @@ Ordered by priority.
 | 10 | "Installing <version>" status | `install-state.db` |
 | 11 | Projects Hub doesn't list | Editor's recent-projects registry list ([community.md](reference/unity/community.md)) |
 | 12 | Git info: branch, open the repo online | `vcs*` fields |
-| 13 | CLI actions when `unity` is on PATH: clean, size, upgrade, close | Optional |
+| 13 | Project tools: clean, size | Own code, modeled on `unity projects clean` / `size` |
 
 Done: settings to sort and filter the list; read `hub.db` (Hub 4) with JSON fallback and the downgrade rule.
 
-Dropped: writing to Hub's JSON or databases.
+## Rejected
+
+Decided against; don't propose again without new facts.
+
+| Idea | Why not |
+|---|---|
+| Extension-local favorites or hide list | Hub is the single source of truth; a second list drifts from it and confuses users |
+| Running the Unity CLI (PATH or Hub 4's copy) | Not installed for most users, slow to start, output can change between versions. It stays a reference |
+| Bundling the Unity CLI | Proprietary, and redundant with the reference-only rule |
+| Writing Hub 3 JSON (`projects-v1.json`, `excludedProjectFolders.json`) | Hub 3 is end-of-life; Hub 4 ignores the JSON after migration |
+| Overwriting the timestamp in Hub data | Hub owns it; no user benefit worth a write |
+| Any `hub.db` write other than deleting a `projects` row | Favorites, tags, titles are edited in Hub |

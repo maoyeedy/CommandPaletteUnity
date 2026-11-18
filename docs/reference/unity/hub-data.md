@@ -20,6 +20,7 @@ Behavior:
 - One row per project in the Projects list.
 - UI edits (favorite, tags, editor version, platform) write the row within seconds.
 - **Remove from list** deletes the row and appends the path to `excludedProjectFolders.json`.
+  `unity projects remove` deletes only the row; the extension does the same.
 - Hub re-reads project folders on demand and rewrites changed rows. Log line:
   `project refresh from disk: <n> row(s) rewritten`.
 

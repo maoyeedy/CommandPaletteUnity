@@ -206,6 +206,83 @@ public sealed class HubSourceTests : IDisposable
         Assert.Equal(before, Snapshot());
     }
 
+    // Remove mirrors `unity projects remove`: deletes one hub.db row, writes nothing else.
+    // Expected rows null = no hub.db file may exist afterwards.
+    public static TheoryData<string, string?, string, bool, string[]?> Removals =>
+        new()
+        {
+            {
+                "migrated db: only the named row is deleted",
+                MigratedDb
+                    + """INSERT INTO projects VALUES ('C:\p\Keep', '{"title":"Keep"}', 1);""",
+                @"C:\p\DbOnly",
+                true,
+                [@"C:\p\Keep"]
+            },
+            { "unknown path: nothing deleted", MigratedDb, @"C:\p\Other", false, [@"C:\p\DbOnly"] },
+            { "key match is exact (case)", MigratedDb, @"c:\P\dbonly", false, [@"C:\p\DbOnly"] },
+            {
+                "not migrated: no write",
+                Schema + """INSERT INTO projects VALUES ('C:\p\DbOnly', '{}', 1);""",
+                @"C:\p\DbOnly",
+                false,
+                [@"C:\p\DbOnly"]
+            },
+            { "no db: none is created", null, @"C:\p\DbOnly", false, null },
+        };
+
+    [Theory]
+    [MemberData(nameof(Removals))]
+    public void Remove_from_list(
+        string name,
+        string? dbSql,
+        string path,
+        bool expectedRemoved,
+        string[]? expectedRows
+    )
+    {
+        _ = name;
+        Setup(dbSql, JsonAB, """{"schema_version":"1","data":[]}""", false);
+        var dbPath = Path.Combine(_hubDir, "hub.db");
+        var otherFiles = Snapshot()
+            .Where(f => !f.StartsWith("hub.db", StringComparison.Ordinal))
+            .ToArray();
+
+        var removed = HubDatabase.TryRemoveProject(dbPath, path);
+
+        Assert.Equal(expectedRemoved, removed);
+        if (expectedRows is null)
+        {
+            Assert.False(File.Exists(dbPath));
+        }
+        else
+        {
+            Assert.Equal(expectedRows, TestSqlite.Paths(dbPath));
+        }
+
+        Assert.Equal(
+            otherFiles,
+            Snapshot().Where(f => !f.StartsWith("hub.db", StringComparison.Ordinal))
+        );
+    }
+
+    [Fact]
+    public void Remove_succeeds_while_running_hub_holds_the_db()
+    {
+        var dbPath = Path.Combine(_hubDir, "hub.db");
+        using var writer = ExternalWriter.Start(
+            _root,
+            dbPath,
+            MigratedDb
+                + "PRAGMA wal_autocheckpoint = 0;"
+                + """INSERT INTO projects VALUES ('C:\p\InWal', '{"title":"InWal"}', 2);"""
+        );
+
+        Assert.True(HubDatabase.TryRemoveProject(dbPath, @"C:\p\InWal"));
+
+        Assert.Equal(["DbOnly"], ProjectParser.LoadProjects(_hubDir).Select(p => p.Title));
+    }
+
     private string[] Snapshot() =>
         Directory
             .GetFiles(_hubDir)
@@ -362,6 +439,24 @@ public sealed class HubSourceTests : IDisposable
             using var command = connection.CreateCommand();
             command.CommandText = sql;
             command.ExecuteNonQuery();
+        }
+
+        public static string[] Paths(string path)
+        {
+            using var connection = new SqliteConnection(
+                new SqliteConnectionStringBuilder { DataSource = path, Pooling = false }.ToString()
+            );
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = "SELECT path FROM projects ORDER BY path";
+            using var reader = command.ExecuteReader();
+            var result = new List<string>();
+            while (reader.Read())
+            {
+                result.Add(reader.GetString(0));
+            }
+
+            return result.ToArray();
         }
     }
 }
