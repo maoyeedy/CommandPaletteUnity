@@ -10,7 +10,7 @@ Two modes. Default to **debug** for iteration; use **release** only when signing
 
 ## 1. Stop PowerToys and the extension
 
-Locked files make register/install fail. For a release install, `Add-AppxPackage ... -ForceApplicationShutdown` closes the running extension itself. For a debug register, close `PowerToys`, `Microsoft.CmdPal.UI` and `UnityExtension` gracefully first; use `Stop-Process -Force` only with the user's OK (project rule: never kill the running extension just to compile-check, use `-p:OutDir=<other dir>/` instead).
+Locked files make register/install fail. For a release install, `Add-AppxPackage ... -ForceApplicationShutdown` closes the running extension itself. For a debug register, nothing: `just register` uninstalls the installed copy, which stops the extension. Otherwise use `Stop-Process -Force` only with the user's OK (project rule: never kill the running extension just to compile-check, use `-p:OutDir=<other dir>/` instead).
 
 ## 2. Build
 
@@ -22,7 +22,7 @@ Stop and report if the build fails; do not deploy a stale output.
 
 ## 3. Install
 
-**Debug.** `just register` (MSIX debug build, Assets copy, `Add-AppxPackage -Register`). It refuses while a release package is installed (`0x80073CFB`) and prints the removal command; removing the user's release install needs their OK.
+**Debug.** `just register` (MSIX debug build, Assets copy, `Add-AppxPackage -Register`). It first removes any installed copy: a dev registration with `-PreserveApplicationData` (settings kept), a release install outright (its settings reset). Then run Command Palette's `Reload`; no PowerToys restart.
 
 **Release.** Sign the bundle with the git-ignored `scripts/sign.ps1` (read its `param()` block). Pass `-BundlePath` explicitly (auto-detect can pick a per-arch `.msix`) and `-Subject` equal to the manifest `Publisher` (the script's default `CN=Yidi Mao` fails its own check). Trusting the cert in `LocalMachine\TrustedPeople` and verifying the signature need an **elevated** shell; `-TrustStore CurrentUser` signs but then fails verification ("root certificate not trusted"). An agent session is not elevated, so hand the user the exact command to run in an admin terminal. Then `Get-AppxPackage *CommandPalette-Unity* | Remove-AppxPackage` and `Add-AppxPackage -Path <bundle> -ForceApplicationShutdown`; confirm with `Get-AppxPackage` (new version, `SignatureKind` Developer) and that `UnityExtension.exe` is running from `WindowsApps`.
 
