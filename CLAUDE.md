@@ -25,7 +25,8 @@ Use the `justfile`; `just` lists recipes.
 - Trim/AOT-safe code, no reflection unless an upstream API needs it; keep `sealed partial` where generators need it.
 - Package versions only in `Directory.Packages.props`; `just pins` passes (shared packages <= PowerToys' pins).
 - `ProjectParser` swallows exceptions and returns an empty list on failure.
-- Hub data is read-only: never write under `%APPDATA%\UnityHub` (`hub.db` via `HubDatabase` only), never read `accounts.db`, never log or show raw project-record JSON.
+- Hub data: the only write is deleting a `projects` row in `hub.db` via `HubDatabase` ("Remove from list"); nothing else under `%APPDATA%\UnityHub`. Never read `accounts.db`, never log or show raw project-record JSON.
+- Never run, require or bundle the Unity CLI (`unity`); `docs/reference/unity/cli.md` is reference only.
 - No Markdown under `UnityExtension/`.
 
 ## Context7 IDs

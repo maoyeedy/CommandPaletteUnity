@@ -8,7 +8,7 @@ Check PowerToys, Command Palette, package install, manifest registration, CLSID 
 
 Stale package, or PowerToys needs a reload.
 
-- Local debug: `just register`, then restart PowerToys.
+- Local debug: `just register`, then Command Palette's `Reload`.
 - Release validation: remove the old package and install the new bundle
   ([PUBLISHING.md](PUBLISHING.md#install-for-testing)).
 

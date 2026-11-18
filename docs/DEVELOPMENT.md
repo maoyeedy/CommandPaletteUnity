@@ -20,7 +20,7 @@ dependencies; do not install them by hand.
 winget install --exact --id Microsoft.WindowsSDK.10.0.26100 --version 10.0.26100.7705 --source winget
 winget pin add --exact --id Microsoft.WindowsSDK.10.0.26100 --version 10.0.26100.7705
 
-# Build toolchain and shell (the justfile runs its scripts in pwsh)
+# Build toolchain and shell (the justfile runs its scripts in pwsh); any SDK >= 10 builds, CI uses 10.0.x
 winget install --exact --id Microsoft.DotNet.SDK.10 --source winget
 winget install --exact --id Microsoft.PowerShell --source winget
 winget install --exact --id Git.Git --source winget
@@ -39,7 +39,7 @@ All commands are in the root `justfile` ([just](https://just.systems)); `just` l
 
 1. `just build` (Debug x64). If the running extension locks `bin/`: `just build <other dir>`.
 2. `just test`, `just check`.
-3. `just register`, then restart PowerToys (or run Command Palette's `Reload`) to try it.
+3. `just register` (uninstalls any installed copy first, keeping dev settings), then run Command Palette's `Reload`.
 4. After a WindowsAppSDK, CsWinRT or packaging change: `just trim`, `just bundle`.
 
 Before a release: `just versions`, `just pins`.
@@ -62,4 +62,5 @@ VS Output window ("Debug").
 - CLSID: `[Guid]` in `UnityExtension.cs` equals both `ClassId` entries in `Package.appxmanifest`.
 - Package versions only in `Directory.Packages.props`.
 - `ProjectParser` swallows exceptions and returns an empty list.
-- Never write Unity Hub data, never read `accounts.db`, never log raw project-record JSON.
+- Hub data: the only write is deleting a `projects` row in `hub.db` via `HubDatabase`; never read
+  `accounts.db`, never log raw project-record JSON.

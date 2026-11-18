@@ -71,7 +71,7 @@ doctor:
         else { "MISSING  $name -> $fix"; $script:missing++ }
     }
     function Has($cmd) { [bool](Get-Command $cmd -ErrorAction SilentlyContinue) }
-    Check '.NET 10 SDK' ((Has dotnet) -and (dotnet --list-sdks | Select-String '^10\.')) 'winget install Microsoft.DotNet.SDK.10'
+    Check '.NET SDK 10 or newer' ((Has dotnet) -and (dotnet --list-sdks | Where-Object { [int]($_ -split '[.]')[0] -ge 10 })) 'winget install Microsoft.DotNet.SDK.10'
     Check 'dotnet local tools' ((Has dotnet) -and ((dotnet tool restore *> $null) -or $LASTEXITCODE -eq 0)) 'dotnet tool restore'
     Check 'pre-commit' (Has pre-commit) 'uv tool install pre-commit'
     Check 'git hooks installed' ((Test-Path .git/hooks/pre-commit) -and (Test-Path .git/hooks/pre-push)) 'pre-commit install'
@@ -86,22 +86,28 @@ doctor:
     Check 'Unity Hub projects-v1.json' (Test-Path "$env:APPDATA\UnityHub\projects-v1.json") 'install Unity Hub and add a project' -Optional
     if ($missing) { "$missing required item(s) missing"; exit 1 }
 
-# Debug build + dev registration into Command Palette; restart PowerToys afterwards
+# Debug build + dev registration into Command Palette; then run Command Palette's Reload
 [group('deploy')]
 [script('pwsh', '-NoLogo', '-NoProfile')]
 register:
     $ErrorActionPreference = 'Stop'
-    $release = Get-AppxPackage YidiMao.CommandPalette-Unity
-    if ($release) {
-        "A release package ($($release.Version)) is installed and blocks -Register (0x80073CFB). Remove it first:"
-        "  Get-AppxPackage YidiMao.CommandPalette-Unity | Remove-AppxPackage"
-        exit 1
+    # Uninstall first: a release install blocks -Register (0x80073CFB), and a running dev
+    # registration locks bin/ (MSB3021). Removal also stops the extension, so PowerToys can stay
+    # open. Dev data (settings) is kept; a release install's settings are not.
+    foreach ($installed in Get-AppxPackage YidiMao.CommandPalette-Unity) {
+        if ($installed.IsDevelopmentMode) {
+            "Removing dev registration $($installed.Version) (settings kept)"
+            Remove-AppxPackage $installed.PackageFullName -PreserveApplicationData
+        } else {
+            "Removing release package $($installed.Version) (its settings are reset)"
+            Remove-AppxPackage $installed.PackageFullName
+        }
     }
     dotnet build UnityExtension/UnityExtension.csproj -c Debug -p:Platform=x64 -p:WindowsPackageType=MSIX
     if ($LASTEXITCODE) { exit $LASTEXITCODE }
-    $manifest = Get-ChildItem UnityExtension/bin/x64/Debug -Recurse -Filter AppxManifest.xml | Where-Object { $_.Directory.Name -eq 'win-x64' } | Select-Object -First 1
+    $manifest = Get-ChildItem UnityExtension/bin/x64/Debug -Recurse -Filter AppxManifest.xml | Where-Object { $_.Directory.Name -eq 'win-x64' } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
     if (-not $manifest) { 'No AppxManifest.xml under UnityExtension/bin/x64/Debug/*/win-x64'; exit 1 }
     $assets = New-Item -ItemType Directory -Force (Join-Path $manifest.DirectoryName 'Assets')
     Copy-Item -Recurse -Force UnityExtension/Assets/* $assets
     Add-AppxPackage -Register $manifest.FullName -ForceUpdateFromAnyVersion
-    "Registered $($manifest.FullName)"
+    "Registered $($manifest.FullName). In Command Palette run Reload."

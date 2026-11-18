@@ -18,4 +18,7 @@ internal sealed record UnityProject
     /// (moved/deleted projects still listed by Unity Hub) have this set to false.
     /// </summary>
     public bool Exists { get; init; }
+
+    /// <summary>Read from hub.db (Hub 4), so "Remove from list" can delete its row.</summary>
+    public bool FromHubDb { get; init; }
 }

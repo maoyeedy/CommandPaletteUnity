@@ -33,4 +33,4 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`docs/DEVELOPMENT.md`](docs/DEVELO
 
 See [`docs/PRODUCT.md`](docs/PRODUCT.md).
 
-[^1]: Not affiliated with Unity Technologies. This extension only reads local Unity Hub data.
+[^1]: Not affiliated with Unity Technologies. This extension uses local Unity Hub data only; its one write is removing a project from Hub's list when you ask.

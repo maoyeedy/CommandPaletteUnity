@@ -112,7 +112,7 @@ public static class ProjectParser
                 var project = TryParseEntry(path, doc.RootElement);
                 if (project is not null)
                 {
-                    result.Add(project);
+                    result.Add(project with { FromHubDb = true });
                 }
             }
             catch (Exception)

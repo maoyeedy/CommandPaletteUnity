@@ -59,7 +59,8 @@ internal sealed partial class UnityExtensionPage : ListPage
                     ? projects.Where(p => p.IsFavorite).Concat(projects.Where(p => !p.IsFavorite))
                     : projects;
 
-                items.AddRange(ordered.Select(CreateProjectListItem));
+                var missing = projects.Where(p => !p.Exists && p.FromHubDb).ToList();
+                items.AddRange(ordered.Select(p => CreateProjectListItem(p, missing)));
             }
         }
         catch (Exception ex)
@@ -78,7 +79,7 @@ internal sealed partial class UnityExtensionPage : ListPage
         return items.ToArray();
     }
 
-    private static ListItem CreateProjectListItem(UnityProject project)
+    private ListItem CreateProjectListItem(UnityProject project, List<UnityProject> missing)
     {
         var defaultCommand = new OpenUnityCommand(project);
 
@@ -89,6 +90,31 @@ internal sealed partial class UnityExtensionPage : ListPage
                 Title = "Open in File Explorer",
             },
         };
+
+        // Only Hub 4 (hub.db) entries can be removed; Hub 3 JSON is never written.
+        if (project.FromHubDb)
+        {
+            contextCommands.Add(
+                new CommandContextItem(
+                    new RemoveProjectsCommand(new[] { project }, () => RaiseItemsChanged())
+                )
+                {
+                    IsCritical = true,
+                }
+            );
+
+            if (!project.Exists && missing.Count > 1)
+            {
+                contextCommands.Add(
+                    new CommandContextItem(
+                        new RemoveProjectsCommand(missing, () => RaiseItemsChanged())
+                    )
+                    {
+                        IsCritical = true,
+                    }
+                );
+            }
+        }
 
         var tags = new List<Tag>();
         if (project.IsFavorite)

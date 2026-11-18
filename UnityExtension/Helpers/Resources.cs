@@ -17,5 +17,7 @@ public static class Resources
     // Segoe Fluent "Warning" glyph \u2014 used to flag projects whose folder is gone from disk.
     public static IconInfo IconMissing => new("\uE7BA");
 
+    public static IconInfo IconRemove => new("\uE74D");
+
     public static IconInfo IconUnity => IconHelpers.FromRelativePath("Assets\\UnityLogo.png");
 }
