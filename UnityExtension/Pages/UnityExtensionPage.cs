@@ -96,7 +96,7 @@ internal sealed partial class UnityExtensionPage : ListPage
         {
             contextCommands.Add(
                 new CommandContextItem(
-                    new RemoveProjectsCommand([project], () => RaiseItemsChanged())
+                    new RemoveProjectsCommand(new[] { project }, () => RaiseItemsChanged())
                 )
                 {
                     IsCritical = true,
