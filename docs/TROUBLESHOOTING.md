@@ -18,9 +18,9 @@ Wrong process, stale output, or code paths not executing.
 
 ## No Unity projects found
 
-`ProjectParser` swallows exceptions. Confirm `%APPDATA%\UnityHub\projects-v1.json` exists and is
-valid JSON. On Hub 4 the JSON is stale until the extension reads `hub.db`
-([PRODUCT.md](PRODUCT.md#roadmap)).
+`ProjectParser` swallows exceptions. Hub 4: `%APPDATA%\UnityHub\hub.db` must open (a corrupt one
+gives an empty list, no JSON fallback). Hub 3: `projects-v1.json` must be valid JSON. Source rules:
+[PRODUCT.md](PRODUCT.md#scope-decisions).
 
 ## Unity does not open
 

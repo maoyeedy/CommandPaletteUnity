@@ -89,6 +89,7 @@
 
 
     <PackageReference Include="Shmuelie.WinRTServer" />
+    <PackageReference Include="Microsoft.Data.Sqlite" />
   </ItemGroup>
 
   <!--

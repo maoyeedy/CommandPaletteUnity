@@ -10,7 +10,6 @@ features. Paths use `<user>`, `<project>` and `<version>` placeholders.
 | [hub-ui.md](hub-ui.md) | Hub 4 Projects page: columns, row states, details panel, tags |
 | [cli.md](cli.md) | Unity CLI: commands, output formats, which data it reads |
 | **What we do about it** | |
-| [extension-impact.md](extension-impact.md) | Required changes, safety rules, feature ideas |
 | [community.md](community.md) | Third-party launchers: launch args, extra data sources, pitfalls |
 | [rea.md](rea.md) | rea toolkit: which tools help audit Hub, and how to run them safely |
 

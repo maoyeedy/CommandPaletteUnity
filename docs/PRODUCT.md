@@ -22,8 +22,6 @@ Not affiliated with Unity Technologies. Local data only: no network, no Unity ac
 | Editor launch | `Unity.exe -projectPath "<path>"`, started directly | Hub does not need to be running |
 | Platform | Windows x64 and arm64, PowerToys Command Palette | |
 
-Safety rules for code: [reference/unity/extension-impact.md](reference/unity/extension-impact.md#safety-rules).
-
 ## Current behavior
 
 One top-level command, **Unity Projects**, opens the page **Recent Unity Projects**.
@@ -38,7 +36,7 @@ One top-level command, **Unity Projects**, opens the page **Recent Unity Project
 | Enter | Opens the project in its matching editor. Toasts: "Project folder no longer exists", "Unity <version> not found. Please install through Unity Hub." |
 | More commands | Open in File Explorer |
 | Empty list | "No Unity projects found" with a hint to open projects in Hub |
-| Data source today | `projects-v1.json` only (stale on Hub 4; see roadmap) |
+| Data source | `hub.db` (Hub 4), else `projects-v1.json` minus `excludedProjectFolders.json`; see scope decisions. Unreadable `hub.db` -> empty list |
 
 Settings:
 
@@ -56,7 +54,6 @@ Ordered by priority.
 
 | # | Item | Notes |
 |---|---|---|
-| 1 | Read `hub.db` (Hub 4) with JSON fallback and the downgrade rule above | Fixes the stale list |
 | 2 | Refresh when Hub data changes | Watch `hub.db`, `hub.db-wal` |
 | 3 | Show and search tags | `tag:` search, Hub 4 only |
 | 4 | Visual polish | Show `~` for the home folder; star without the word "Favorite" |
@@ -70,6 +67,6 @@ Ordered by priority.
 | 12 | Git info: branch, open the repo online | `vcs*` fields |
 | 13 | CLI actions when `unity` is on PATH: clean, size, upgrade, close | Optional |
 
-Done: settings to sort and filter the list.
+Done: settings to sort and filter the list; read `hub.db` (Hub 4) with JSON fallback and the downgrade rule.
 
 Dropped: writing to Hub's JSON or databases.

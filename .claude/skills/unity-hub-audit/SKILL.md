@@ -7,7 +7,7 @@ description: >-
 # Unity Hub / CLI audit
 
 Goal: find what changed in Hub and CLI behavior since the last audit, prove it, and update
-`docs/reference/unity/` (README, hub-data, hub-ui, cli, extension-impact, community, rea) and
+`docs/reference/unity/` (README, hub-data, hub-ui, cli, community, rea) and
 `references/baseline.json`. For database schemas, follow the recipe in `docs/reference/unity/rea.md`.
 
 ## 1. Snapshot and diff
@@ -49,6 +49,6 @@ user's data (project/editor counts, presence counts moving together). Look for:
   (keep the old behavior if users may still run it). Update the version table in README.md.
 - The docs are public: use `<user>`, `<project>`, `<version>` placeholders, no real paths, project,
   org, account or machine names, no OS or editor build details.
-- Revisit `extension-impact.md` if the data source answer changed.
+- Revisit the scope decisions in `docs/PRODUCT.md` if the data source answer changed.
 - Replace `references/baseline.json` with the new snapshot once the docs match it, and
   rg it for the user's name and drive-letter paths before saving.

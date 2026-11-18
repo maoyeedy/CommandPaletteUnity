@@ -62,5 +62,4 @@ VS Output window ("Debug").
 - CLSID: `[Guid]` in `UnityExtension.cs` equals both `ClassId` entries in `Package.appxmanifest`.
 - Package versions only in `Directory.Packages.props`.
 - `ProjectParser` swallows exceptions and returns an empty list.
-- Never write Unity Hub data; see the
-  [safety rules](reference/unity/extension-impact.md#safety-rules).
+- Never write Unity Hub data, never read `accounts.db`, never log raw project-record JSON.
