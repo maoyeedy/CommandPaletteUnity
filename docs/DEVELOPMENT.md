@@ -62,4 +62,5 @@ VS Output window ("Debug").
 - CLSID: `[Guid]` in `UnityExtension.cs` equals both `ClassId` entries in `Package.appxmanifest`.
 - Package versions only in `Directory.Packages.props`.
 - `ProjectParser` swallows exceptions and returns an empty list.
-- Never write Unity Hub data, never read `accounts.db`, never log raw project-record JSON.
+- Hub data: the only write is deleting a `projects` row in `hub.db` via `HubDatabase`; never read
+  `accounts.db`, never log raw project-record JSON.
