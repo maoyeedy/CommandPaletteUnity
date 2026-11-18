@@ -40,8 +40,9 @@ The winget SDK version in [DEVELOPMENT.md](DEVELOPMENT.md#machine-setup) follows
 `winget upgrade --all` from moving it.
 
 - When BuildTools moves: `winget pin remove` the old pin, then update both SDK lines.
-- A new base (e.g. `10.0.26100.x` to `10.0.27000.x`) also needs the `windows10.0.NNNNN.0` suffix of
-  `TargetFramework` in `UnityExtension.csproj` and `MaxVersionTested` in `Package.appxmanifest`.
+- A new base (e.g. `10.0.26100.x` to `10.0.27000.x`) also needs the `windows10.0.NNNNN` suffix of
+  `TargetFramework` (no trailing `.0`: csharp-ls 0.28 rewrites the TFM without it, and a mismatch
+  silently drops every NuGet reference) in both csproj files and `win-x64.pubxml`, and `MaxVersionTested` in `Package.appxmanifest`.
   Leave `MinVersion` and `Identity Version` alone.
 - Remove side-by-side .NET SDKs nothing pins to, so `dotnet --list-sdks` stays clean.
 
