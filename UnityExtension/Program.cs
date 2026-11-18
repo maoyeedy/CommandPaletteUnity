@@ -4,7 +4,6 @@
 
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.CommandPalette.Extensions;
 using Shmuelie.WinRTServer;
 using Shmuelie.WinRTServer.CsWinRT;
@@ -14,11 +13,11 @@ namespace UnityExtension;
 public class Program
 {
     [MTAThread]
-    public static async Task Main(string[] args)
+    public static void Main(string[] args)
     {
         if (args.Length > 0 && args[0] == "-RegisterProcessAsComServer")
         {
-            await using global::Shmuelie.WinRTServer.ComServer server = new();
+            global::Shmuelie.WinRTServer.ComServer server = new();
             ManualResetEvent extensionDisposedEvent = new(false);
 
             // We are instantiating an extension instance once above, and returning it every time the callback in RegisterExtension below is called.
@@ -31,6 +30,12 @@ public class Program
             // This will make the main thread wait until the event is signalled by the extension class.
             // Since we have single instance of the extension object, we exit as soon as it is disposed.
             extensionDisposedEvent.WaitOne();
+
+            // Stop + UnsafeDispose, as in the PowerToys template. DisposeAsync would wait for every
+            // served object to be garbage collected, but the class factory above keeps
+            // extensionInstance alive, so the process would never exit after the host disposes it.
+            server.Stop();
+            server.UnsafeDispose();
         }
         else
         {
