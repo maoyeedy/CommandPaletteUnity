@@ -1,8 +1,14 @@
 name: Dependabot auto-merge
 
-# Arms GitHub auto-merge for minor/patch GitHub Actions updates.
+# Arms GitHub auto-merge for minor/patch updates:
+# - every GitHub Actions update
+# - the allow-listed NuGet packages below (test-only plus Microsoft.Data.Sqlite)
 # The merge itself waits for the required checks in the master ruleset.
-# NuGet updates stay manual: `just pins` must hold against PowerToys.
+# Other NuGet updates stay manual: CsWin32 is 0.x (a minor is breaking), a
+# SDK.BuildTools base-series bump moves the target TFM, StyleCop is prerelease,
+# and WinRTServer has no test coverage. Runtime-shared packages are not proposed
+# by Dependabot at all (see .github/dependabot.yml); `just pins` guards them.
+# A new package reference is not auto-merged until it is added here.
 
 on:
   pull_request:
@@ -27,9 +33,14 @@ jobs:
 
       - name: Enable auto-merge
         if: >-
-          steps.meta.outputs.package-ecosystem == 'github_actions' &&
           (steps.meta.outputs.update-type == 'version-update:semver-minor' ||
-          steps.meta.outputs.update-type == 'version-update:semver-patch')
+          steps.meta.outputs.update-type == 'version-update:semver-patch') &&
+          (steps.meta.outputs.package-ecosystem == 'github_actions' ||
+          (steps.meta.outputs.package-ecosystem == 'nuget' &&
+          (contains(format(',{0},', steps.meta.outputs.dependency-names), ',Microsoft.Data.Sqlite,') ||
+          contains(format(',{0},', steps.meta.outputs.dependency-names), ',xunit,') ||
+          contains(format(',{0},', steps.meta.outputs.dependency-names), ',xunit.runner.visualstudio,') ||
+          contains(format(',{0},', steps.meta.outputs.dependency-names), ',Microsoft.NET.Test.Sdk,'))))
         run: gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
