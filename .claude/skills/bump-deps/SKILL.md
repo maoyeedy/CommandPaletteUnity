@@ -1,7 +1,7 @@
 ---
 name: bump-deps
 description: >-
-  Update third-party dependencies of the Unity Command Palette extension: NuGet packages in Directory.Packages.props, dotnet local tools in dotnet-tools.json, pre-commit hook revisions, and Windows SDK targets. Use for dependency, package, tool or hook upgrades. Not for the app's own version number (use release).
+  Update third-party dependencies of the Unity Command Palette extension: NuGet packages in Directory.Packages.props, dotnet local tools in dotnet-tools.json, the actionlint/gitleaks pins in .githooks/pins.ps1, and Windows SDK targets. Use for dependency, package, tool or hook upgrades. Not for the app's own version number (use release).
 ---
 
 # Bump dependencies
@@ -39,13 +39,14 @@ dotnet tool restore
 
 Add any tools that appear in `dotnet-tools.json`.
 
-## 3. Pre-commit hooks
+## 3. Hook tool pins
 
 ```
-pre-commit autoupdate
+# .githooks/pins.ps1 -> ActionlintVersion, GitleaksVersion
+just doctor   # reports installed versions against the pins
 ```
 
-Check the diff: reject any change that lowers a `rev` (autoupdate has proposed a gitleaks downgrade before; `git checkout -- .pre-commit-config.yaml` if so). Then `pre-commit run --all-files`; the end-of-file hook may rewrite `dotnet-tools.json`, so run it twice until it passes.
+Bump a pin only together with the installed binary, never downward
 
 ## 4. Windows SDK targets (only for a new SDK base)
 

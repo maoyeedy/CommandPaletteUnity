@@ -34,11 +34,12 @@ clean:
 test:
     dotnet test UnityExtension.Tests/UnityExtension.Tests.csproj -p:Platform=x64 -p:WindowsAppSdkBootstrapInitialize=false --blame-hang --blame-hang-timeout 2m
 
-# Formatting and all pre-commit hooks (csharpier, actionlint, gitleaks, ...)
+# Formatting and every pre-commit check (csharpier, actionlint, gitleaks, ...); pre-push checks
+# (dotnet format analyzers, vulnerability scan) only run on `git push`.
 [group('check')]
 check:
     dotnet tool restore
-    pre-commit run --all-files
+    pwsh -NoLogo -NoProfile -File .githooks/pre-commit.ps1 --all-files
 
 # csproj Version/AssemblyVersion/FileVersion and manifest Identity Version must agree (X.Y.Z / X.Y.Z.0)
 [group('check')]
@@ -60,6 +61,11 @@ pins:
     ./.github/scripts/CheckPins.ps1
     exit $LASTEXITCODE
 
+# Point git at the committed hooks in .githooks/ (once per clone)
+[group('setup')]
+hooks:
+    git config core.hooksPath .githooks
+
 # Fresh clone / new PC: audit SDKs, tools, hooks and host setup
 [group('setup')]
 [script('pwsh', '-NoLogo', '-NoProfile')]
@@ -73,14 +79,22 @@ doctor:
     function Has($cmd) { [bool](Get-Command $cmd -ErrorAction SilentlyContinue) }
     Check '.NET SDK 10 or newer' ((Has dotnet) -and (dotnet --list-sdks | Where-Object { [int]($_ -split '[.]')[0] -ge 10 })) 'winget install Microsoft.DotNet.SDK.10'
     Check 'dotnet local tools' ((Has dotnet) -and ((dotnet tool restore *> $null) -or $LASTEXITCODE -eq 0)) 'dotnet tool restore'
-    Check 'pre-commit' (Has pre-commit) 'uv tool install pre-commit'
-    Check 'git hooks installed' ((Test-Path .git/hooks/pre-commit) -and (Test-Path .git/hooks/pre-push)) 'pre-commit install'
+    $pinsText = Get-Content .githooks/pins.ps1 -Raw
+    $actionlintPin = [regex]::Match($pinsText, "ActionlintVersion\s*=\s*'([^']+)'").Groups[1].Value
+    $gitleaksPin = [regex]::Match($pinsText, "GitleaksVersion\s*=\s*'([^']+)'").Groups[1].Value
+    . ./.githooks/pins.ps1
+    $actionlintVersion = if (Has actionlint) { [regex]::Match("$(actionlint --version 2>$null | Select-Object -First 1)", '\d+\.\d+\.\d+').Value } else { '' }
+    $gitleaksVersion = if (Has gitleaks) { "$(gitleaks version 2>$null)".Trim() } else { '' }
+    Check "actionlint $actionlintPin (installed $(if ($actionlintVersion) { $actionlintVersion } else { 'none' }))" ((Has actionlint) -and (Test-ToolAtLeast $actionlintVersion $actionlintPin)) 'winget install rhysd.actionlint'
+    Check "gitleaks $gitleaksPin (installed $(if ($gitleaksVersion) { $gitleaksVersion } else { 'none' }))" ((Has gitleaks) -and (Test-ToolAtLeast $gitleaksVersion $gitleaksPin)) 'winget install gitleaks.gitleaks'
+    Check 'git hooks path (core.hooksPath .githooks)' ("$(git config core.hooksPath 2>$null)".Trim() -eq '.githooks') 'just hooks'
+    $hookModes = @('.githooks/pre-commit', '.githooks/pre-push' | ForEach-Object { "$(git ls-files -s $_)".Trim() })
+    Check 'git hooks committed executable (100755)' (@($hookModes | Where-Object { $_ -like '100755 *' }).Count -eq 2) 'git update-index --chmod=+x .githooks/pre-commit .githooks/pre-push'
     $dev = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock' -ErrorAction SilentlyContinue).AllowDevelopmentWithoutDevLicense
     Check 'Developer Mode (debug register)' ($dev -eq 1) 'Settings > System > For developers > Developer Mode'
     Check 'PowerToys' ((Test-Path "$env:LOCALAPPDATA\PowerToys\PowerToys.exe") -or (Test-Path "$env:ProgramFiles\PowerToys\PowerToys.exe")) 'winget install Microsoft.PowerToys'
     Check 'gh (just pins, releases)' (Has gh) 'winget install GitHub.cli' -Optional
     Check 'winapp (dev registration, UI inspect)' (Has winapp) 'winget install Microsoft.WinAppCli' -Optional
-    Check 'actionlint' (Has actionlint) 'winget install rhysd.actionlint' -Optional
     Check 'msstore (Store submissions)' (Has msstore) 'winget install "Microsoft Store Developer CLI"' -Optional
     Check 'ctx7 (library docs)' (Has ctx7) 'bun i -g ctx7' -Optional
     Check 'Unity Hub projects-v1.json' (Test-Path "$env:APPDATA\UnityHub\projects-v1.json") 'install Unity Hub and add a project' -Optional

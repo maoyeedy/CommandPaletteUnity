@@ -1,0 +1,9 @@
+#!/bin/sh
+# Git hook entry point (core.hooksPath=.githooks); checks live in pre-commit.ps1.
+here=$(cd "$(dirname "$0")" && pwd)
+if command -v cygpath >/dev/null 2>&1; then here=$(cygpath -m "$here"); fi
+if ! command -v pwsh >/dev/null 2>&1; then
+    echo "pre-commit: pwsh not found; install PowerShell 7 (just doctor)." >&2
+    exit 1
+fi
+exec pwsh -NoLogo -NoProfile -File "$here/pre-commit.ps1" "$@"
