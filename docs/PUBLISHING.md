@@ -83,7 +83,7 @@ Install the signed bundle (the cert must be trusted, see "Signing"):
 Add-AppxPackage -Path "AppPackages\UnityExtension_*\UnityExtension_*.msixbundle" -ForceApplicationShutdown
 ```
 
-Reload Command Palette or restart PowerToys after install.
+After install, reload Command Palette extensions: run `Start-Process x-cmdpal://reload`, or type "Reload" in Command Palette and run "Reload Command Palette extensions".
 
 ## Release checks
 
