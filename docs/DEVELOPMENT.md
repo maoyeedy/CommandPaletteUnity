@@ -20,6 +20,9 @@ and the packaging parts of the csproj should stay close to it; diff against it w
 Install with winget, then run `just doctor`. Windows App Runtime, VCLibs and UI.Xaml arrive as MSIX
 dependencies; do not install them by hand.
 
+First checkout: `just hooks` once per clone. It sets `git config core.hooksPath .githooks`, which
+activates the committed pre-commit and pre-push checks; `just doctor` verifies it.
+
 ```powershell
 # Windows SDK: version and pin rules in DEPENDENCIES.md
 winget install --exact --id Microsoft.WindowsSDK.10.0.26100 --version 10.0.26100.7705 --source winget

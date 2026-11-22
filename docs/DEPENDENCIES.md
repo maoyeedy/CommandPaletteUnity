@@ -1,11 +1,11 @@
 # Dependencies
 
-How to update NuGet packages, local tools, pre-commit hooks and the Windows SDK. The `bump-deps`
+How to update NuGet packages, local tools, the git hook tools and the Windows SDK. The `bump-deps`
 skill follows this file.
 
 ## Order
 
-NuGet first (affects compilation), then local tools, then pre-commit hooks. All package versions
+NuGet first (affects compilation), then local tools, then the hook tool pins. All package versions
 live in `Directory.Packages.props`.
 
 ```bash
@@ -14,7 +14,7 @@ dotnet package update <PackageId>@<version> --project UnityExtension/UnityExtens
 dotnet tool update --local csharpier   # --local is required, else the global manifest is updated
 dotnet tool update --local dotnet-outdated-tool
 dotnet tool restore
-pre-commit autoupdate && pre-commit run --all-files   # reject any hook rev downgrade
+# actionlint/gitleaks: bump the constants in .githooks/pins.ps1, then `just doctor` and `just check`
 ```
 
 ## Rules
