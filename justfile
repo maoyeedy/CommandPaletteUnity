@@ -138,4 +138,14 @@ register:
     $assets = New-Item -ItemType Directory -Force (Join-Path $manifest.DirectoryName 'Assets')
     Copy-Item -Recurse -Force UnityExtension/Assets/* $assets
     Add-AppxPackage -Register $manifest.FullName -ForceUpdateFromAnyVersion
-    "Registered $($manifest.FullName). In Command Palette run Reload."
+    "Registered $($manifest.FullName)."
+    # A remove/re-register leaves the old provider in CmdPal's list until it reloads, so a
+    # second register can look like two extensions. Force that refresh here. This needs
+    # Command Palette running and "Enable external command links" on (default); the first
+    # request asks to confirm unless "Always allow" was chosen.
+    if (Get-Process Microsoft.CmdPal.UI -ErrorAction SilentlyContinue) {
+        Start-Process x-cmdpal://reload
+        "Sent x-cmdpal://reload; confirm in Command Palette if it asks."
+    } else {
+        "Command Palette is not running; start it to load the extension."
+    }

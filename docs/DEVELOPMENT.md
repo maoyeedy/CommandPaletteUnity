@@ -47,7 +47,7 @@ All commands are in the root `justfile` ([just](https://just.systems)); `just` l
 
 1. `just build` (Debug x64). If the running extension locks `bin/`: `just build <other dir>`.
 2. `just test`, `just check`.
-3. `just register` (uninstalls any installed copy first, keeping dev settings), then run Command Palette's `Reload`.
+3. `just register` (uninstalls any installed copy first, keeping dev settings); if Command Palette is running it also reloads extensions via `x-cmdpal://reload` (the first request asks to confirm).
 4. After a WindowsAppSDK, CsWinRT or packaging change: `just trim`, `just bundle`.
 
 Before a release: `just versions`, `just pins`.

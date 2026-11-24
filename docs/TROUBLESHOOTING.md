@@ -6,9 +6,10 @@ Check PowerToys, Command Palette, package install, manifest registration, CLSID 
 
 ## Changes not showing
 
-Stale package, or PowerToys needs a reload.
+Stale package, or Command Palette has not reloaded extensions.
 
-- Local debug: `just register`, then Command Palette's `Reload`.
+- Local debug: `just register` (reloads extensions itself). Manual reload: `Start-Process x-cmdpal://reload`,
+  or `Reload` in Command Palette.
 - Release validation: remove the old package and install the new bundle
   ([PUBLISHING.md](PUBLISHING.md#install-for-testing)).
 

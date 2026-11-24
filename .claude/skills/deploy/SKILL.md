@@ -22,7 +22,7 @@ Stop and report if the build fails; do not deploy a stale output.
 
 ## 3. Install
 
-**Debug.** `just register` (MSIX debug build, Assets copy, `Add-AppxPackage -Register`). It first removes any installed copy: a dev registration with `-PreserveApplicationData` (settings kept), a release install outright (its settings reset). Then run Command Palette's `Reload`; no PowerToys restart.
+**Debug.** `just register` (MSIX debug build, Assets copy, `Add-AppxPackage -Register`). It first removes any installed copy: a dev registration with `-PreserveApplicationData` (settings kept), a release install outright (its settings reset). It then reloads extensions via `x-cmdpal://reload` if Command Palette is running.
 
 **Release.** Sign the bundle with the git-ignored `scripts/sign.ps1` (read its `param()` block). Pass `-BundlePath` explicitly (auto-detect can pick a per-arch `.msix`) and `-Subject` equal to the manifest `Publisher` (the script's default `CN=Yidi Mao` fails its own check). Trusting the cert in `LocalMachine\TrustedPeople` and verifying the signature need an **elevated** shell; `-TrustStore CurrentUser` signs but then fails verification ("root certificate not trusted"). An agent session is not elevated, so hand the user the exact command to run in an admin terminal. Then `Get-AppxPackage *CommandPalette-Unity* | Remove-AppxPackage` and `Add-AppxPackage -Path <bundle> -ForceApplicationShutdown`; confirm with `Get-AppxPackage` (new version, `SignatureKind` Developer) and that `UnityExtension.exe` is running from `WindowsApps`.
 
