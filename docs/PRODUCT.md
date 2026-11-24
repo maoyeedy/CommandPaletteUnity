@@ -17,7 +17,7 @@ Not affiliated with Unity Technologies. Local data only: no network, no Unity ac
 | Hub versions | **Hub 4 first, Hub 3 still supported** | Hub 4 is current, but the JSON reader already exists and costs little to keep |
 | Project source | `hub.db` if it exists and `meta.projects_json_migrated = '1'`, else `projects-v1.json` minus `excludedProjectFolders.json` | Hub 4 stops updating the JSON after it imports it |
 | Hub 4 -> Hub 3 downgrade | Use whichever of `hub.db` / `projects-v1.json` was modified more recently | Otherwise Hub 3 edits would be hidden behind a stale `hub.db` |
-| Writes to Hub data | **Deletes `projects` rows only:** "Remove from list" deletes one row; the danger zone deletes all rows, both in `hub.db` through `HubDatabase`. Nothing else under `%APPDATA%\UnityHub` | Same kind of write as `unity projects remove` (verified, see [cli.md](reference/unity/cli.md)). Any wider write risks the user's project list |
+| Writes to Hub data | **Deletes and new-row inserts on `hub.db` `projects` only:** "Remove from list" deletes one row, Danger zone deletes all rows, and Settings "Add projects to Unity Hub" inserts new rows (`INSERT OR IGNORE`, never modifying existing rows). Nothing else under `%APPDATA%\UnityHub` | Same kind of write as `unity projects add` / `remove` (verified, see [cli.md](reference/unity/cli.md)). Any wider write risks existing project metadata |
 | Unity CLI | **Reference only.** The extension never runs, requires or bundles it | Most users have only Hub. We study its commands, UX and data writes, then implement what we need ourselves |
 | Hub 3 users | Read-only: list, open, Explorer. No remove | Hub 3 is end-of-life (3.22.6); its list lives in JSON we don't write |
 | Editor launch | `Unity.exe -projectPath "<path>"`, started directly | Hub does not need to be running |
@@ -38,7 +38,7 @@ One top-level command, **Unity Projects**, opens the page **Recent Unity Project
 | Enter | Opens the project in its matching editor (re-scanning the registry on miss). Missing editor with a known changeset prompts to install via `unityhub://<version>/<changeset>`; otherwise toasts "Unity <version> not found. Please install through Unity Hub.". Missing folder toasts "Project folder no longer exists" |
 | More commands | Kept `<= 5` items and grouped by verb (`Open ...` -> `Copy ...` -> critical `Remove ...` at the bottom): when folder exists, `Open in Console` (`Ctrl+Shift+R`, secondary action), `Open in Explorer` (`Ctrl+Shift+E`), and `Open solution` (when a `.sln`/`.slnx` exists in the project root); always `Copy path` (`Ctrl+Shift+C`); Unity Hub v4 only `Remove from Unity Hub` (`Ctrl+Shift+Delete`, confirm, deletes the `hub.db` row), and on missing projects with >1 missing `Remove all missing (n)` |
 | Empty list | "No Unity projects found" with a hint to open projects in Hub |
-| Settings page | The extension's real settings page (provider `Settings`), with the settings below and a **Danger zone**: a "Remove all projects from Unity Hub" button, an inline two-step confirm inside the settings card (CmdPal's `CommandResult.Confirm` dialog belongs to the palette window, not the settings window), then all `hub.db` project rows are deleted. No project folder is deleted. Unity Hub v4 only |
+| Settings page | The extension's real settings page (provider `Settings`), with preferences, **Add projects to Unity Hub** (inline Explorer multi-folder picker or depth-limited recursive folder scan -> inline checkbox review -> `INSERT OR IGNORE` into `hub.db`; Unity Hub v4 only), and a **Danger zone**: a "Remove all projects from Unity Hub" button, an inline two-step confirm inside the settings card (CmdPal's `CommandResult.Confirm` dialog belongs to the palette window, not the settings window), then all `hub.db` project rows are deleted. No project folder is deleted. Unity Hub v4 only |
 | Data source | `hub.db` (Hub 4), else `projects-v1.json` minus `excludedProjectFolders.json`; see scope decisions. Unreadable `hub.db` -> empty list. Watches Hub data files (`hub.db`, `hub.db-wal`, `projects-v1.json`, `excludedProjectFolders.json`) and refreshes the open list automatically on change |
 
 Settings:
@@ -76,7 +76,7 @@ Decided against; don't propose again without new facts.
 | Bundling the Unity CLI | Proprietary, and redundant with the reference-only rule |
 | Writing Hub 3 JSON (`projects-v1.json`, `excludedProjectFolders.json`) | Hub 3 is end-of-life; Hub 4 ignores the JSON after migration |
 | Overwriting the timestamp in Hub data | Hub owns it; no user benefit worth a write |
-| Any `hub.db` write other than deleting a `projects` row | Favorites, tags, titles are edited in Hub |
+| Any `hub.db` write that modifies existing rows or other tables | Favorites, tags, titles are edited in Hub; only row deletes and new-row `INSERT OR IGNORE` are performed |
 | Open a project with a different installed editor | Unity projects are version-bound; a mismatched version can upgrade or break the project. Hub's Installs page stays the place to choose editors |
 | List installed editors and their paths inside CmdPal | Duplicates Hub's Installs page and offers no launch action |
 | "Installing <version>" status from `install-state.db` | Transient, usually empty second database; the launcher cannot act on the status, so watching it costs more than the rare state is worth |

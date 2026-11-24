@@ -348,6 +348,108 @@ public sealed class HubSourceTests : IDisposable
         Assert.Equal(["DbOnly"], ProjectParser.LoadProjects(_hubDir).Select(p => p.Title));
     }
 
+    public static TheoryData<string, string?, string[], int, string[]?> AddCases =>
+        new()
+        {
+            {
+                "migrated db: inserts new projects and ignores duplicates",
+                MigratedDb,
+                [@"C:\p\DbOnly", @"C:\p\NewA", @"C:\p\NewB"],
+                2,
+                [@"C:\p\DbOnly", @"C:\p\NewA", @"C:\p\NewB"]
+            },
+            {
+                "not migrated: no write",
+                Schema + """INSERT INTO projects VALUES ('C:\p\DbOnly', '{}', 1);""",
+                [@"C:\p\NewA"],
+                0,
+                [@"C:\p\DbOnly"]
+            },
+            { "no db: none is created", null, [@"C:\p\NewA"], 0, null },
+        };
+
+    [Theory]
+    [MemberData(nameof(AddCases))]
+    public void Add_projects_to_hub(
+        string name,
+        string? dbSql,
+        string[] pathsToAdd,
+        int expectedAdded,
+        string[]? expectedRows
+    )
+    {
+        _ = name;
+        Setup(dbSql, JsonAB, """{"schema_version":"1","data":[]}""", false);
+        var dbPath = Path.Combine(_hubDir, "hub.db");
+        var otherFiles = Snapshot()
+            .Where(f => !f.StartsWith("hub.db", StringComparison.Ordinal))
+            .ToArray();
+
+        var candidates = pathsToAdd
+            .Select(p => new UnityProjectCandidate(
+                p,
+                Path.GetFileName(p),
+                "6000.0.1f1",
+                "abc123def456",
+                123456
+            ))
+            .ToArray();
+
+        var added = HubDatabase.TryAddProjects(dbPath, candidates);
+
+        Assert.Equal(expectedAdded, added);
+        if (expectedRows is null)
+        {
+            Assert.False(File.Exists(dbPath));
+        }
+        else
+        {
+            Assert.Equal(expectedRows, TestSqlite.Paths(dbPath));
+        }
+
+        Assert.Equal(
+            otherFiles,
+            Snapshot().Where(f => !f.StartsWith("hub.db", StringComparison.Ordinal))
+        );
+    }
+
+    [Fact]
+    public void Added_project_round_trips_without_overwriting_existing_row()
+    {
+        Setup(
+            Schema
+                + """
+                INSERT INTO meta VALUES ('projects_json_migrated', '1');
+                INSERT INTO projects VALUES ('C:\p\Existing', '{"title":"CustomName","version":"2022.3.1f1","isFavorite":true,"tags":["keep"]}', 1);
+                """,
+            null,
+            null,
+            false
+        );
+        var dbPath = Path.Combine(_hubDir, "hub.db");
+        var candidates = new[]
+        {
+            new UnityProjectCandidate(@"C:\p\Existing", "Existing", "6000.0.1f1", "", 999),
+            new UnityProjectCandidate(@"C:\p\Fresh", "Fresh", "6000.2.0f1", "7f159b6136da", 42000),
+        };
+
+        var added = HubDatabase.TryAddProjects(dbPath, candidates);
+
+        Assert.Equal(1, added);
+        var projects = ProjectParser.LoadProjects(_hubDir);
+        var existing = projects.Single(p => p.Path == @"C:\p\Existing");
+        Assert.Equal("CustomName", existing.Title);
+        Assert.True(existing.IsFavorite);
+        Assert.Equal(["keep"], existing.Tags);
+
+        var fresh = projects.Single(p => p.Path == @"C:\p\Fresh");
+        Assert.Equal("Fresh", fresh.Title);
+        Assert.Equal("6000.2.0f1", fresh.Version);
+        Assert.Equal("7f159b6136da", fresh.Changeset);
+        Assert.Equal(42000, fresh.LastModified);
+        Assert.False(fresh.IsFavorite);
+    }
+
     private string[] Snapshot() =>
         Directory
             .GetFiles(_hubDir)
