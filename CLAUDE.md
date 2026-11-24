@@ -15,7 +15,6 @@ Use the `justfile`; `just` lists recipes.
 
 - Each change: `just build`, `just test`; after shell bulk edits `just check` (Claude hooks only cover Edit/Write).
 - After extension code edits: run `just register` automatically (do not ask first) so the live Command Palette session gets the change, and report whether it succeeded, failed, or Command Palette was not running. (`just register` already builds Debug x64 and reloads CmdPal, which immediately re-locks `bin/`, so do not run `just build` after it; it resets release-install settings while dev settings survive.)
-- Upstream source: `just vendor` creates sparse, gitignored `vendor/PowerToys/`; read the Toolkit, extension template and sample pages there instead of `gh api repos/.../contents/...`. `just vendor-update` refreshes it.
 - After a WindowsAppSDK/CsWinRT or packaging change: `just trim`, `just bundle`.
 - New clone or new PC: `just doctor`.
 - MSB3021/MSB3027 "locked by: Unity Extension for Command Palette" = extension is running: `just register` (replaces `just build`) or compile-check with `just build <other dir>`; never kill it.
@@ -53,3 +52,7 @@ Unpinned (track default branch); confirm API details against the installed packa
 | CSharpier (1.4.0) | `/belav/csharpier` |
 | MSIX / AppxManifest | `/microsoftdocs/msix-docs` |
 | .NET 10 / dotnet CLI | `/dotnet/docs` |
+
+## Upstream source
+
+`just vendor` creates a sparse, gitignored `vendor/PowerToys/` checkout; `just vendor-update` refreshes it. Read the Toolkit, extension template and sample pages there instead of `gh api repos/.../contents/...`. The repo URL and sparse paths live in `scripts/Init-Vendor.ps1`.
