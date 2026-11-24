@@ -1,7 +1,7 @@
 # Unity Hub config folder (`%APPDATA%\UnityHub`)
 
 JSON preferences, logs and caches live here. The project database is in [registry.md](registry.md),
-install locations in [installdir.md](installdir.md), and `unityhub://` links in
+install locations in [install-locations.md](install-locations.md), and `unityhub://` links in
 [protocol.md](protocol.md). Paths use `<user>`, `<version>` and `<hub package>` placeholders.
 
 ## JSON files
@@ -22,7 +22,7 @@ install locations in [installdir.md](installdir.md), and `unityhub://` links in
 | `cli-plugin-registry.json`, `cli-skill-installs.json`, `cli-update-check.json` | | Unity CLI state |
 | one-flag files | `hideHubOnEditorOpen`, `skipRemoveConfirmation`, `themeSetting`, `languageConfig`, `dismissedBanners`, ... | One preference each |
 
-Editor-install and download preferences are in [installdir.md](installdir.md).
+Editor-install and download preferences are in [install-locations.md](install-locations.md).
 
 ## Folders
 

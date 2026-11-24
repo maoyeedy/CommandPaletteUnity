@@ -3,7 +3,7 @@
 Facts sourced to docs.unity.com or unity.com are official. Facts marked "observed" come from this
 machine's registry, `hubInfo.json` and `logs\info-log.json` (Hub 4.0.1, checked 2026-11-24). The
 extension never runs the Unity CLI; this page is reference only. Running-Hub filesystem indicators
-live in [configdir.md](configdir.md#running-hub).
+live in [config-and-logs.md](config-and-logs.md#running-hub).
 
 ## Editor install: `unityhub://<version>/<changeset>`
 
@@ -37,13 +37,13 @@ link. Observed details on this machine:
 - `HKCR\unityhub` and `HKCU\Software\Classes\unityhub` carry only the `URL Protocol` marker. The MSIX
   package registers `windows.protocol\unityhub` under AppModel with `ACID` = `app\Unity Hub.exe`.
   There is no classic `shell\open\command` here. `hubInfo.json` holds `executablePath` for the
-  resolved path (see [installdir.md](installdir.md)).
+  resolved path (see [install-locations.md](install-locations.md)).
 - Invoking a URL while Hub runs logs a second-instance event with `protocolUrlSource: 'sharedData'`
   and "protocol URL forwarded to protocol handler". Normal starts log
   "deeplink: argv carries no unityhub:// link" (see
-  [running indicators](configdir.md#running-hub)).
+  [running indicators](config-and-logs.md#running-hub)).
 - `user-settings.json` carries `deeplink.alwaysForwardToSingleEditor = true` here; this is a local
-  observation, not a default (see [configdir.md](configdir.md)).
+  observation, not a default (see [config-and-logs.md](config-and-logs.md)).
 
 ## Unknowns - do not assume
 

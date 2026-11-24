@@ -7,7 +7,7 @@ description: >-
 # Unity Hub / CLI audit
 
 Goal: find what changed in Hub and CLI behavior since the last audit, prove it, and update
-`docs/reference/unity/` (README, unityhub/{protocol,registry,configdir,installdir}, hub-ui, cli,
+`docs/reference/unity/` (README, unityhub/{protocol,registry,config-and-logs,install-locations}, hub-ui, cli,
 community, rea) and
 `references/baseline.json`. For database schemas, follow the recipe in `docs/reference/unity/rea.md`.
 

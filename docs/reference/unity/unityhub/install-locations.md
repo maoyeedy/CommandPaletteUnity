@@ -1,6 +1,6 @@
 # Unity Hub and editor install locations
 
-Hub 4 is an MSIX package. `hubInfo.json` (in [configdir.md](configdir.md)) gives the resolved
+Hub 4 is an MSIX package. `hubInfo.json` (in [config-and-logs.md](config-and-logs.md)) gives the resolved
 `Unity Hub.exe` path; the `unityhub://` protocol registration is in [protocol.md](protocol.md).
 Paths use `<version>` and `<install dir>` placeholders.
 

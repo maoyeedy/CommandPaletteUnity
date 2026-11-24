@@ -2,8 +2,8 @@
 
 Hub 4 keeps its Projects list in `%APPDATA%\UnityHub\hub.db` (SQLite in WAL mode). Read it read-only,
 or copy `.db`, `-wal` and `-shm` together. Files marked *legacy* came from Hub 3. JSON preferences,
-logs and running indicators are in [configdir.md](configdir.md); install locations are in
-[installdir.md](installdir.md).
+logs and running indicators are in [config-and-logs.md](config-and-logs.md); install locations are in
+[install-locations.md](install-locations.md).
 
 ## Schema and behavior
 

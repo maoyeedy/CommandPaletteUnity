@@ -19,6 +19,7 @@ Use the `justfile`; `just` lists recipes.
 - New clone or new PC: `just doctor`.
 - MSB3021/MSB3027 "locked by: Unity Extension for Command Palette" = extension is running: `just build <other dir>`; never kill it.
 - Tests cover `ProjectParser`, `HubDatabase`, and `HubDataWatcher` (the WAL test needs `pwsh`); UI and commands need a manual check in Command Palette after `just register`.
+- Commit on a branch, not `master` (even for docs-only changes). Stop and ask before opening or merging a PR: the user may have follow-up changes.
 - Push to `master` needs passing CI; land changes through a PR, direct pushes are rejected.
 
 ## Invariants

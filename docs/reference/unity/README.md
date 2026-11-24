@@ -8,8 +8,8 @@ features. Paths use `<user>`, `<project>`, `<version>` and `<install dir>` place
 | **Unity Hub** | |
 | [unityhub/protocol.md](unityhub/protocol.md) | `unityhub://` install and project links; Hub starts on demand |
 | [unityhub/registry.md](unityhub/registry.md) | `hub.db` schema, project record fields, other databases |
-| [unityhub/configdir.md](unityhub/configdir.md) | `%APPDATA%\UnityHub` JSON files, logs, folders, running indicators |
-| [unityhub/installdir.md](unityhub/installdir.md) | Hub and editor install locations, discovery, installer registry keys |
+| [unityhub/config-and-logs.md](unityhub/config-and-logs.md) | `%APPDATA%\UnityHub` JSON files, logs, folders, running indicators |
+| [unityhub/install-locations.md](unityhub/install-locations.md) | Hub and editor install locations, discovery, installer registry keys |
 | [hub-ui.md](hub-ui.md) | Hub 4 Projects page: columns, row states, details panel, tags |
 | **Unity CLI** | |
 | [cli.md](cli.md) | commands, output formats, which data it reads |
