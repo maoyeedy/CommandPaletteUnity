@@ -18,8 +18,9 @@ internal enum HubDbStatus
 }
 
 /// <summary>
-/// Access to Unity Hub 4's hub.db. Reads never write or lock. The only write is
-/// <see cref="TryRemoveProject"/>, which deletes one projects row like `unity projects remove`.
+/// Access to Unity Hub 4's hub.db. Reads never write or lock. The only writes are
+/// <see cref="TryRemoveProject"/> and <see cref="TryRemoveAllProjects"/>, which delete projects
+/// rows like `unity projects remove`.
 /// </summary>
 internal static class HubDatabase
 {
@@ -143,6 +144,59 @@ internal static class HubDatabase
         {
             // Busy (Hub mid-write), missing table, read-only file, ...
             return false;
+        }
+    }
+
+    /// <summary>
+    /// Deletes every <c>projects</c> row, the bulk version of <see cref="TryRemoveProject"/>.
+    /// Writes nothing unless the db exists and is migrated. Never throws; returns the number of
+    /// rows deleted, or 0 when nothing could be removed.
+    /// </summary>
+    internal static int TryRemoveAllProjects(string dbPath)
+    {
+        try
+        {
+            if (!File.Exists(dbPath))
+            {
+                return 0;
+            }
+
+            using var connection = new SqliteConnection(
+                new SqliteConnectionStringBuilder
+                {
+                    DataSource = dbPath,
+                    Mode = SqliteOpenMode.ReadWrite,
+                    Pooling = false,
+                    DefaultTimeout = 2,
+                }.ToString()
+            );
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+
+            using var check = connection.CreateCommand();
+            check.Transaction = transaction;
+            check.CommandText = "SELECT value FROM meta WHERE key = 'projects_json_migrated'";
+            if (check.ExecuteScalar() is not "1")
+            {
+                return 0;
+            }
+
+            using var delete = connection.CreateCommand();
+            delete.Transaction = transaction;
+            delete.CommandText = "DELETE FROM projects";
+            var removed = delete.ExecuteNonQuery();
+            if (removed == 0)
+            {
+                return 0;
+            }
+
+            transaction.Commit();
+            return removed;
+        }
+        catch (Exception)
+        {
+            // Busy (Hub mid-write), missing table, read-only file, ...
+            return 0;
         }
     }
 

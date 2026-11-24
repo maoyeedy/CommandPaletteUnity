@@ -17,10 +17,10 @@ public partial class UnityExtensionCommandsProvider : CommandProvider
         DisplayName = "Unity Projects";
         Icon = Resources.IconUnity;
 
-        Settings = _settingsManager.Settings;
         _commands =
         [
             new CommandItem(new UnityExtensionPage(_settingsManager)) { Title = DisplayName },
+            new CommandItem(new SettingsPage(_settingsManager)) { Title = "Settings" },
         ];
     }
 
