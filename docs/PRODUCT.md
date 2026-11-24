@@ -37,7 +37,7 @@ One top-level command, **Unity Projects**, opens the page **Recent Unity Project
 | Enter | Opens the project in its matching editor. Toasts: "Project folder no longer exists", "Unity <version> not found. Please install through Unity Hub." |
 | More commands | Open in File Explorer. Hub 4 only: "Remove from Unity Hub list" (confirm, deletes the `hub.db` row), and on missing projects "Remove all missing projects (n)" |
 | Empty list | "No Unity projects found" with a hint to open projects in Hub |
-| Settings page | The extension's real settings page (provider `Settings`), with the two toggles and a **Danger zone**: a destructive "Remove all projects from Unity Hub list" button, one critical confirm, then all `hub.db` project rows are deleted. No project folder is deleted. Hub 4 only |
+| Settings page | The extension's real settings page (provider `Settings`), with the two toggles and a **Danger zone**: a "Remove all projects from Unity Hub list" button, an inline two-step confirm inside the settings card (CmdPal's `CommandResult.Confirm` dialog belongs to the palette window, not the settings window), then all `hub.db` project rows are deleted. No project folder is deleted. Hub 4 only |
 | Data source | `hub.db` (Hub 4), else `projects-v1.json` minus `excludedProjectFolders.json`; see scope decisions. Unreadable `hub.db` -> empty list |
 
 Settings:
