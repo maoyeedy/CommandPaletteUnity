@@ -1,0 +1,5 @@
+# Ripgrep: re-include root-level hidden or locally ignored paths worth searching.
+!/.claude/
+!/docs/.local/
+!/scripts/.local/
+!/vendor/
