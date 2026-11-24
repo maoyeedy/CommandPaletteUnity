@@ -123,7 +123,13 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
         var tags = new List<Tag>();
         if (project.IsFavorite)
         {
-            tags.Add(new Tag("⭐ Favorite") { Foreground = ColorHelpers.FromRgb(222, 186, 56) });
+            tags.Add(
+                new Tag("\u2B50")
+                {
+                    Foreground = ColorHelpers.FromRgb(222, 186, 56),
+                    ToolTip = "Favorite",
+                }
+            );
         }
 
         if (!project.Exists)
@@ -133,13 +139,49 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
 
         tags.Add(new Tag(project.Version));
 
+        var displayPath = ShortenHomePath(project.Path);
+
         return new ListItem(defaultCommand)
         {
             Title = project.Title,
-            Subtitle = project.Exists ? project.Path : $"{project.Path}  (folder not found)",
+            Subtitle = project.Exists ? displayPath : $"{displayPath}  (folder not found)",
             Icon = project.Exists ? Resources.IconUnity : Resources.IconMissing,
             Tags = tags.ToArray(),
             MoreCommands = contextCommands.ToArray(),
         };
+    }
+
+    internal static string ShortenHomePath(string path, string? homeDir = null)
+    {
+        homeDir ??= Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        homeDir = homeDir.TrimEnd('\\', '/');
+        if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(homeDir))
+        {
+            return path;
+        }
+
+        if (
+            path.Length < homeDir.Length
+            || !string.Equals(
+                path[..homeDir.Length].Replace('/', '\\'),
+                homeDir.Replace('/', '\\'),
+                StringComparison.OrdinalIgnoreCase
+            )
+        )
+        {
+            return path;
+        }
+
+        if (path.Length == homeDir.Length)
+        {
+            return "~";
+        }
+
+        if (path[homeDir.Length] is '\\' or '/')
+        {
+            return path.Length == homeDir.Length + 1 ? "~" : "~" + path[homeDir.Length..];
+        }
+
+        return path;
     }
 }

@@ -78,4 +78,23 @@ public sealed class ProjectParserTests
             Directory.Delete(present);
         }
     }
+
+    [Theory]
+    [InlineData(@"C:\Users\alice", @"C:\Users\alice", "~")]
+    [InlineData(@"C:\Users\alice\", @"C:\Users\alice", "~")]
+    [InlineData(@"C:/Users/alice/", @"C:\Users\alice", "~")]
+    [InlineData(@"C:\Users\alice\Projects\Game", @"C:\Users\alice", @"~\Projects\Game")]
+    [InlineData(@"C:/Users/alice/Projects/Game", @"C:\Users\alice", "~/Projects/Game")]
+    [InlineData(@"c:\users\ALICE\Projects\Game", @"C:\Users\alice\", @"~\Projects\Game")]
+    [InlineData(
+        @"C:\Users\alice2\Projects\Game",
+        @"C:\Users\alice",
+        @"C:\Users\alice2\Projects\Game"
+    )]
+    [InlineData(@"D:\Projects\Game", @"C:\Users\alice", @"D:\Projects\Game")]
+    [InlineData("", @"C:\Users\alice", "")]
+    public void Shorten_home_path(string path, string homeDir, string expected)
+    {
+        Assert.Equal(expected, UnityExtensionPage.ShortenHomePath(path, homeDir));
+    }
 }
