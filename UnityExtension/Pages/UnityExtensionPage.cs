@@ -221,13 +221,7 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
             metadata.Add(TextDetail("Build target", project.BuildTarget));
         }
 
-        return new Details
-        {
-            Title = project.Title,
-            HeroImage = project.Exists ? Resources.IconUnity : Resources.IconMissing,
-            Body = project.Exists ? string.Empty : "Project folder was not found on disk.",
-            Metadata = metadata.ToArray(),
-        };
+        return new Details { Metadata = metadata.ToArray() };
     }
 
     private static DetailsElement TextDetail(string key, string value) =>
