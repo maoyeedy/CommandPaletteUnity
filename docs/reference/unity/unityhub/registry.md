@@ -20,8 +20,8 @@ CREATE TABLE projects (
 - One row per project in the Projects list. UI edits (favorite, tags, editor version, platform)
   write the row within seconds.
 - On first Hub 4 launch, `projects-v1.json` is imported, `meta.projects_json_migrated` is set to
-  `'1'`, and the JSON is never written again. The CLI 1.0.x still reads the JSON as a Hub 3 fallback
-  (observed on 1.0.0; see [../cli.md](../cli.md)). The extension's fallback/downgrade rule is in
+  `'1'`, and the JSON is never written again. Observed on CLI 1.0.0: the CLI still reads the JSON as
+  a Hub 3 fallback (see [../cli.md](../cli.md)). The extension's fallback/downgrade rule is in
   [PRODUCT.md](../../../PRODUCT.md#scope-decisions).
 - **Remove from list** deletes the `projects` row and appends the path to
   `excludedProjectFolders.json`. The CLI `projects remove` and this extension delete only the row;
@@ -44,7 +44,7 @@ CREATE TABLE projects (
 | `architecture` | always | string | `x86_64` or `arm64` |
 | `isCustomEditor` | always | bool | Editor set to a path outside Hub's installs |
 | `isFavorite` | always | bool | Star |
-| `lastModified` | always | Unix ms or **`null`** | `null` if never opened; absent values are treated as `0` by `ProjectParser` |
+| `lastModified` | always, may be `null` | Unix ms or **`null`** | `null` if never opened; missing, null, non-numeric or overflowing values become `0` in `ProjectParser` |
 | `sourceFingerprint` | usually | string | mtime/size list of project files for change detection. Hub 4 suffix `\|hub-gpui-derive:<n>;spn:false;usn:0`, Hub 3 suffix `\|spn:false;eds:` |
 | `renderPipeline` | usually | string | `BuiltIn`, `URP`, `HDRP`, ... |
 | `buildTarget` | often | string | `StandaloneWindows64`, `Android`, ... Missing = current platform |
@@ -59,7 +59,7 @@ CREATE TABLE projects (
 | `repositoryName` | if Git remote known | string | |
 | `vcsConfigurationPath` | if Git | string | `<repo>\.git\config`. Can be in a parent folder |
 | `projectPathInsideRepository` | if subfolder | string | Project path relative to repo root |
-| `tags` | if any | string[] | **Hub 4 only**, up to 50 chars each. UI: [../hub-ui.md#manage-tags-dialog](../hub-ui.md#manage-tags-dialog) |
+| `tags` | if any | string[] | **Hub 4 writes tags**, up to 50 chars each; the extension parses the field from either source. UI: [../hub-ui.md#manage-tags-dialog](../hub-ui.md#manage-tags-dialog) |
 
 Computed live, not stored: current branch, folder size, remote repo size, Git account, and warnings
 such as "Missing Editor version" (presentation: [../hub-ui.md](../hub-ui.md), install route:

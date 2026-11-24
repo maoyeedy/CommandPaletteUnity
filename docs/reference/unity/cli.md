@@ -4,7 +4,8 @@ Reference only: the extension never runs it (see [PRODUCT.md](../../PRODUCT.md) 
 for its commands, UX and how it changes Hub data, then implement what we need.
 
 Separate product from Hub, own MSIX (winget `Unity.CLI`), on PATH as an app execution alias
-(`%LOCALAPPDATA%\Microsoft\WindowsApps\unity`). Observed on 1.0.0; 1.0.1 notes from its changelog.
+(`%LOCALAPPDATA%\Microsoft\WindowsApps\unity`). Observed on CLI 1.0.0; 1.0.1 notes come from its
+changelog.
 Manual: https://docs.unity.com/unity-cli (not https://docs.unity.com/en-us/hub/hub-cli, which is the Hub 3 `--headless` CLI). Changelog:
 `https://public-cdn.cloud.unity3d.com/hub/prod/cli/<version>/CHANGELOG.md`.
 
@@ -28,7 +29,7 @@ Manual: https://docs.unity.com/unity-cli (not https://docs.unity.com/en-us/hub/h
 ## Data it reads
 
 - Config: `unity config path` -> `%APPDATA%\UnityHub\user-settings.json` (shared with Hub).
-- **Projects: `hub.db`** (1.0.0; see [unityhub/registry.md](unityhub/registry.md)): `unity projects --json --all` returns the `hub.db` path set,
+- **Projects: `hub.db`** (see [unityhub/registry.md](unityhub/registry.md)): `unity projects --json --all` returns the `hub.db` path set,
   including projects added after migration that the JSON lacks. Items have no `tags`.
 - **Writes: `projects add` / `remove` change the `hub.db` `projects` row only.** Checked with a dummy
   project while Hub 4 was running: `add` inserts a row, `remove` deletes it (`"removed": true`),

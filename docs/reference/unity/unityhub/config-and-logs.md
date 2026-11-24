@@ -8,7 +8,7 @@ install locations in [install-locations.md](install-locations.md), and `unityhub
 
 | File | Shape | Role |
 |---|---|---|
-| `projects-v1.json` | `{"schema_version":"v1","data":{"<path>":{...}}}` | *Legacy* project registry, no `tags`. Hub 4 imports it once and never writes it again; the CLI 1.0.x still reads it as a Hub 3 fallback (observed on 1.0.0). See [registry.md](registry.md) and [PRODUCT.md](../../../PRODUCT.md#scope-decisions) |
+| `projects-v1.json` | `{"schema_version":"v1","data":{"<path>":{...}}}` | *Legacy* project registry, no `tags`. Hub 4 imports it once and never writes it again; the CLI fallback is in [registry.md](registry.md#schema-and-behavior). See also [PRODUCT.md](../../../PRODUCT.md#scope-decisions) |
 | `excludedProjectFolders.json` | `{"schema_version":"1","data":["<path>"]}` | Paths Hub has removed from the list. The extension does not write this file |
 | `projectsInfo.json` | `{"<path>":{"cliArgs":"..."}}` | Extra editor arguments per project |
 | `projectDir.json` | `{"directoryPath":"..."}` | Last folder used by Add / New project |

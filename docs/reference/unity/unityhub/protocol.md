@@ -1,7 +1,7 @@
 # Unity Hub protocol (`unityhub://`)
 
 Facts sourced to docs.unity.com or unity.com are official. Facts marked "observed" come from this
-machine's registry, `hubInfo.json` and `logs\info-log.json` (Hub 4.0.1, checked 2026-11-24). The
+machine's registry, `hubInfo.json` and `logs\info-log.json`; observed on Hub 4.0.1, 2026-11-24. The
 extension never runs the Unity CLI; this page is reference only. Running-Hub filesystem indicators
 live in [config-and-logs.md](config-and-logs.md#running-hub).
 

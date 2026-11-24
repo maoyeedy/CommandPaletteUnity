@@ -26,9 +26,10 @@ Hub-installed editors are not listed in a file: Hub scans the install folder
 `{"schema_version":"2","data":[]}` even with editors installed.
 
 The extension reads `HKCU`/`HKLM\SOFTWARE\Unity Technologies\Installer\<subkey>` (`Version`,
-`Location x64`) and uses `<install path>\Editor\Unity.exe` (`EditorParser`), matching versions
-exactly. On Windows, `just editors` (scripts/Get-UnityEditors.ps1) prints the same discovery without
-running the CLI or starting Unity.
+`Location x64`) and uses `<install path>\Editor\Unity.exe` only when that file exists
+(`EditorParser`), matching versions exactly. On Windows, `just editors`
+(scripts/Get-UnityEditors.ps1) prints that same set of usable editors and reports the stale entries
+it skipped, without running the CLI or starting Unity.
 
 ## Related sources
 

@@ -26,9 +26,19 @@ foreach ($regPath in $regPaths) {
     }
 }
 
-if (-not $rows) {
-    'No editors found under HKCU/HKLM SOFTWARE\Unity Technologies\Installer.'
+# EditorParser ignores a registry entry when <install path>\Editor\Unity.exe is missing.
+$usable = @($rows | Where-Object { $_.ExeExists })
+$skipped = @($rows | Where-Object { -not $_.ExeExists })
+
+if (-not $usable) {
+    'No usable editors found under HKCU/HKLM SOFTWARE\Unity Technologies\Installer.'
+    if ($skipped) { "Skipped $($skipped.Count) stale registry entry/entries." }
     exit 0
 }
 
-$rows | Sort-Object Version | Format-Table -AutoSize
+$usable | Sort-Object Version |
+    Select-Object Version, InstallPath, Executable, Hive |
+    Format-Table -AutoSize
+if ($skipped) {
+    "Skipped $($skipped.Count) stale registry entry/entries without <install path>\Editor\Unity.exe (EditorParser ignores these)."
+}

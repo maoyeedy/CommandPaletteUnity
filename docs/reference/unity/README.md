@@ -31,7 +31,10 @@ Re-audit after a Hub or CLI upgrade with the `unity-hub-audit` skill. For quick 
 Hub 4 release post: https://discussions.unity.com/t/now-available-unity-hub-4-0-0/1741866
 CLI manual: https://docs.unity.com/unity-cli
 
-## Tech stack and packaging (from the Windows binaries and manifests)
+## Tech stack and packaging
+
+Summary from the Windows binaries and manifests; crate details from `inspect-rust-binary`
+(see [rea.md](rea.md)).
 
 | | Hub 4.0 | CLI 1.0 |
 |---|---|---|
@@ -53,10 +56,9 @@ The Hub 3 Electron/Chromium folders in `%APPDATA%\UnityHub` are leftovers.
 3. **Tags are Hub 4 only.** They live in the `hub.db` row (`tags` array), nowhere else; the UI and
    tag dialog are in [hub-ui.md](hub-ui.md), storage in
    [registry.md](unityhub/registry.md#project-record-fields).
-4. **CLI 1.0.x reads and writes `hub.db`** once Hub 4 has migrated (observed on 1.0.0).
-   `unity projects` returns the `hub.db` path set, including projects added after migration that the
-   JSON lacks, still without tags. `projects add` / `remove` change only the `projects` row, not the
-   JSON or `excludedProjectFolders.json` (see [cli.md](cli.md)).
+4. **CLI 1.0.x reads and writes `hub.db`** once Hub 4 has migrated: `unity projects` returns the
+   `hub.db` set, and `projects add` / `remove` change only the `projects` row. Details in
+   [cli.md](cli.md).
 5. Branch, size, Git account and "missing editor" state are not stored. Hub computes them live.
 6. A `unityhub://` link starts Hub through the OS protocol handler; Hub does not need to be open
    first (see [unityhub/protocol.md](unityhub/protocol.md)).
