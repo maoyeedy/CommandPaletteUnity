@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using Microsoft.Win32;
 
 namespace UnityExtension;
 
 public static class EditorParser
 {
-    private static readonly Dictionary<string, string> _versionPathMap;
-
-    static EditorParser()
-    {
-        _versionPathMap = GetVersionToPathMapping();
-    }
+    private static readonly Lock _cacheLock = new();
+    private static Dictionary<string, string> _versionPathMap = GetVersionToPathMapping();
 
     internal static Dictionary<string, string> GetVersionToPathMapping()
     {
@@ -38,23 +35,34 @@ public static class EditorParser
 
     internal static string GetPathForVersion(string version)
     {
-        if (_versionPathMap.TryGetValue(version, out var path))
+        lock (_cacheLock)
         {
-            return path;
+            return _versionPathMap.TryGetValue(version, out var path) ? path : string.Empty;
         }
-
-        return string.Empty;
     }
 
     internal static string GetExecutablePathForVersion(string version)
     {
-        var path = GetPathForVersion(version);
-        if (string.IsNullOrEmpty(path))
+        lock (_cacheLock)
         {
-            return string.Empty;
-        }
+            if (_versionPathMap.TryGetValue(version, out var cachedPath))
+            {
+                var cachedExe = Path.Combine(cachedPath, "Editor", "Unity.exe");
+                if (File.Exists(cachedExe))
+                {
+                    return cachedExe;
+                }
+            }
 
-        var executablePath = Path.Combine(path, "Editor", "Unity.exe");
-        return File.Exists(executablePath) ? executablePath : string.Empty;
+            // Re-scan on miss or stale cache so newly installed editors work without restarting CmdPal.
+            _versionPathMap = GetVersionToPathMapping();
+            if (!_versionPathMap.TryGetValue(version, out var path))
+            {
+                return string.Empty;
+            }
+
+            var executablePath = Path.Combine(path, "Editor", "Unity.exe");
+            return File.Exists(executablePath) ? executablePath : string.Empty;
+        }
     }
 }
