@@ -8,6 +8,7 @@ features. Paths use `<user>`, `<project>` and `<version>` placeholders.
 | **What Unity does** | |
 | [hub-data.md](hub-data.md) | Hub 4 data folder: databases, JSON files, project record schema |
 | [hub-ui.md](hub-ui.md) | Hub 4 Projects page: columns, row states, details panel, tags |
+| [deeplinks.md](deeplinks.md) | `unityhub://` install and project links; Hub starts on demand |
 | [cli.md](cli.md) | Unity CLI: commands, output formats, which data it reads |
 | **What we do about it** | |
 | [community.md](community.md) | Third-party launchers: launch args, extra data sources, pitfalls |
@@ -49,3 +50,5 @@ leftovers.
    `hub.db` path set, including projects added after migration that the JSON lacks, still without tags. `projects add` / `remove` change only the `projects` row, not the JSON
    or `excludedProjectFolders.json`.
 5. Branch, size, Git account and "missing editor" state are not stored. Hub computes them live.
+6. A `unityhub://` link starts Hub through the OS protocol handler; Hub does not need to be open
+   first (see [deeplinks.md](deeplinks.md)).

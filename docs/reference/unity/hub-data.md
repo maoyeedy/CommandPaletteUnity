@@ -24,6 +24,17 @@ Behavior:
 - Hub re-reads project folders on demand and rewrites changed rows. Log line:
   `project refresh from disk: <n> row(s) rewritten`.
 
+## Running Hub
+
+Hub is single-instance; the process is `Unity Hub.exe`, and `hubInfo.json` `executablePath` gives its
+full path. While it runs, SQLite uses WAL mode, so `hub.db-wal` and `hub.db-shm` exist and
+`logs\hub-gpui-running-<pid>-<id>.json` is written. `hubInfo.json` is rewritten on each launch.
+
+The extension treats `hub.db-wal` existence as the running signal: without it the db file is
+complete and read with `immutable=1` (no side files); with it, `readonly_shm=1` maps the existing
+`-shm` read-only (`HubDatabase.ReadOnlyUri`). A normal start logs
+`deeplink: argv carries no unityhub:// link`.
+
 ### `data` fields
 
 "Usually" = present for projects opened at least once in a recent editor.
@@ -87,7 +98,7 @@ as "Missing Editor version".
 | `secondaryDownloadLocation.json` | `{"path":"..."}` | Download folder. Missing = `%APPDATA%\UnityHub\downloads` |
 | `modulesPreference.json` | `{"selected":[...],"deselected":[...]}` | Default modules |
 | `hubInfo.json` | `{"version":"4.0.0","executablePath":"...\\Unity Hub.exe"}` | Installed Hub, rewritten each launch |
-| `user-settings.json` | object | General settings (`minimizeToTray`, `themeSource`, `projects.showProductNames`, `deeplink.*`, `updater.releaseChannel`, `templates.*`, CLI consent flags). `unity config path` points here |
+| `user-settings.json` | object | General settings (`minimizeToTray`, `themeSource`, `projects.showProductNames`, `deeplink.*`, `updater.releaseChannel`, `templates.*`, CLI consent flags). `unity config path` points here. Observed `deeplink.alwaysForwardToSingleEditor = true` (see [deeplinks.md](deeplinks.md)) |
 | `hub-gpui-window-state.json` | `{x,y,width,height,maximized,fullscreen}` | Hub 4 window. `main-window.json` is *legacy* |
 | `cachedFeatureFlags.json`, `cloudConfig.json`, `hubConfig.json` | | Remote flags and endpoints |
 | `cli-plugin-registry.json`, `cli-skill-installs.json`, `cli-update-check.json` | | Unity CLI state |
@@ -104,5 +115,9 @@ as "Missing Editor version".
 
 ## Installed editors
 
-No file lists them. Hub scans the install folder for `<version>\Editor\Unity.exe` and adds
-`editors-v2.json` entries. Log: `<n> editor install(s) discovered by the engine sidecar in path: <dir>`.
+Hub-installed editors are not listed in a file: Hub scans the install folder (`secondaryInstallPath.json`)
+for `<version>\Editor\Unity.exe`. Log: `<n> editor install(s) discovered by the engine sidecar in
+path: <dir>`. `editors-v2.json` holds editors added with "Locate" and can be
+`{"schema_version":"2","data":[]}` even with editors installed. The extension reads
+`HKCU`/`HKLM\SOFTWARE\Unity Technologies\Installer\<subkey>` (`Version`, `Location x64`) and uses
+`<install path>\Editor\Unity.exe` (`EditorParser`), matching versions exactly.
