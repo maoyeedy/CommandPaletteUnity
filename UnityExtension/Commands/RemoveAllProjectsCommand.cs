@@ -4,8 +4,9 @@ using Microsoft.CommandPalette.Extensions.Toolkit;
 namespace UnityExtension;
 
 /// <summary>
-/// Asks for confirmation, then deletes every projects row from Hub 4's hub.db. Project folders
-/// on disk are never touched.
+/// Deletes every projects row from Hub 4's hub.db. Project folders on disk are never touched.
+/// The settings page confirms first with an inline two-step card before invoking this command;
+/// a CommandResult.Confirm dialog would belong to the palette window, not the settings window.
 /// </summary>
 internal sealed partial class RemoveAllProjectsCommand : InvokableCommand
 {
@@ -15,39 +16,18 @@ internal sealed partial class RemoveAllProjectsCommand : InvokableCommand
         Icon = Resources.IconRemove;
     }
 
-    public override CommandResult Invoke() =>
-        CommandResult.Confirm(
-            new ConfirmationArgs
-            {
-                Title = "Remove all projects from Unity Hub?",
-                Description =
-                    "Clears every entry from Hub's list, including projects still on disk. Your project files stay untouched.",
-                PrimaryCommand = new ConfirmedCommand(),
-                IsPrimaryCommandCritical = true,
-            }
-        );
-
-    private sealed partial class ConfirmedCommand : InvokableCommand
+    public override CommandResult Invoke()
     {
-        public ConfirmedCommand()
-        {
-            Name = "Remove all projects";
-            Icon = Resources.IconRemove;
-        }
+        var dbPath = Path.Combine(Resources.UnityHubDir, "hub.db");
+        var removed = HubDatabase.TryRemoveAllProjects(dbPath);
 
-        public override CommandResult Invoke()
-        {
-            var dbPath = Path.Combine(Resources.UnityHubDir, "hub.db");
-            var removed = HubDatabase.TryRemoveAllProjects(dbPath);
+        var message =
+            removed > 0
+                ? $"Removed {removed} projects from Unity Hub's list"
+                : "Nothing removed. Unity Hub may be busy, or this is Hub 3.";
 
-            var message =
-                removed > 0
-                    ? $"Removed {removed} projects from Unity Hub's list"
-                    : "Nothing removed. Unity Hub may be busy, or this is Hub 3.";
-
-            return CommandResult.ShowToast(
-                new ToastArgs { Message = message, Result = CommandResult.KeepOpen() }
-            );
-        }
+        return CommandResult.ShowToast(
+            new ToastArgs { Message = message, Result = CommandResult.KeepOpen() }
+        );
     }
 }

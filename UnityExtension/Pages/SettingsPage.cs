@@ -36,54 +36,96 @@ internal sealed partial class SettingsPage : ContentPage
 
     private sealed partial class DangerZoneForm : FormContent
     {
-        public DangerZoneForm()
-        {
-            // One card keeps the heading, explanation and button aligned with the settings card
-            // above it. The default action style makes the button look like its Save button; the
-            // danger is signalled at the point of commitment by the critical confirm dialog.
-            TemplateJson = """
+        // CommandResult.Confirm is a ContentDialog owned by the palette window, so it cannot show
+        // in the separate settings window. Confirm inline instead: assigning TemplateJson raises a
+        // property change and the host re-renders the card in place.
+        private const string IdleTemplate = """
+            {
+              "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+              "type": "AdaptiveCard",
+              "version": "1.5",
+              "body": [
                 {
-                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-                  "type": "AdaptiveCard",
-                  "version": "1.5",
-                  "body": [
-                    {
-                      "type": "TextBlock",
-                      "text": "Danger zone",
-                      "size": "large",
-                      "weight": "bolder",
-                      "wrap": true
-                    },
-                    {
-                      "type": "TextBlock",
-                      "text": "Clears every entry from Hub 4's project list, including ones still on disk. Your project files stay untouched.",
-                      "wrap": true,
-                      "isSubtle": true,
-                      "spacing": "small"
-                    }
-                  ],
-                  "actions": [
-                    {
-                      "type": "Action.Submit",
-                      "title": "Remove all projects from Unity Hub list",
-                      "data": { "action": "removeAll" }
-                    }
-                  ]
+                  "type": "TextBlock",
+                  "text": "Danger zone",
+                  "size": "large",
+                  "weight": "bolder",
+                  "wrap": true
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "Clears every entry from Hub 4's project list, including ones still on disk. Your project files stay untouched.",
+                  "wrap": true,
+                  "isSubtle": true,
+                  "spacing": "small"
                 }
-                """;
-        }
+              ],
+              "actions": [
+                {
+                  "type": "Action.Submit",
+                  "title": "Remove all projects from Unity Hub list",
+                  "data": { "action": "removeAll" }
+                }
+              ]
+            }
+            """;
+
+        private const string ConfirmTemplate = """
+            {
+              "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+              "type": "AdaptiveCard",
+              "version": "1.5",
+              "body": [
+                {
+                  "type": "TextBlock",
+                  "text": "Remove all projects?",
+                  "size": "large",
+                  "weight": "bolder",
+                  "wrap": true
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "Every entry leaves Hub's project list, including projects still on disk. Your project files stay untouched.",
+                  "color": "attention",
+                  "wrap": true,
+                  "spacing": "small"
+                }
+              ],
+              "actions": [
+                {
+                  "type": "Action.Submit",
+                  "title": "Cancel",
+                  "data": { "action": "cancelRemoveAll" }
+                },
+                {
+                  "type": "Action.Submit",
+                  "title": "Remove all projects",
+                  "data": { "action": "confirmRemoveAll" }
+                }
+              ]
+            }
+            """;
+
+        public DangerZoneForm() => TemplateJson = IdleTemplate;
 
         public override ICommandResult SubmitForm(string inputs, string data)
         {
-            if (
-                !inputs.Contains("removeAll", StringComparison.Ordinal)
-                && !data.Contains("removeAll", StringComparison.Ordinal)
-            )
+            // Check the specific actions first: both contain "removeAll" as a substring.
+            if (data.Contains("cancelRemoveAll", StringComparison.Ordinal))
             {
-                return CommandResult.KeepOpen();
+                TemplateJson = IdleTemplate;
+            }
+            else if (data.Contains("confirmRemoveAll", StringComparison.Ordinal))
+            {
+                TemplateJson = IdleTemplate;
+                return new RemoveAllProjectsCommand().Invoke();
+            }
+            else if (data.Contains("removeAll", StringComparison.Ordinal))
+            {
+                TemplateJson = ConfirmTemplate;
             }
 
-            return new RemoveAllProjectsCommand().Invoke();
+            return CommandResult.KeepOpen();
         }
     }
 }
