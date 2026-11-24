@@ -14,18 +14,18 @@ Read only when the topic comes up: `docs/DEVELOPMENT.md` (setup, dev loop, doc m
 Use the `justfile`; `just` lists recipes.
 
 - Each change: `just build`, `just test`; after shell bulk edits `just check` (Claude hooks only cover Edit/Write).
+- After extension code edits: run `just register` automatically (do not ask first) so the live Command Palette session gets the change, and report whether it succeeded, failed, or Command Palette was not running. (`just register` resets release-install settings; dev settings survive.)
 - After a WindowsAppSDK/CsWinRT or packaging change: `just trim`, `just bundle`.
 - New clone or new PC: `just doctor`.
 - MSB3021/MSB3027 "locked by: Unity Extension for Command Palette" = extension is running: `just build <other dir>`; never kill it.
-- Tests cover `ProjectParser` and `HubDatabase` only (the WAL test needs `pwsh`); UI and commands need a manual check in Command Palette (`just register`).
-- `just register` resets release-install settings; dev settings survive.
+- Tests cover `ProjectParser`, `HubDatabase`, and `HubDataWatcher` (the WAL test needs `pwsh`); UI and commands need a manual check in Command Palette after `just register`.
 - Push to `master` needs passing CI; land changes through a PR, direct pushes are rejected.
 
 ## Invariants
 
 - CLSID: `[Guid]` in `UnityExtension.cs` == both `ClassId` entries in `Package.appxmanifest`.
 - `just versions` passes (csproj and manifest versions agree); the tag build fails otherwise.
-- Trim/AOT-safe code, no reflection unless an upstream API needs it; keep `sealed partial` where generators need it.
+- Trim/AOT-safe code, no reflection unless an upstream API needs it; keep `sealed partial` where generators need it (including `IDisposable` -> `CsWinRT1028`).
 - Package versions only in `Directory.Packages.props`; `just pins` passes (shared packages <= PowerToys' pins).
 - `ProjectParser` swallows exceptions and returns an empty list on failure.
 - Settings and palette are separate windows: `CommandResult.Confirm` shows only in the palette, so settings actions confirm inline in their Adaptive Card.

@@ -6,7 +6,7 @@ description: >-
 
 # Deploy
 
-Two modes. Default to **debug** for iteration; use **release** only when signing or packaging is mentioned. Run from the repo root. For multi-line PowerShell use `pwsh -NoProfile -Command - <<'PWSH' ... PWSH` (never inside bash double quotes, `$` and backticks get expanded).
+Two modes. Default to **debug** for iteration; use **release** only when signing or packaging is mentioned. Local debug `just register` is routine after extension code changes -- run it without asking and report whether it succeeded, failed, or Command Palette was not running. Run from the repo root. For multi-line PowerShell use `pwsh -NoProfile -Command - <<'PWSH' ... PWSH` (never inside bash double quotes, `$` and backticks get expanded).
 
 ## 1. Stop the running extension
 
