@@ -7,11 +7,18 @@ internal sealed record UnityProject
     public string Path { get; init; } = string.Empty;
     public string Title { get; init; } = string.Empty;
     public string Version { get; init; } = string.Empty;
+    public string Changeset { get; init; } = string.Empty;
     public long LastModified { get; init; }
     public bool IsFavorite { get; init; }
 
     /// <summary>Hub 4 project tags; empty for Hub 3 or untagged projects.</summary>
     public IReadOnlyList<string> Tags { get; init; } = [];
+
+    public string RenderPipeline { get; init; } = string.Empty;
+    public string BuildTarget { get; init; } = string.Empty;
+    public string VcsProvider { get; init; } = string.Empty;
+    public string GitOrganization { get; init; } = string.Empty;
+    public string GitRepository { get; init; } = string.Empty;
 
     /// <summary>
     /// Whether the project's folder still exists on disk. Dead references

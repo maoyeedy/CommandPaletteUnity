@@ -1,17 +1,22 @@
 # Roadmap
 
-Ordered by impact on finding and launching a project, not by how much Hub 4 data we can read. Scope
-and current behavior live in [PRODUCT.md](PRODUCT.md); ideas we decided against are in
-[Rejected](PRODUCT.md#rejected).
+No open roadmap items remain for 1.0. Scope and current behavior live in [PRODUCT.md](PRODUCT.md);
+dropped ideas are recorded in [Rejected](PRODUCT.md#rejected).
 
-| # | Item | Notes |
-|---|---|---|
-| 1 | Projects Hub doesn't list | Editor's recent-projects registry list ([community.md](reference/unity/community.md)). Read-only fallback, deduped by path and labeled so it never looks like a Hub row |
-| 2 | Missing editor: Hub install prompt | Today: toast only. `unityhub://<version>/<changeset>` opens Hub's install modal; Hub does not need to be running (see [protocol.md](reference/unity/unityhub/protocol.md)) |
-| 3 | Show and search tags | `tag:` search, Hub 4 only. `UnityProject.Tags` is already parsed; show tags in details first. Search syntax needs a dedicated UI/UX pass |
-| 4 | Visual polish | Show `~` for the home folder; star without the word "Favorite" |
-| 5 | Git info in details | `vcsProvider`, `organizationName`, `repositoryName` from `hub.db`. Branch is computed live, so it stays out |
-| 6 | Render pipeline / build target in details | `renderPipeline`, `buildTarget`; details only, not row tags |
-| 7 | Per-project editor arguments | `projectsInfo.json` `cliArgs`; relevant only where users already set them |
+## Shipped in 1.0
 
-Done: refresh when Hub data changes (`hub.db`, `hub.db-wal`, JSON fallback); settings to sort and filter the list; read `hub.db` (Hub 4) with JSON fallback and the downgrade rule; remove from Hub's list (per project, all missing, or all entries, Hub 4 only).
+- Refresh automatically when Hub data changes (`hub.db`, `hub.db-wal`, JSON fallback).
+- Settings to sort favorites first, hide missing projects, and clear Hub's project list.
+- Read `hub.db` (Hub 4) with `projects-v1.json` fallback and the Hub 4 -> Hub 3 downgrade rule.
+- Remove from Hub's list (per project, all missing, or all entries; Hub 4 only).
+- Visual polish: `~` for `%USERPROFILE%` in subtitles and a star-only favorite badge.
+- Missing editor prompt: launch `unityhub://<version>/<changeset>` when a changeset is present, and re-scan the registry on miss.
+- Project details pane: editor version, full path, Hub 4 tags, Git repository link/name, render pipeline, and build target.
+
+## Rejected as overkill
+
+Removed from the 1.0 roadmap (see [Rejected](PRODUCT.md#rejected) for rationale):
+
+- Projects Hub doesn't list (Editor `RecentlyUsedProjectPaths` registry fallback).
+- Custom `tag:` search syntax.
+- Per-project editor arguments (`projectsInfo.json` `cliArgs`).

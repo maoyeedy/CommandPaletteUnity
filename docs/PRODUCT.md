@@ -31,10 +31,11 @@ One top-level command, **Unity Projects**, opens the page **Recent Unity Project
 |---|---|
 | Order | Newest `lastModified` first. Favorites first if the setting is on |
 | Title | Hub's project title, or the folder name |
-| Subtitle | Project path. Adds "(folder not found)" when missing |
-| Tags | Star + "Favorite" (gold), "Missing" (red), editor version |
+| Subtitle | Project path (with `~` for `%USERPROFILE%`). Adds "(folder not found)" when missing |
+| Tags | Star icon (gold, tooltip "Favorite"), "Missing" (red), editor version |
 | Icon | Unity logo, or a "missing" icon |
-| Enter | Opens the project in its matching editor. Toasts: "Project folder no longer exists", "Unity <version> not found. Please install through Unity Hub." |
+| Details | Details pane showing editor version, full path, Hub 4 tags, Git repository (clickable link for GitHub/GitLab), render pipeline, and build target (omitting empty fields) |
+| Enter | Opens the project in its matching editor (re-scanning the registry on miss). Missing editor with a known changeset prompts to install via `unityhub://<version>/<changeset>`; otherwise toasts "Unity <version> not found. Please install through Unity Hub.". Missing folder toasts "Project folder no longer exists" |
 | More commands | Open in File Explorer. Hub 4 only: "Remove from Unity Hub list" (confirm, deletes the `hub.db` row), and on missing projects "Remove all missing projects (n)" |
 | Empty list | "No Unity projects found" with a hint to open projects in Hub |
 | Settings page | The extension's real settings page (provider `Settings`), with the two toggles and a **Danger zone**: a "Remove all projects from Unity Hub list" button, an inline two-step confirm inside the settings card (CmdPal's `CommandResult.Confirm` dialog belongs to the palette window, not the settings window), then all `hub.db` project rows are deleted. No project folder is deleted. Hub 4 only |
@@ -70,3 +71,6 @@ Decided against; don't propose again without new facts.
 | List installed editors and their paths inside CmdPal | Duplicates Hub's Installs page and offers no launch action |
 | "Installing <version>" status from `install-state.db` | Transient, usually empty second database; the launcher cannot act on the status, so watching it costs more than the rare state is worth |
 | Project tools: clean, size | `clean` deletes Library/Temp (destructive); `size` needs a slow live scan. Both belong to Hub/the CLI, which stays reference-only |
+| Projects Hub doesn't list (Editor `RecentlyUsedProjectPaths` registry fallback) | Rejected as overkill: requires reading `ProjectVersion.txt` from disk, recency order is unverified, and adds a second non-Hub project type without tags, favorites, or remove |
+| Custom `tag:` search syntax | Rejected as overkill: converting `ListPage` to `DynamicListPage` replaces Command Palette's built-in fuzzy search for minimal gain; tags are shown in the Details pane instead |
+| Per-project editor arguments (`projectsInfo.json` `cliArgs`) | Rejected as overkill: rarely set; Unity Hub remains the place for custom launch flags |

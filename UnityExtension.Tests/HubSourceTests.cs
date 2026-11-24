@@ -148,7 +148,7 @@ public sealed class HubSourceTests : IDisposable
             Schema
                 + $$"""
                 INSERT INTO meta VALUES ('projects_json_migrated', '1');
-                INSERT INTO projects VALUES ('C:\p\{{Cafe}}', '{"title":"{{Cafe}}","path":"C:\\p\\{{Cafe}}","version":"6000.2.0f1","lastModified":null,"isFavorite":true,"tags":["ui","{{JapaneseTag}}"]}', 1);
+                INSERT INTO projects VALUES ('C:\p\{{Cafe}}', '{"title":"{{Cafe}}","path":"C:\\p\\{{Cafe}}","version":"6000.2.0f1","changeset":"7f159b6136da","lastModified":null,"isFavorite":true,"tags":["ui","{{JapaneseTag}}"],"renderPipeline":"URP","buildTarget":"StandaloneWindows64","vcsProvider":"github","organizationName":"acme","repositoryName":"game"}', 1);
                 INSERT INTO projects VALUES ('C:\p\Plain', '{"title":"Plain","version":"2022.3.1f1","lastModified":42,"isFavorite":false}', 1);
                 """,
             null,
@@ -161,11 +161,23 @@ public sealed class HubSourceTests : IDisposable
         var tagged = projects.Single(p => p.Title == Cafe);
         Assert.Equal("C:\\p\\" + Cafe, tagged.Path);
         Assert.Equal("6000.2.0f1", tagged.Version);
+        Assert.Equal("7f159b6136da", tagged.Changeset);
         Assert.Equal(0, tagged.LastModified);
         Assert.True(tagged.IsFavorite);
         Assert.Equal(["ui", JapaneseTag], tagged.Tags);
+        Assert.Equal("URP", tagged.RenderPipeline);
+        Assert.Equal("StandaloneWindows64", tagged.BuildTarget);
+        Assert.Equal("github", tagged.VcsProvider);
+        Assert.Equal("acme", tagged.GitOrganization);
+        Assert.Equal("game", tagged.GitRepository);
 
         var plain = projects.Single(p => p.Title == "Plain");
+        Assert.Equal("", plain.Changeset);
+        Assert.Equal("", plain.RenderPipeline);
+        Assert.Equal("", plain.BuildTarget);
+        Assert.Equal("", plain.VcsProvider);
+        Assert.Equal("", plain.GitOrganization);
+        Assert.Equal("", plain.GitRepository);
         Assert.Equal(42, plain.LastModified);
         Assert.False(plain.IsFavorite);
         Assert.Empty(plain.Tags);

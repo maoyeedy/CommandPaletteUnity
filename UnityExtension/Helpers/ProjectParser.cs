@@ -184,6 +184,8 @@ public static class ProjectParser
                     ? versionEl.GetString()!
                     : "Unknown";
 
+            var changeset = GetOptionalString(projectInfo, "changeset");
+
             // lastModified is null for projects never opened.
             long lastModified = 0;
             if (
@@ -222,9 +224,15 @@ public static class ProjectParser
                 Path = projectPath,
                 Title = title,
                 Version = version,
+                Changeset = changeset,
                 LastModified = lastModified,
                 IsFavorite = isFavorite,
                 Tags = tags,
+                RenderPipeline = GetOptionalString(projectInfo, "renderPipeline"),
+                BuildTarget = GetOptionalString(projectInfo, "buildTarget"),
+                VcsProvider = GetOptionalString(projectInfo, "vcsProvider"),
+                GitOrganization = GetOptionalString(projectInfo, "organizationName"),
+                GitRepository = GetOptionalString(projectInfo, "repositoryName"),
                 Exists = SafeDirectoryExists(projectPath),
             };
         }
@@ -232,6 +240,19 @@ public static class ProjectParser
         {
             return null;
         }
+    }
+
+    private static string GetOptionalString(JsonElement element, string propertyName)
+    {
+        if (
+            element.TryGetProperty(propertyName, out var valueEl)
+            && valueEl.ValueKind == JsonValueKind.String
+        )
+        {
+            return valueEl.GetString()?.Trim() ?? string.Empty;
+        }
+
+        return string.Empty;
     }
 
     // Hub 4 never writes projects-v1.json after migration, so a JSON newer than hub.db

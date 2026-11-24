@@ -26,7 +26,7 @@ gives an empty list, no JSON fallback). Hub 3: `projects-v1.json` must be valid 
 ## Unity does not open
 
 Check `EditorParser`: the project's exact version must be under
-`HKCU`/`HKLM\SOFTWARE\Unity Technologies\Installer`.
+`HKCU`/`HKLM\SOFTWARE\Unity Technologies\Installer`. Installing a missing editor through Unity Hub does not require restarting Command Palette: `EditorParser` re-scans the registry on miss.
 
 ## Build fails: file is locked
 

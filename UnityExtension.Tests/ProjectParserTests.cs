@@ -78,4 +78,37 @@ public sealed class ProjectParserTests
             Directory.Delete(present);
         }
     }
+
+    [Theory]
+    [InlineData(@"C:\Users\alice", @"C:\Users\alice", "~")]
+    [InlineData(@"C:\Users\alice\", @"C:\Users\alice", "~")]
+    [InlineData(@"C:/Users/alice/", @"C:\Users\alice", "~")]
+    [InlineData(@"C:\Users\alice\Projects\Game", @"C:\Users\alice", @"~\Projects\Game")]
+    [InlineData(@"C:/Users/alice/Projects/Game", @"C:\Users\alice", "~/Projects/Game")]
+    [InlineData(@"c:\users\ALICE\Projects\Game", @"C:\Users\alice\", @"~\Projects\Game")]
+    [InlineData(
+        @"C:\Users\alice2\Projects\Game",
+        @"C:\Users\alice",
+        @"C:\Users\alice2\Projects\Game"
+    )]
+    [InlineData(@"D:\Projects\Game", @"C:\Users\alice", @"D:\Projects\Game")]
+    [InlineData("", @"C:\Users\alice", "")]
+    public void Shorten_home_path(string path, string homeDir, string expected)
+    {
+        Assert.Equal(expected, UnityExtensionPage.ShortenHomePath(path, homeDir));
+    }
+
+    [Theory]
+    [InlineData("6000.0.1f1", "7f159b6136da", "unityhub://6000.0.1f1/7f159b6136da")]
+    [InlineData("2022.3.10f1-alpha", "abc123DEF", "unityhub://2022.3.10f1-alpha/abc123DEF")]
+    [InlineData("6000.0.1f1", "", null)]
+    [InlineData("Unknown", "7f159b6136da", null)]
+    [InlineData("", "7f159b6136da", null)]
+    [InlineData("6000.0.1f1/extra", "7f159b6136da", null)]
+    [InlineData("6000.0.1f1", "7f159b6136da?x=1", null)]
+    [InlineData("6000.0.1f1", "7f15 9b61", null)]
+    public void Build_hub_install_uri(string version, string changeset, string? expected)
+    {
+        Assert.Equal(expected, OpenUnityCommand.TryBuildHubInstallUri(version, changeset));
+    }
 }
