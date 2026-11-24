@@ -63,7 +63,7 @@ internal sealed partial class SettingsPage : ContentPage
               "actions": [
                 {
                   "type": "Action.Submit",
-                  "title": "Remove all projects from Unity Hub list",
+                  "title": "Remove all projects from Hub list",
                   "data": { "action": "removeAll" }
                 }
               ]

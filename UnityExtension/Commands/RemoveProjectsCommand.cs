@@ -20,9 +20,7 @@ internal sealed partial class RemoveProjectsCommand : InvokableCommand
         _projects = projects;
         _onRemoved = onRemoved;
         Name =
-            projects.Count == 1
-                ? "Remove from Unity Hub list"
-                : $"Remove all missing projects ({projects.Count})";
+            projects.Count == 1 ? "Remove from Hub list" : $"Remove all missing ({projects.Count})";
         Icon = Resources.IconRemove;
     }
 
@@ -36,7 +34,7 @@ internal sealed partial class RemoveProjectsCommand : InvokableCommand
         return CommandResult.Confirm(
             new ConfirmationArgs
             {
-                Title = _projects.Count == 1 ? "Remove from Unity Hub list?" : $"{Name}?",
+                Title = _projects.Count == 1 ? "Remove from Hub list?" : $"{Name}?",
                 Description = description,
                 PrimaryCommand = new ConfirmedCommand(_projects, _onRemoved),
                 IsPrimaryCommandCritical = true,

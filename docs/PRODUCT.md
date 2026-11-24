@@ -29,24 +29,27 @@ One top-level command, **Unity Projects**, opens the page **Recent Unity Project
 
 | Element | Behavior |
 |---|---|
-| Order | Newest `lastModified` first. Favorites first if the setting is on |
+| Order | Ordered by `Sort projects by` (default newest `lastModified` first; also supports `Name (A-Z)` and `Editor version`). Favorites first if enabled; optionally grouped under section headers by editor version |
 | Title | Hub's project title, or the folder name |
 | Subtitle | Project path (with `~` for `%USERPROFILE%`). Adds "(folder not found)" when missing |
 | Tags | Star icon (gold, tooltip "Favorite"), "Missing" (red), editor version |
 | Icon | Unity logo, or a "missing" icon |
-| Details | Details pane showing editor version, full path, Hub 4 tags, Git repository (clickable link for GitHub/GitLab), render pipeline, and build target (omitting empty fields) |
+| Details | Details pane (toggled by `Show details pane`) showing editor version, full path, Hub 4 tags, Git repository (clickable link for GitHub/GitLab), render pipeline, and build target (omitting empty fields) |
 | Enter | Opens the project in its matching editor (re-scanning the registry on miss). Missing editor with a known changeset prompts to install via `unityhub://<version>/<changeset>`; otherwise toasts "Unity <version> not found. Please install through Unity Hub.". Missing folder toasts "Project folder no longer exists" |
-| More commands | Open in File Explorer. Hub 4 only: "Remove from Unity Hub list" (confirm, deletes the `hub.db` row), and on missing projects "Remove all missing projects (n)" |
+| More commands | When folder exists: `Open in File Explorer` (`Ctrl+Shift+E`), `Open path in console` (`Ctrl+Shift+R`). Always: `Copy path` (`Ctrl+Shift+C`). Hub 4 only: `Remove from Hub list` (`Ctrl+Shift+Delete`, confirm, deletes the `hub.db` row), and on missing projects with >1 missing `Remove all missing (n)` |
 | Empty list | "No Unity projects found" with a hint to open projects in Hub |
-| Settings page | The extension's real settings page (provider `Settings`), with the two toggles and a **Danger zone**: a "Remove all projects from Unity Hub list" button, an inline two-step confirm inside the settings card (CmdPal's `CommandResult.Confirm` dialog belongs to the palette window, not the settings window), then all `hub.db` project rows are deleted. No project folder is deleted. Hub 4 only |
+| Settings page | The extension's real settings page (provider `Settings`), with the settings below and a **Danger zone**: a "Remove all projects from Hub list" button, an inline two-step confirm inside the settings card (CmdPal's `CommandResult.Confirm` dialog belongs to the palette window, not the settings window), then all `hub.db` project rows are deleted. No project folder is deleted. Hub 4 only |
 | Data source | `hub.db` (Hub 4), else `projects-v1.json` minus `excludedProjectFolders.json`; see scope decisions. Unreadable `hub.db` -> empty list. Watches Hub data files (`hub.db`, `hub.db-wal`, `projects-v1.json`, `excludedProjectFolders.json`) and refreshes the open list automatically on change |
 
 Settings:
 
 | Setting | Default |
 |---|---|
+| Sort projects by | Recently modified |
 | Group favorites first | on |
-| Hide projects missing from disk | off |
+| Group by editor version | off |
+| Hide missing projects | off |
+| Show details pane | on |
 
 Editors are found through the registry (`HKCU`/`HKLM\SOFTWARE\Unity Technologies\Installer`) and
 matched by exact version.

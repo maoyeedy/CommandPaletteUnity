@@ -10,8 +10,8 @@ internal sealed partial class OpenExplorerCommand : InvokableCommand
 
     public OpenExplorerCommand(UnityProject project)
     {
-        Name = "Open in Explorer";
-        Icon = Resources.IconUrl;
+        Name = "Open in File Explorer";
+        Icon = Resources.IconFolder;
 
         _projectPath = project.Path;
     }

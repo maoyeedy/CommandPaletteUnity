@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text.Json;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Windows.System;
 
 namespace UnityExtension;
 
@@ -23,15 +24,26 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
         Icon = Resources.IconUnity;
         Title = "Recent Unity Projects";
         Name = "Recent Unity Projects";
-        ShowDetails = true;
+        ShowDetails = _settingsManager.ShowDetails;
+        _settingsManager.Settings.SettingsChanged += OnSettingsChanged;
         _watcher = new HubDataWatcher(Resources.UnityHubDir, () => RaiseItemsChanged());
     }
 
-    public void Dispose() => _watcher.Dispose();
+    public void Dispose()
+    {
+        _settingsManager.Settings.SettingsChanged -= OnSettingsChanged;
+        _watcher.Dispose();
+    }
+
+    private void OnSettingsChanged(object sender, Settings args)
+    {
+        ShowDetails = _settingsManager.ShowDetails;
+        RaiseItemsChanged();
+    }
 
     public override IListItem[] GetItems()
     {
-        var items = new List<ListItem>();
+        var items = new List<IListItem>();
         IsLoading = true;
 
         try
@@ -57,14 +69,41 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
             }
             else
             {
-                projects.Sort((a, b) => b.LastModified.CompareTo(a.LastModified));
-
-                IEnumerable<UnityProject> ordered = _settingsManager.GroupFavoritesFirst
-                    ? projects.Where(p => p.IsFavorite).Concat(projects.Where(p => !p.IsFavorite))
-                    : projects;
-
                 var missing = projects.Where(p => !p.Exists && p.FromHubDb).ToList();
-                items.AddRange(ordered.Select(p => CreateProjectListItem(p, missing)));
+
+                if (_settingsManager.GroupByEditorVersion)
+                {
+                    var groups = projects
+                        .GroupBy(
+                            p => string.IsNullOrWhiteSpace(p.Version) ? "Unknown" : p.Version,
+                            StringComparer.OrdinalIgnoreCase
+                        )
+                        .ToList();
+
+                    groups.Sort((a, b) => CompareVersionsDescending(a.Key, b.Key));
+
+                    foreach (var group in groups)
+                    {
+                        var orderedGroup = OrderProjects(
+                            group.ToList(),
+                            _settingsManager.SortOrder,
+                            _settingsManager.GroupFavoritesFirst
+                        );
+                        var groupItems = orderedGroup
+                            .Select(p => (IListItem)CreateProjectListItem(p, missing))
+                            .ToArray();
+                        items.AddRange(new Section(group.Key, groupItems));
+                    }
+                }
+                else
+                {
+                    var ordered = OrderProjects(
+                        projects,
+                        _settingsManager.SortOrder,
+                        _settingsManager.GroupFavoritesFirst
+                    );
+                    items.AddRange(ordered.Select(p => CreateProjectListItem(p, missing)));
+                }
             }
         }
         catch (Exception ex)
@@ -83,17 +122,165 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
         return items.ToArray();
     }
 
+    internal static List<UnityProject> OrderProjects(
+        IReadOnlyList<UnityProject> projects,
+        string sortOrder,
+        bool groupFavoritesFirst
+    )
+    {
+        var sorted = projects.ToList();
+        sorted.Sort(
+            (a, b) =>
+            {
+                var primary = sortOrder switch
+                {
+                    SettingsManager.SortName => StringComparer.OrdinalIgnoreCase.Compare(
+                        a.Title,
+                        b.Title
+                    ),
+                    SettingsManager.SortVersion => CompareVersionsDescending(a.Version, b.Version),
+                    _ => b.LastModified.CompareTo(a.LastModified),
+                };
+
+                return primary != 0 ? primary : b.LastModified.CompareTo(a.LastModified);
+            }
+        );
+
+        if (!groupFavoritesFirst)
+        {
+            return sorted;
+        }
+
+        return sorted.Where(p => p.IsFavorite).Concat(sorted.Where(p => !p.IsFavorite)).ToList();
+    }
+
+    internal static int CompareVersionsDescending(string a, string b)
+    {
+        var aUnknown =
+            string.IsNullOrWhiteSpace(a)
+            || string.Equals(a, "Unknown", StringComparison.OrdinalIgnoreCase);
+        var bUnknown =
+            string.IsNullOrWhiteSpace(b)
+            || string.Equals(b, "Unknown", StringComparison.OrdinalIgnoreCase);
+
+        if (aUnknown && bUnknown)
+        {
+            return 0;
+        }
+
+        if (aUnknown)
+        {
+            return 1;
+        }
+
+        if (bUnknown)
+        {
+            return -1;
+        }
+
+        int i = 0;
+        int j = 0;
+        while (i < a.Length && j < b.Length)
+        {
+            var aIsDigit = char.IsAsciiDigit(a[i]);
+            var bIsDigit = char.IsAsciiDigit(b[j]);
+
+            if (aIsDigit && bIsDigit)
+            {
+                long numA = ReadNumber(a, ref i);
+                long numB = ReadNumber(b, ref j);
+                var cmp = numB.CompareTo(numA);
+                if (cmp != 0)
+                {
+                    return cmp;
+                }
+            }
+            else if (!aIsDigit && !bIsDigit)
+            {
+                var startA = i;
+                while (i < a.Length && !char.IsAsciiDigit(a[i]))
+                {
+                    i++;
+                }
+
+                var startB = j;
+                while (j < b.Length && !char.IsAsciiDigit(b[j]))
+                {
+                    j++;
+                }
+
+                var cmp = MemoryExtensions.CompareTo(
+                    b.AsSpan(startB, j - startB),
+                    a.AsSpan(startA, i - startA),
+                    StringComparison.OrdinalIgnoreCase
+                );
+                if (cmp != 0)
+                {
+                    return cmp;
+                }
+            }
+            else
+            {
+                // Digits sort before non-digits in descending order.
+                return aIsDigit ? -1 : 1;
+            }
+        }
+
+        return (b.Length - j).CompareTo(a.Length - i);
+
+        static long ReadNumber(string s, ref int index)
+        {
+            long value = 0;
+            while (index < s.Length && char.IsAsciiDigit(s[index]))
+            {
+                value = (value * 10) + (s[index] - '0');
+                index++;
+            }
+
+            return value;
+        }
+    }
+
     private ListItem CreateProjectListItem(UnityProject project, List<UnityProject> missing)
     {
         var defaultCommand = new OpenUnityCommand(project);
 
-        var contextCommands = new List<IContextItem>
+        var contextCommands = new List<IContextItem>();
+
+        if (project.Exists)
         {
-            new CommandContextItem(new OpenExplorerCommand(project))
+            contextCommands.Add(
+                new CommandContextItem(new OpenExplorerCommand(project))
+                {
+                    RequestedShortcut = KeyChordHelpers.FromModifiers(
+                        ctrl: true,
+                        shift: true,
+                        vkey: VirtualKey.E
+                    ),
+                }
+            );
+            contextCommands.Add(
+                new CommandContextItem(OpenInConsoleCommand.FromDirectory(project.Path))
+                {
+                    RequestedShortcut = KeyChordHelpers.FromModifiers(
+                        ctrl: true,
+                        shift: true,
+                        vkey: VirtualKey.R
+                    ),
+                }
+            );
+        }
+
+        contextCommands.Add(
+            new CommandContextItem(new CopyPathCommand(project.Path))
             {
-                Title = "Open in File Explorer",
-            },
-        };
+                RequestedShortcut = KeyChordHelpers.FromModifiers(
+                    ctrl: true,
+                    shift: true,
+                    vkey: VirtualKey.C
+                ),
+            }
+        );
 
         // Only Hub 4 (hub.db) entries can be removed; Hub 3 JSON is never written.
         if (project.FromHubDb)
@@ -104,6 +291,11 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
                 )
                 {
                     IsCritical = true,
+                    RequestedShortcut = KeyChordHelpers.FromModifiers(
+                        ctrl: true,
+                        shift: true,
+                        vkey: VirtualKey.Delete
+                    ),
                 }
             );
 
@@ -147,7 +339,7 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
             Subtitle = project.Exists ? displayPath : $"{displayPath}  (folder not found)",
             Icon = project.Exists ? Resources.IconUnity : Resources.IconMissing,
             Tags = tags.ToArray(),
-            Details = BuildDetails(project),
+            Details = _settingsManager.ShowDetails ? BuildDetails(project) : null,
             MoreCommands = contextCommands.ToArray(),
         };
     }

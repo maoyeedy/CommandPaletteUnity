@@ -12,7 +12,7 @@ internal sealed partial class RemoveAllProjectsCommand : InvokableCommand
 {
     public RemoveAllProjectsCommand()
     {
-        Name = "Remove all projects from Unity Hub list";
+        Name = "Remove all projects from Hub list";
         Icon = Resources.IconRemove;
     }
 
