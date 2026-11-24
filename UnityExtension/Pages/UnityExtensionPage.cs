@@ -271,6 +271,10 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
                     ),
                 }
             );
+            if (OpenSolutionCommand.TryFindSolutionFile(project.Path, project.Title) is { } sln)
+            {
+                contextCommands.Add(new CommandContextItem(new OpenSolutionCommand(sln)));
+            }
         }
 
         contextCommands.Add(
@@ -326,6 +330,8 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
                 );
             }
         }
+
+        contextCommands.Add(new CommandContextItem(new OpenUnityHubCommand()));
 
         var tags = new List<Tag>();
         if (project.IsFavorite)

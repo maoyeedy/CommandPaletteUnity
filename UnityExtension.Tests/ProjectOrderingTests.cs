@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Xunit;
 
@@ -109,5 +110,64 @@ public sealed class ProjectOrderingTests
 
         var uri = UnityExtensionPage.TryBuildRepoUri(project);
         Assert.Equal(expected, uri?.AbsoluteUri);
+    }
+
+    [Theory]
+    [InlineData(new string[0], "Title", null)]
+    [InlineData(new[] { "Project-Psyqualogy.sln" }, "Psyqualogy", "Project-Psyqualogy.sln")]
+    [InlineData(new[] { "Other.sln", "CustomTitle.sln" }, "CustomTitle", "CustomTitle.sln")]
+    [InlineData(new[] { "Zeta.sln", "Alpha.slnx" }, "Other", "Alpha.slnx")]
+    [InlineData(new[] { "App.slnx" }, "Other", "App.slnx")]
+    public void Try_find_solution_file_selects_expected_candidate(
+        string[] files,
+        string projectTitle,
+        string? expectedFileName
+    )
+    {
+        var dir = Directory.CreateTempSubdirectory();
+        try
+        {
+            foreach (var file in files)
+            {
+                File.WriteAllText(Path.Combine(dir.FullName, file), string.Empty);
+            }
+
+            var actual = OpenSolutionCommand.TryFindSolutionFile(dir.FullName, projectTitle);
+            var expected = expectedFileName is null
+                ? null
+                : Path.Combine(dir.FullName, expectedFileName);
+            Assert.Equal(expected, actual);
+        }
+        finally
+        {
+            Directory.Delete(dir.FullName, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Try_find_solution_file_prefers_folder_name_when_present()
+    {
+        var dir = Directory.CreateTempSubdirectory();
+        try
+        {
+            var folderMatch = $"{dir.Name}.sln";
+            File.WriteAllText(Path.Combine(dir.FullName, "Alpha.sln"), string.Empty);
+            File.WriteAllText(Path.Combine(dir.FullName, "TitleMatch.sln"), string.Empty);
+            File.WriteAllText(Path.Combine(dir.FullName, folderMatch), string.Empty);
+
+            var actual = OpenSolutionCommand.TryFindSolutionFile(dir.FullName, "TitleMatch");
+            Assert.Equal(Path.Combine(dir.FullName, folderMatch), actual);
+        }
+        finally
+        {
+            Directory.Delete(dir.FullName, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Try_find_solution_file_returns_null_for_missing_directory()
+    {
+        var missing = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        Assert.Null(OpenSolutionCommand.TryFindSolutionFile(missing, "Anything"));
     }
 }

@@ -17,6 +17,9 @@ public static class Resources
     // Segoe Fluent "FolderOpen" glyph -- matches PowerToys Search Apps "Open file location".
     public static IconInfo IconFolder => new("\uE838");
 
+    // Segoe Fluent "Code" glyph.
+    public static IconInfo IconCode => new("\uE943");
+
     // Segoe Fluent "Warning" glyph -- used to flag projects whose folder is gone from disk.
     public static IconInfo IconMissing => new("\uE7BA");
 
