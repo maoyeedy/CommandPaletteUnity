@@ -90,7 +90,7 @@ vendor:
     pwsh -NoLogo -NoProfile -File ./scripts/Init-Vendor.ps1
     exit $LASTEXITCODE
 
-# Refresh the vendor/ checkouts to the latest upstream default branch
+# Refresh the vendor/ checkout at the release matching local PowerToys (or main if not installed)
 [group('setup')]
 vendor-update:
     pwsh -NoLogo -NoProfile -File ./scripts/Init-Vendor.ps1 -Update

@@ -7,7 +7,7 @@ paths:
 
 `vendor/PowerToys/` is reference only, never a build input. Search it with `fd`/`rg` before falling back to `gh api`; every path in the table is materialized locally. Paths are relative to `vendor/PowerToys/src/modules/cmdpal/`.
 
-> `vendor/PowerToys/` tracks upstream `main` and can be ahead of both `Directory.Packages.props` and the installed Command Palette host. Check `(Get-AppxPackage *CommandPalette*).Version` (and `git -C vendor/PowerToys log`) before relying on newly added host features or Adaptive Card inputs.
+> `scripts/Init-Vendor.ps1` pins `vendor/PowerToys/` to the PowerToys release tag matching the installed app (the host ships with it), so this source is what the installed Command Palette runs. The checkout is shallow (`--depth 1`): `git log -S` / `git blame` cannot date a feature; use `gh api repos/microsoft/PowerToys/commits?path=<path>`. Compile-time APIs are gated by the pinned NuGet package in `Directory.Packages.props`, not by this source.
 
 | Path | Read it for |
 |---|---|
