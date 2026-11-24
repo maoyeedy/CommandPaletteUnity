@@ -8,6 +8,8 @@ namespace UnityExtension;
 /// <summary>
 /// Watches a Unity Hub data folder for changes to the project registry (Hub 4 hub.db/hub.db-wal
 /// and Hub 3 projects-v1.json/excludedProjectFolders.json) and invokes a debounced callback.
+/// CmdPal usually auto-hides on focus loss and re-reads on reopen, so this mainly covers
+/// background Hub writes, pinned palettes, or the separate Settings window's "Remove all".
 /// </summary>
 internal sealed partial class HubDataWatcher : IDisposable
 {
