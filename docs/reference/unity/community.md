@@ -21,8 +21,12 @@ License-patching tools for Hub and the Editor are out of scope.
 ## Extra data source
 
 The Editor (not Hub) writes recent projects to HKCU
-`Software\Unity Technologies\Unity Editor 5.x`, values whose name contains
-`RecentlyUsedProjectPaths-`, as NUL-terminated UTF-8 binary. This covers projects missing from Hub.
+`Software\Unity Technologies\Unity Editor 5.x`. Values are named
+`RecentlyUsedProjectPaths-<n>_h<hash>` (observed indices 0..23+, e.g.
+`RecentlyUsedProjectPaths-0_h1085040554`), are REG_BINARY, and hold one NUL-terminated UTF-8 folder
+path with forward slashes (e.g. `C:/Projects/MyGame`). This covers projects missing from Hub.
+The meaning of the `_h` suffix and the recency order of the indices were not verified (observed on
+Hub 4.0.1, 2026-11-24). These entries have no Hub row: no tags, favorite, or remove.
 
 ## Pitfalls seen in their code
 

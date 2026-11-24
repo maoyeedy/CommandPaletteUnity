@@ -26,6 +26,7 @@ Cells:
 - **Warning icon** before the name when the project cannot open. Tooltip:
   > This project can't be opened in the Editor. To proceed, resolve the following issues:
   > - Missing Editor version
+  The install flow can also be opened with a deeplink (see [deeplinks.md](deeplinks.md)).
 - **Tags**: chips. **Branch**: live Git branch, dash without Git.
 
 ## Expanded row

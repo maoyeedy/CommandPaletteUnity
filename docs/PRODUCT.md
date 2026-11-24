@@ -66,3 +66,7 @@ Decided against; don't propose again without new facts.
 | Writing Hub 3 JSON (`projects-v1.json`, `excludedProjectFolders.json`) | Hub 3 is end-of-life; Hub 4 ignores the JSON after migration |
 | Overwriting the timestamp in Hub data | Hub owns it; no user benefit worth a write |
 | Any `hub.db` write other than deleting a `projects` row | Favorites, tags, titles are edited in Hub |
+| Open a project with a different installed editor | Unity projects are version-bound; a mismatched version can upgrade or break the project. Hub's Installs page stays the place to choose editors |
+| List installed editors and their paths inside CmdPal | Duplicates Hub's Installs page and offers no launch action |
+| "Installing <version>" status from `install-state.db` | Transient, usually empty second database; the launcher cannot act on the status, so watching it costs more than the rare state is worth |
+| Project tools: clean, size | `clean` deletes Library/Temp (destructive); `size` needs a slow live scan. Both belong to Hub/the CLI, which stays reference-only |
