@@ -84,6 +84,18 @@ pins:
 hooks:
     git config core.hooksPath .githooks
 
+# Clone the gitignored vendor/ checkouts agents read as upstream source (once per clone)
+[group('setup')]
+vendor:
+    pwsh -NoLogo -NoProfile -File ./scripts/Init-Vendor.ps1
+    exit $LASTEXITCODE
+
+# Refresh the vendor/ checkouts to the latest upstream default branch
+[group('setup')]
+vendor-update:
+    pwsh -NoLogo -NoProfile -File ./scripts/Init-Vendor.ps1 -Update
+    exit $LASTEXITCODE
+
 # Fresh clone / new PC: audit SDKs, tools, hooks and host setup
 [group('setup')]
 [script('pwsh', '-NoLogo', '-NoProfile')]

@@ -15,6 +15,7 @@ Use the `justfile`; `just` lists recipes.
 
 - Each change: `just build`, `just test`; after shell bulk edits `just check` (Claude hooks only cover Edit/Write).
 - After extension code edits: run `just register` automatically (do not ask first) so the live Command Palette session gets the change, and report whether it succeeded, failed, or Command Palette was not running. (`just register` resets release-install settings; dev settings survive.)
+- Upstream source: `just vendor` creates sparse, gitignored `vendor/PowerToys/`; read the Toolkit, extension template and sample pages there instead of `gh api repos/.../contents/...`. `just vendor-update` refreshes it.
 - After a WindowsAppSDK/CsWinRT or packaging change: `just trim`, `just bundle`.
 - New clone or new PC: `just doctor`.
 - MSB3021/MSB3027 "locked by: Unity Extension for Command Palette" = extension is running: `just build <other dir>`; never kill it.

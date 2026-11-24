@@ -42,6 +42,13 @@ winget install --exact --id Microsoft.WinAppCli --source winget
 winget install --exact --id 9P53PC5S0PHJ --source msstore
 ```
 
+### Upstream source
+
+Agents read the Command Palette SDK, Toolkit, extension template and sample pages from a sparse
+local checkout in `vendor/PowerToys/` (gitignored), not through `gh api`. Run `just vendor` once per
+clone; `just vendor-update` refreshes it. The repo URL and the four sparse paths live in
+`scripts/Init-Vendor.ps1` -- add a repo there when agents start consulting another upstream source.
+
 ## Daily loop
 
 All commands are in the root `justfile` ([just](https://just.systems)); `just` lists them.
