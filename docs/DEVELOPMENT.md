@@ -51,6 +51,10 @@ All commands are in the root `justfile` ([just](https://just.systems)); `just` l
 3. `just register` (uninstalls any installed copy first, keeping dev settings but resetting a release install's settings); if Command Palette is running it also reloads extensions via `x-cmdpal://reload` (the first request asks to confirm).
 4. After a WindowsAppSDK, CsWinRT or packaging change: `just trim`, `just bundle`.
 
+Reference-doc helpers (Windows dev-only, read-only, no Unity CLI): `just editors` lists editors from
+the installer registry, `just hubfacts` prints the local Hub facts used in `docs/reference/unity/`,
+and `just docs-check` verifies relative links and heading anchors after doc edits.
+
 Before a release: `just versions`, `just pins`.
 
 For register caveats and loading problems, see

@@ -28,7 +28,7 @@ Manual: https://docs.unity.com/unity-cli (not https://docs.unity.com/en-us/hub/h
 ## Data it reads
 
 - Config: `unity config path` -> `%APPDATA%\UnityHub\user-settings.json` (shared with Hub).
-- **Projects: `hub.db`** (1.0.0): `unity projects --json --all` returns the `hub.db` path set,
+- **Projects: `hub.db`** (1.0.0; see [unityhub/registry.md](unityhub/registry.md)): `unity projects --json --all` returns the `hub.db` path set,
   including projects added after migration that the JSON lacks. Items have no `tags`.
 - **Writes: `projects add` / `remove` change the `hub.db` `projects` row only.** Checked with a dummy
   project while Hub 4 was running: `add` inserts a row, `remove` deletes it (`"removed": true`),

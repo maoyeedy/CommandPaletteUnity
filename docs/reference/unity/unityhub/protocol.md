@@ -1,8 +1,9 @@
-# Unity Hub deeplinks (Windows)
+# Unity Hub protocol (`unityhub://`)
 
 Facts sourced to docs.unity.com or unity.com are official. Facts marked "observed" come from this
 machine's registry, `hubInfo.json` and `logs\info-log.json` (Hub 4.0.1, checked 2026-11-24). The
-extension never runs the Unity CLI; this page is reference only.
+extension never runs the Unity CLI; this page is reference only. Running-Hub filesystem indicators
+live in [configdir.md](configdir.md#running-hub).
 
 ## Editor install: `unityhub://<version>/<changeset>`
 
@@ -10,12 +11,12 @@ extension never runs the Unity CLI; this page is reference only.
 - Hub 4.0.0-beta.2 release notes: a `unityhub://` link installs a custom or pre-release build through
   the normal install flow, lists it beside an official release of the same version, and only accepts
   builds hosted on Unity's own download sites.
-- Observed: `unityhub://6000.3.5f2/3fa8bc678cb0` was logged by `ArgumentParser`, followed by
-  "Editor version 6000.3.5f2 is not installed" and "Loading custom install modal".
-- Observed module form: `unityhub://6000.3.5f1/a1ec4b2f2d19/module=mac-mono` led to a custom install
-  of `mac-mono`. No official page documents this form, so treat it as observed only.
+- Observed: `unityhub://<version>/<changeset>` was logged by `ArgumentParser`, followed by
+  "Editor version <version> is not installed" and "Loading custom install modal".
+- Observed module form: `unityhub://<version>/<changeset>/module=<module>` led to a custom install of
+  that module. No official page documents this form, so treat it as observed only.
 - The link needs a short changeset, not just a version. A `hub.db` project row has a `changeset`
-  field, but it can be empty (see [hub-data.md](hub-data.md)).
+  field, but it can be empty (see [registry.md](registry.md#project-record-fields)).
 
 ## Project and editor operations: `unityhub://editor/...`
 
@@ -27,7 +28,7 @@ extension never runs the Unity CLI; this page is reference only.
 - Official Windows example: `start "" unityhub://editor/project/new`; from C#,
   `Application.OpenURL("unityhub://editor/project/new")`.
 
-## Hub does not need to be open
+## Protocol dispatch and running Hub
 
 The official deeplinking page states: "The user doesn't need to have the Hub open prior to accessing
 the deeplink." The OS protocol dispatch starts it; no running-Hub check is needed before invoking a
@@ -36,13 +37,13 @@ link. Observed details on this machine:
 - `HKCR\unityhub` and `HKCU\Software\Classes\unityhub` carry only the `URL Protocol` marker. The MSIX
   package registers `windows.protocol\unityhub` under AppModel with `ACID` = `app\Unity Hub.exe`.
   There is no classic `shell\open\command` here. `hubInfo.json` holds `executablePath` for the
-  resolved path.
+  resolved path (see [installdir.md](installdir.md)).
 - Invoking a URL while Hub runs logs a second-instance event with `protocolUrlSource: 'sharedData'`
   and "protocol URL forwarded to protocol handler". Normal starts log
-  "deeplink: argv carries no unityhub:// link".
-- `user-settings.json` carries `deeplink.alwaysForwardToSingleEditor = true` here.
-- If a running check is ever needed for another purpose, see [hub-data.md#running-hub](hub-data.md#running-hub):
-  process `Unity Hub.exe`, `hubInfo.json`, and `hub.db-wal` / `logs\hub-gpui-running-*.json`.
+  "deeplink: argv carries no unityhub:// link" (see
+  [running indicators](configdir.md#running-hub)).
+- `user-settings.json` carries `deeplink.alwaysForwardToSingleEditor = true` here; this is a local
+  observation, not a default (see [configdir.md](configdir.md)).
 
 ## Unknowns - do not assume
 

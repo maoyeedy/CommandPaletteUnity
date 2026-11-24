@@ -41,6 +41,24 @@ check:
     dotnet tool restore
     pwsh -NoLogo -NoProfile -File .githooks/pre-commit.ps1 --all-files
 
+# Windows dev-only: editors found in the same registry keys EditorParser reads
+[group('check')]
+editors:
+    pwsh -NoLogo -NoProfile -File ./scripts/Get-UnityEditors.ps1
+    exit $LASTEXITCODE
+
+# Windows dev-only: local Hub facts used by docs/reference/unity (read-only)
+[group('check')]
+hubfacts:
+    pwsh -NoLogo -NoProfile -File ./scripts/Get-HubFacts.ps1
+    exit $LASTEXITCODE
+
+# Windows dev-only: check relative Markdown links and heading anchors
+[group('check')]
+docs-check:
+    pwsh -NoLogo -NoProfile -File ./scripts/Check-DocLinks.ps1
+    exit $LASTEXITCODE
+
 # csproj Version/AssemblyVersion/FileVersion and manifest Identity Version must agree (X.Y.Z / X.Y.Z.0)
 [group('check')]
 [script('pwsh', '-NoLogo', '-NoProfile')]
