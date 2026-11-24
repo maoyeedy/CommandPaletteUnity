@@ -33,7 +33,7 @@ Check `EditorParser`: the project's exact version must be under
 `MSB3021` / `MSB3027` "locked by: Unity Extension for Command Palette" means the extension is running
 inside Command Palette and holds `UnityExtension.exe`. It is not a code error.
 
-Re-register to get a normal build, or compile-check into another folder: `just build <other dir>`.
+Run `just register` (it removes the running registration, runs a normal Debug build, and reloads Command Palette -- do not chain `just build` right after it, as Command Palette immediately relaunches and re-locks `UnityExtension.exe`), or compile-check without registering into another folder: `just build <other dir>`.
 Never kill the running extension just to compile-check. `-p:UseAppHost=false` fails with `NETSDK1067`.
 
 ## Known warnings
