@@ -140,10 +140,11 @@ register:
     Add-AppxPackage -Register $manifest.FullName -ForceUpdateFromAnyVersion
     "Registered $($manifest.FullName)."
     # A remove/re-register leaves the old provider in CmdPal's list until it reloads, so a
-    # second register can look like two extensions. Force that refresh here. This needs
-    # Command Palette running and "Enable external command links" on (default); the first
-    # request asks to confirm unless "Always allow" was chosen.
+    # second register can look like two extensions. Let the old extension process exit and
+    # CmdPal's package-catalog events settle first; reloading too early still sees two
+    # entries. This needs Command Palette running and "Enable external command links" on.
     if (Get-Process Microsoft.CmdPal.UI -ErrorAction SilentlyContinue) {
+        Start-Sleep -Seconds 3
         Start-Process x-cmdpal://reload
         "Sent x-cmdpal://reload; confirm in Command Palette if it asks."
     } else {
