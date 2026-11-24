@@ -228,6 +228,11 @@ public static class ProjectParser
                 LastModified = lastModified,
                 IsFavorite = isFavorite,
                 Tags = tags,
+                RenderPipeline = GetOptionalString(projectInfo, "renderPipeline"),
+                BuildTarget = GetOptionalString(projectInfo, "buildTarget"),
+                VcsProvider = GetOptionalString(projectInfo, "vcsProvider"),
+                GitOrganization = GetOptionalString(projectInfo, "organizationName"),
+                GitRepository = GetOptionalString(projectInfo, "repositoryName"),
                 Exists = SafeDirectoryExists(projectPath),
             };
         }

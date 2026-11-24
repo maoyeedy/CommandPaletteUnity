@@ -14,6 +14,12 @@ internal sealed record UnityProject
     /// <summary>Hub 4 project tags; empty for Hub 3 or untagged projects.</summary>
     public IReadOnlyList<string> Tags { get; init; } = [];
 
+    public string RenderPipeline { get; init; } = string.Empty;
+    public string BuildTarget { get; init; } = string.Empty;
+    public string VcsProvider { get; init; } = string.Empty;
+    public string GitOrganization { get; init; } = string.Empty;
+    public string GitRepository { get; init; } = string.Empty;
+
     /// <summary>
     /// Whether the project's folder still exists on disk. Dead references
     /// (moved/deleted projects still listed by Unity Hub) have this set to false.

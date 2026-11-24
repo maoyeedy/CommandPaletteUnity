@@ -23,7 +23,7 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
         Icon = Resources.IconUnity;
         Title = "Recent Unity Projects";
         Name = "Recent Unity Projects";
-        ShowDetails = false;
+        ShowDetails = true;
         _watcher = new HubDataWatcher(Resources.UnityHubDir, () => RaiseItemsChanged());
     }
 
@@ -147,9 +147,95 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
             Subtitle = project.Exists ? displayPath : $"{displayPath}  (folder not found)",
             Icon = project.Exists ? Resources.IconUnity : Resources.IconMissing,
             Tags = tags.ToArray(),
+            Details = BuildDetails(project),
             MoreCommands = contextCommands.ToArray(),
         };
     }
+
+    private static Details BuildDetails(UnityProject project)
+    {
+        var metadata = new List<IDetailsElement>
+        {
+            TextDetail("Editor", project.Version),
+            TextDetail("Path", project.Path),
+        };
+
+        if (project.Tags.Count > 0)
+        {
+            metadata.Add(
+                new DetailsElement
+                {
+                    Key = "Tags",
+                    Data = new DetailsTags
+                    {
+                        Tags = project.Tags.Select(t => (ITag)new Tag(t)).ToArray(),
+                    },
+                }
+            );
+        }
+
+        if (!string.IsNullOrEmpty(project.GitRepository))
+        {
+            var repoLabel = string.IsNullOrEmpty(project.GitOrganization)
+                ? project.GitRepository
+                : $"{project.GitOrganization}/{project.GitRepository}";
+
+            if (
+                (
+                    string.Equals(project.VcsProvider, "github", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(
+                        project.VcsProvider,
+                        "gitlab",
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
+                && !string.IsNullOrEmpty(project.GitOrganization)
+                && Uri.TryCreate(
+                    $"https://{project.VcsProvider.ToLowerInvariant()}.com/{project.GitOrganization}/{project.GitRepository}",
+                    UriKind.Absolute,
+                    out var repoUri
+                )
+            )
+            {
+                metadata.Add(
+                    new DetailsElement
+                    {
+                        Key = "Repository",
+                        Data = new DetailsLink { Link = repoUri, Text = repoLabel },
+                    }
+                );
+            }
+            else
+            {
+                metadata.Add(TextDetail("Repository", repoLabel));
+            }
+        }
+
+        if (!string.IsNullOrEmpty(project.RenderPipeline))
+        {
+            metadata.Add(TextDetail("Render pipeline", project.RenderPipeline));
+        }
+
+        if (!string.IsNullOrEmpty(project.BuildTarget))
+        {
+            metadata.Add(TextDetail("Build target", project.BuildTarget));
+        }
+
+        return new Details
+        {
+            Title = project.Title,
+            HeroImage = project.Exists ? Resources.IconUnity : Resources.IconMissing,
+            Body = project.Exists ? string.Empty : "Project folder was not found on disk.",
+            Metadata = metadata.ToArray(),
+        };
+    }
+
+    private static DetailsElement TextDetail(string key, string value) =>
+        new()
+        {
+            Key = key,
+            Data = new DetailsTags { Tags = [new Tag(value)] },
+        };
 
     internal static string ShortenHomePath(string path, string? homeDir = null)
     {
