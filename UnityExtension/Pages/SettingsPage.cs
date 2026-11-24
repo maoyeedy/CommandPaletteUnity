@@ -32,24 +32,15 @@ internal sealed partial class SettingsPage : ContentPage
     }
 
     public override IContent[] GetContent() =>
-        [
-            .. _settingsManager.Settings.ToContent(),
-            new MarkdownContent(
-                """
-                ## Danger zone
-
-                Unity Hub has no way to clear its whole project history. This removes every entry from
-                Hub's project list in one step, including projects that are still on disk. Your project
-                folders and files are never touched. Hub 4 only; Hub 3 entries stay untouched.
-                """
-            ),
-            new DangerZoneForm(),
-        ];
+        [.. _settingsManager.Settings.ToContent(), new DangerZoneForm()];
 
     private sealed partial class DangerZoneForm : FormContent
     {
         public DangerZoneForm()
         {
+            // One card keeps the heading, explanation and button aligned with the settings card
+            // above it. The default action style makes the button look like its Save button; the
+            // danger is signalled at the point of commitment by the critical confirm dialog.
             TemplateJson = """
                 {
                   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
@@ -58,15 +49,23 @@ internal sealed partial class SettingsPage : ContentPage
                   "body": [
                     {
                       "type": "TextBlock",
-                      "text": "Clear years of accumulated entries without reinstalling Unity Hub.",
+                      "text": "Danger zone",
+                      "size": "large",
+                      "weight": "bolder",
                       "wrap": true
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "Clears every entry from Hub 4's project list, including ones still on disk. Your project files stay untouched.",
+                      "wrap": true,
+                      "isSubtle": true,
+                      "spacing": "small"
                     }
                   ],
                   "actions": [
                     {
                       "type": "Action.Submit",
                       "title": "Remove all projects from Unity Hub list",
-                      "style": "destructive",
                       "data": { "action": "removeAll" }
                     }
                   ]

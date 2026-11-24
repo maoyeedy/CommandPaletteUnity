@@ -19,9 +19,9 @@ internal sealed partial class RemoveAllProjectsCommand : InvokableCommand
         CommandResult.Confirm(
             new ConfirmationArgs
             {
-                Title = "Remove all projects from Unity Hub list?",
+                Title = "Remove all projects from Unity Hub?",
                 Description =
-                    "Deletes every entry from Unity Hub's project list, including projects that still exist on disk. No project folder or file is deleted. This removes years of history in one step.",
+                    "Clears every entry from Hub's list, including projects still on disk. Your project files stay untouched.",
                 PrimaryCommand = new ConfirmedCommand(),
                 IsPrimaryCommandCritical = true,
             }
@@ -31,7 +31,7 @@ internal sealed partial class RemoveAllProjectsCommand : InvokableCommand
     {
         public ConfirmedCommand()
         {
-            Name = "Remove all";
+            Name = "Remove all projects";
             Icon = Resources.IconRemove;
         }
 
