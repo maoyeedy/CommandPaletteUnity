@@ -249,6 +249,18 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
 
         if (project.Exists)
         {
+            var consoleCommand = OpenInConsoleCommand.FromDirectory(project.Path);
+            consoleCommand.Name = "Open in Console";
+            contextCommands.Add(
+                new CommandContextItem(consoleCommand)
+                {
+                    RequestedShortcut = KeyChordHelpers.FromModifiers(
+                        ctrl: true,
+                        shift: true,
+                        vkey: VirtualKey.R
+                    ),
+                }
+            );
             contextCommands.Add(
                 new CommandContextItem(new OpenExplorerCommand(project))
                 {
@@ -256,16 +268,6 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
                         ctrl: true,
                         shift: true,
                         vkey: VirtualKey.E
-                    ),
-                }
-            );
-            contextCommands.Add(
-                new CommandContextItem(OpenInConsoleCommand.FromDirectory(project.Path))
-                {
-                    RequestedShortcut = KeyChordHelpers.FromModifiers(
-                        ctrl: true,
-                        shift: true,
-                        vkey: VirtualKey.R
                     ),
                 }
             );
@@ -281,6 +283,19 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
                 ),
             }
         );
+
+        if (TryBuildRepoUri(project) is { } repoUri)
+        {
+            contextCommands.Add(
+                new CommandContextItem(
+                    new OpenUrlCommand(repoUri.AbsoluteUri)
+                    {
+                        Name = RepoCommandName(project.VcsProvider),
+                        Icon = Resources.IconUrl,
+                    }
+                )
+            );
+        }
 
         // Only Hub 4 (hub.db) entries can be removed; Hub 3 JSON is never written.
         if (project.FromHubDb)
@@ -372,22 +387,7 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
                 ? project.GitRepository
                 : $"{project.GitOrganization}/{project.GitRepository}";
 
-            if (
-                (
-                    string.Equals(project.VcsProvider, "github", StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(
-                        project.VcsProvider,
-                        "gitlab",
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                )
-                && !string.IsNullOrEmpty(project.GitOrganization)
-                && Uri.TryCreate(
-                    $"https://{project.VcsProvider.ToLowerInvariant()}.com/{project.GitOrganization}/{project.GitRepository}",
-                    UriKind.Absolute,
-                    out var repoUri
-                )
-            )
+            if (TryBuildRepoUri(project) is { } repoUri)
             {
                 metadata.Add(
                     new DetailsElement
@@ -427,6 +427,53 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
             Key = key,
             Data = new DetailsTags { Tags = [new Tag(value)] },
         };
+
+    internal static Uri? TryBuildRepoUri(UnityProject project)
+    {
+        if (
+            !string.Equals(project.VcsProvider, "github", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(project.VcsProvider, "gitlab", StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            return null;
+        }
+
+        if (
+            !IsSafeRepoSegment(project.GitOrganization) || !IsSafeRepoSegment(project.GitRepository)
+        )
+        {
+            return null;
+        }
+
+        var url =
+            $"https://{project.VcsProvider.ToLowerInvariant()}.com/{project.GitOrganization}/{project.GitRepository}";
+        return Uri.TryCreate(url, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps
+            ? uri
+            : null;
+    }
+
+    private static bool IsSafeRepoSegment(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value.Contains("://", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        foreach (var c in value)
+        {
+            if (char.IsWhiteSpace(c) || c is ':' or '?' or '#')
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static string RepoCommandName(string vcsProvider) =>
+        string.Equals(vcsProvider, "gitlab", StringComparison.OrdinalIgnoreCase)
+            ? "Open on GitLab"
+            : "Open on GitHub";
 
     internal static string ShortenHomePath(string path, string? homeDir = null)
     {

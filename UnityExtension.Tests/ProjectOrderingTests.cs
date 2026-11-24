@@ -77,4 +77,37 @@ public sealed class ProjectOrderingTests
         );
         Assert.Equal(expectedTitles, ordered.Select(p => p.Title));
     }
+
+    [Theory]
+    [InlineData(
+        "github",
+        "Unity-Technologies",
+        "Example",
+        "https://github.com/Unity-Technologies/Example"
+    )]
+    [InlineData("GitLab", "my-org", "my-repo", "https://gitlab.com/my-org/my-repo")]
+    [InlineData("github", "git://example.com/org", "repo", null)]
+    [InlineData("github", "org", "git://example.com/repo", null)]
+    [InlineData("github", "git@github.com:org", "repo", null)]
+    [InlineData("bitbucket", "org", "repo", null)]
+    [InlineData("", "org", "repo", null)]
+    [InlineData("github", "", "repo", null)]
+    [InlineData("github", "org", "", null)]
+    public void Try_build_repo_uri_validates_https_provider_and_segments(
+        string provider,
+        string org,
+        string repo,
+        string? expected
+    )
+    {
+        var project = new UnityProject
+        {
+            VcsProvider = provider,
+            GitOrganization = org,
+            GitRepository = repo,
+        };
+
+        var uri = UnityExtensionPage.TryBuildRepoUri(project);
+        Assert.Equal(expected, uri?.AbsoluteUri);
+    }
 }
