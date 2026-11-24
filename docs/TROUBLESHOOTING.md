@@ -2,7 +2,7 @@
 
 ## Extension not visible
 
-Check PowerToys, Command Palette, package install, manifest registration, CLSID consistency.
+Check Command Palette (runs standalone; PowerToys need not be open), package install, manifest registration, CLSID consistency.
 
 ## Changes not showing
 
@@ -33,8 +33,8 @@ Check `EditorParser`: the project's exact version must be under
 `MSB3021` / `MSB3027` "locked by: Unity Extension for Command Palette" means the extension is running
 inside Command Palette and holds `UnityExtension.exe`. It is not a code error.
 
-Close or unregister the extension (`winapp unregister`) for a normal build, or compile-check into
-another folder: `just build <other dir>`. `-p:UseAppHost=false` fails with `NETSDK1067`.
+Re-register to get a normal build, or compile-check into another folder: `just build <other dir>`.
+Never kill the running extension just to compile-check. `-p:UseAppHost=false` fails with `NETSDK1067`.
 
 ## Known warnings
 

@@ -17,8 +17,7 @@ Use the `justfile`; `just` lists recipes.
 - New clone or new PC: `just doctor`.
 - MSB3021/MSB3027 "locked by: Unity Extension for Command Palette" = extension is running: `just build <other dir>`; never kill it.
 - Tests cover `ProjectParser` and `HubDatabase` only (the WAL test needs `pwsh`); UI and commands need a manual check in Command Palette (`just register`).
-- `just register` replaces the installed copy (dev settings kept, release settings reset) and auto-reloads a running CmdPal.
-- A duplicate `Unity Projects` entry after registering is CmdPal's cache, not a second install; Reload clears it.
+- `just register` resets release-install settings; dev settings survive.
 - Push to `master` needs passing CI; land changes through a PR, direct pushes are rejected.
 
 ## Invariants
@@ -28,6 +27,7 @@ Use the `justfile`; `just` lists recipes.
 - Trim/AOT-safe code, no reflection unless an upstream API needs it; keep `sealed partial` where generators need it.
 - Package versions only in `Directory.Packages.props`; `just pins` passes (shared packages <= PowerToys' pins).
 - `ProjectParser` swallows exceptions and returns an empty list on failure.
+- Settings and palette are separate windows: `CommandResult.Confirm` shows only in the palette, so settings actions confirm inline in their Adaptive Card.
 - Hub data: the only writes delete `projects` rows in `hub.db` via `HubDatabase` (one or all); nothing else under `%APPDATA%\UnityHub`. Never read `accounts.db`, never log or show raw project-record JSON.
 - Never run, require or bundle the Unity CLI (`unity`); `docs/reference/unity/cli.md` is reference only.
 - No Markdown under `UnityExtension/`.

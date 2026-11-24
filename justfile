@@ -100,14 +100,14 @@ doctor:
     Check 'Unity Hub projects-v1.json' (Test-Path "$env:APPDATA\UnityHub\projects-v1.json") 'install Unity Hub and add a project' -Optional
     if ($missing) { "$missing required item(s) missing"; exit 1 }
 
-# Debug build + dev registration into Command Palette; then run Command Palette's Reload
+# Debug build + dev registration into Command Palette, then reload its extensions
 [group('deploy')]
 [script('pwsh', '-NoLogo', '-NoProfile')]
 register:
     $ErrorActionPreference = 'Stop'
     # Uninstall first: a release install blocks -Register (0x80073CFB), and a running dev
-    # registration locks bin/ (MSB3021). Removal also stops the extension, so PowerToys can stay
-    # open. Dev data (settings) is kept; a release install's settings are not.
+    # registration locks bin/ (MSB3021). Removal also stops the extension, so Command Palette can
+    # stay open. Dev data (settings) is kept; a release install's settings are not.
     foreach ($installed in @(Get-AppxPackage YidiMao.CommandPalette-Unity)) {
         if ($installed.IsDevelopmentMode) {
             $kind = 'dev registration'
