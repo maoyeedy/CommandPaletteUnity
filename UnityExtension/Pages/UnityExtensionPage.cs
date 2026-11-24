@@ -12,9 +12,10 @@ using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace UnityExtension;
 
-internal sealed partial class UnityExtensionPage : ListPage
+internal sealed partial class UnityExtensionPage : ListPage, IDisposable
 {
     private readonly SettingsManager _settingsManager;
+    private readonly HubDataWatcher _watcher;
 
     public UnityExtensionPage(SettingsManager settingsManager)
     {
@@ -23,7 +24,10 @@ internal sealed partial class UnityExtensionPage : ListPage
         Title = "Recent Unity Projects";
         Name = "Recent Unity Projects";
         ShowDetails = false;
+        _watcher = new HubDataWatcher(Resources.UnityHubDir, () => RaiseItemsChanged());
     }
+
+    public void Dispose() => _watcher.Dispose();
 
     public override IListItem[] GetItems()
     {

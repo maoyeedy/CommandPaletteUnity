@@ -58,7 +58,7 @@ For register caveats and loading problems, see
 
 ## Test
 
-`UnityExtension.Tests` (xUnit) covers `ProjectParser` and `HubDatabase` only (the WAL test needs
+`UnityExtension.Tests` (xUnit) covers `ProjectParser`, `HubDatabase`, and `HubDataWatcher` (the WAL test needs
 `pwsh`). Check UI and commands by hand in Command Palette;
 [PRODUCT.md](PRODUCT.md#current-behavior) lists the expected behavior.
 
