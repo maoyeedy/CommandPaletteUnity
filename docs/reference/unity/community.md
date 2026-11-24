@@ -1,7 +1,7 @@
 # Community launchers and mods
 
 Lessons from third-party Hub projects. They predate Hub 4, so none of them reads `hub.db`. Reviewed
-2026-11-18, read-only.
+read-only 2026-11-18; the registry detail below was observed on Hub 4.0.1, 2026-11-24.
 
 | Project | Stack | Takeaway |
 |---|---|---|
@@ -25,8 +25,8 @@ The Editor (not Hub) writes recent projects to HKCU
 `RecentlyUsedProjectPaths-<n>_h<hash>` (observed indices 0..23+, e.g.
 `RecentlyUsedProjectPaths-0_h1085040554`), are REG_BINARY, and hold one NUL-terminated UTF-8 folder
 path with forward slashes (e.g. `C:/Projects/MyGame`). This covers projects missing from Hub.
-The meaning of the `_h` suffix and the recency order of the indices were not verified (observed on
-Hub 4.0.1, 2026-11-24). These entries have no Hub row: no tags, favorite, or remove.
+The meaning of the `_h` suffix and the recency order of the indices were not verified. These entries
+have no Hub row: no tags, favorite, or remove.
 
 ## Pitfalls seen in their code
 

@@ -1,5 +1,7 @@
 # Dev-only, read-only: print the local Hub facts used in docs/reference/unity.
 # Does not start Unity Hub, run the Unity CLI, or modify the registry.
+# Output is masked to the placeholders used in the docs: no real paths, project
+# names, hashes or package identities are printed. Do not paste raw local values into docs.
 $ErrorActionPreference = 'Stop'
 
 function Show-Section([string]$title) {
@@ -14,15 +16,17 @@ $infoPath = Join-Path $hubDir 'hubInfo.json'
 if (Test-Path -LiteralPath $infoPath) {
     $info = Get-Content -LiteralPath $infoPath -Raw | ConvertFrom-Json
     "version       = $($info.version)"
-    "executablePath= $($info.executablePath)"
+    "executablePath= <hub package>\app\Unity Hub.exe"
 } else {
-    "No $infoPath"
+    'No hubInfo.json in %APPDATA%\UnityHub'
 }
 
 Show-Section 'Running Hub process'
 $hubProcesses = @(Get-CimInstance Win32_Process -Filter "Name = 'Unity Hub.exe'" -ErrorAction SilentlyContinue)
 if ($hubProcesses) {
-    $hubProcesses | Select-Object ProcessId, ExecutablePath, CommandLine | Format-List
+    "process count = $($hubProcesses.Count)"
+    'process name  = Unity Hub.exe'
+    'executable    = <hub package>\app\Unity Hub.exe (path and command line masked)'
 } else {
     'Not running'
 }
@@ -43,9 +47,9 @@ if (Test-Path -LiteralPath $marker) {
 }
 $protocolRoot = 'Registry::HKEY_CLASSES_ROOT\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppModel\PackageRepository\Extensions\windows.protocol\unityhub'
 if (Test-Path -LiteralPath $protocolRoot) {
+    'AppModel windows.protocol\unityhub key = present'
     Get-ChildItem -LiteralPath $protocolRoot -Recurse | ForEach-Object {
-        "AppModel key = $($_.Name)"
-        foreach ($name in $_.Property) { "  $name = $($_.GetValue($name))" }
+        "  AppModel properties = $(@($_.Property).Count) (names and values masked)"
     }
 } else {
     'No AppModel windows.protocol\unityhub key'
@@ -56,14 +60,10 @@ $editorKeyPath = 'Registry::HKEY_CURRENT_USER\Software\Unity Technologies\Unity 
 if (Test-Path -LiteralPath $editorKeyPath) {
     $key = Get-Item -LiteralPath $editorKeyPath
     $names = @($key.GetValueNames() | Where-Object { $_ -like 'RecentlyUsedProjectPaths-*' } | Select-Object -First 3)
+    "recent project values = $($names.Count)"
     foreach ($name in $names) {
-        $bytes = $key.GetValue($name)
-        $path = if ($bytes -is [byte[]]) {
-            ([Text.Encoding]::UTF8.GetString($bytes) -split "`0" | Where-Object { $_ } | Select-Object -First 1)
-        } else {
-            "$($bytes.GetType().Name) value"
-        }
-        "$name = $path"
+        $maskedName = $name -replace '_h.*$', '_h<hash>'
+        "  $maskedName = <project>"
     }
 } else {
     'No Unity Editor 5.x registry key'
@@ -74,7 +74,7 @@ $secondaryPath = Join-Path $hubDir 'secondaryInstallPath.json'
 if (Test-Path -LiteralPath $secondaryPath) {
     $value = (Get-Content -LiteralPath $secondaryPath -Raw).Trim('"')
     if ($value) {
-        "secondaryInstallPath = $value"
+        'secondaryInstallPath = <install dir> (set)'
     } else {
         "secondaryInstallPath = '' (default: %ProgramFiles%\Unity\Hub\Editor)"
     }

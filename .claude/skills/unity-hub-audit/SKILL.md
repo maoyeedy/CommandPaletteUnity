@@ -6,9 +6,8 @@ description: >-
 
 # Unity Hub / CLI audit
 
-Goal: find what changed in Hub and CLI behavior since the last audit, prove it, and update
-`docs/reference/unity/` (README, unityhub/{protocol,registry,configdir,installdir}, hub-ui, cli,
-community, rea) and
+Goal: find what changed in Hub and CLI behavior since the last audit, prove it, and update the files
+listed in the table in `docs/reference/unity/README.md` (the index for `docs/reference/unity/`) and
 `references/baseline.json`. For database schemas, follow the recipe in `docs/reference/unity/rea.md`.
 
 ## 1. Snapshot and diff
@@ -43,13 +42,14 @@ user's data (project/editor counts, presence counts moving together). Look for:
   copy of `hub.db`. Never write to `hub.db`, `projects-v1.json` or run mutating CLI commands
   (`projects pin/add/remove`) on real data without asking: they change the user's Hub state.
 - Items listed under "Unverified" in `cli.md`: retry them when the version changes.
-- Quick local facts: `just hubfacts` and `just editors` are read-only Windows helpers in `scripts/`;
-  `just docs-check` verifies links after the edits.
+- Quick local facts: `just hubfacts` (masked output) and `just editors` are read-only Windows helpers
+  in `scripts/`; `just docs-check` verifies link syntax and anchors, not semantics, after the edits.
 
 ## 3. Update the docs
 
-- Edit facts in place; state the versions a fact was observed on when behavior differs by version
-  (keep the old behavior if users may still run it). Update the version table in README.md.
+- Edit facts in place. Use "Observed on <product> <version>, <YYYY-MM-DD>" for locally observed
+  facts, with the date of the observation; keep old behavior if users may still run it. State a
+  version only once per file where possible and point elsewhere to the version table in README.md.
 - The docs are public: use `<user>`, `<project>`, `<version>` placeholders, no real paths, project,
   org, account or machine names, no OS or editor build details.
 - Revisit the scope decisions in `docs/PRODUCT.md` if the data source answer changed.

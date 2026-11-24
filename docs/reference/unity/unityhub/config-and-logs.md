@@ -1,14 +1,14 @@
 # Unity Hub config folder (`%APPDATA%\UnityHub`)
 
 JSON preferences, logs and caches live here. The project database is in [registry.md](registry.md),
-install locations in [installdir.md](installdir.md), and `unityhub://` links in
+install locations in [install-locations.md](install-locations.md), and `unityhub://` links in
 [protocol.md](protocol.md). Paths use `<user>`, `<version>` and `<hub package>` placeholders.
 
 ## JSON files
 
 | File | Shape | Role |
 |---|---|---|
-| `projects-v1.json` | `{"schema_version":"v1","data":{"<path>":{...}}}` | *Legacy* project registry, no `tags`. Hub 4 imports it once and never writes it again; the CLI 1.0.x still reads it as a Hub 3 fallback (observed on 1.0.0). See [registry.md](registry.md) and [PRODUCT.md](../../../PRODUCT.md#scope-decisions) |
+| `projects-v1.json` | `{"schema_version":"v1","data":{"<path>":{...}}}` | *Legacy* project registry, no `tags`. Hub 4 imports it once and never writes it again; the CLI fallback is in [registry.md](registry.md#schema-and-behavior). See also [PRODUCT.md](../../../PRODUCT.md#scope-decisions) |
 | `excludedProjectFolders.json` | `{"schema_version":"1","data":["<path>"]}` | Paths Hub has removed from the list. The extension does not write this file |
 | `projectsInfo.json` | `{"<path>":{"cliArgs":"..."}}` | Extra editor arguments per project |
 | `projectDir.json` | `{"directoryPath":"..."}` | Last folder used by Add / New project |
@@ -22,7 +22,7 @@ install locations in [installdir.md](installdir.md), and `unityhub://` links in
 | `cli-plugin-registry.json`, `cli-skill-installs.json`, `cli-update-check.json` | | Unity CLI state |
 | one-flag files | `hideHubOnEditorOpen`, `skipRemoveConfirmation`, `themeSetting`, `languageConfig`, `dismissedBanners`, ... | One preference each |
 
-Editor-install and download preferences are in [installdir.md](installdir.md).
+Editor-install and download preferences are in [install-locations.md](install-locations.md).
 
 ## Folders
 

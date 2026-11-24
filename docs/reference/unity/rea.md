@@ -44,8 +44,9 @@ Unity Mono/IL2CPP detection (that is for games, not the Hub).
 2. `npx -y rea-agents@latest inspect-sqlite-database <copy> --schema-scope database --json > <copy>.json`
 3. Compare `schema.tables[].sql` with [registry.md](unityhub/registry.md) and update it.
 
-Last run 2026-11-18 against Hub 4.0.x: matches `unityhub/registry.md`. The only addition was the
-`writer_kind` column.
+Last run 2026-11-18 against Hub 4.0.0 (baseline `hubVersion: 4.0.0`): matches
+[registry.md](unityhub/registry.md). The only addition was the `writer_kind` column. Re-run after
+the 4.0.1 upgrade before relying on the schema as current.
 
 ## Safety
 
