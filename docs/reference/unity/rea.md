@@ -14,10 +14,28 @@ Needs Node 22.23.4+, 24.22.1+ or 26.12.1+. Run with `npx -y rea-agents@latest <c
 | `inspect-rust-binary` | Crate names and versions in `Unity Hub.exe` / `unity.exe` | Only reads `cargo-auditable` metadata. No result does not mean a crate is missing |
 | `inspect-pe-imports`, `inspect-native-exports` | Which system DLLs Hub and the CLI link | Bundled SQLite does not show up |
 | `capabilities` | Lists which providers are installed | Run first |
-| `list_strings`, `search_strings` (MCP, via Ghidra) | Find file names, SQL, JSON keys and flags inside the binaries | Needs Ghidra 12.1+ and JDK 21+. Windows PE support is marked experimental |
 
 Not useful here: the JS/Electron analyzers (Hub 4 is native Rust; they only fit Hub 3), and the
 Unity Mono/IL2CPP detection (that is for games, not the Hub).
+
+## Rejected: deep native analysis
+
+`list_strings` / `search_strings` (MCP via Ghidra) and the pseudocode/decompile tools (`analyze`,
+`function`, `trace`) are **rejected, not deferred**. This is not a "look back if we need it" option:
+
+- **No source to recover.** `unity.exe` is an optimized native Rust binary. Ghidra can return
+  strings and pseudocode, never readable Rust source.
+- **The facts we would dig for are already covered.** Crates and DLL links come from the standalone
+  tools above; the data the extension cares about lives in `hub.db`, inspected directly with
+  `inspect-sqlite-database`.
+- **The CLI is observable without RE.** It has a stable, documented output contract
+  (`--format json`, `unity commands --format tsv`; see [cli.md](cli.md)). Checking behavior from
+  its output is cheaper and more reliable than reading disassembly.
+- **Cost without payoff.** Ghidra 12.1+ and JDK 21+ are extra setup and Windows PE support is
+  marked experimental. The remaining open questions in `cli.md` (for example, which store
+  `projects pin` writes) are better answered by running the CLI on a dummy project and diffing
+  `%APPDATA%\UnityHub`.
+- **Runtime tools stay off-limits** (see [Safety](#safety)).
 
 ## Recipe: refresh the database schema
 
