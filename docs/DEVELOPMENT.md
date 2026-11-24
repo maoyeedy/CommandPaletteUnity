@@ -63,7 +63,7 @@ For register caveats and loading problems, see
 
 ## Test
 
-`UnityExtension.Tests` (xUnit) covers `ProjectParser`, `HubDatabase`, and `HubDataWatcher` (the WAL test needs
+`UnityExtension.Tests` (xUnit) covers `ProjectParser`, `HubDatabase`, `HubDataWatcher`, path shortening, and Hub install URI validation (the WAL test needs
 `pwsh`). Check UI and commands by hand in Command Palette;
 [PRODUCT.md](PRODUCT.md#current-behavior) lists the expected behavior.
 

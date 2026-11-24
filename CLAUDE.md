@@ -18,7 +18,7 @@ Use the `justfile`; `just` lists recipes.
 - After a WindowsAppSDK/CsWinRT or packaging change: `just trim`, `just bundle`.
 - New clone or new PC: `just doctor`.
 - MSB3021/MSB3027 "locked by: Unity Extension for Command Palette" = extension is running: `just build <other dir>`; never kill it.
-- Tests cover `ProjectParser`, `HubDatabase`, and `HubDataWatcher` (the WAL test needs `pwsh`); UI and commands need a manual check in Command Palette after `just register`.
+- Tests cover `ProjectParser`, `HubDatabase`, `HubDataWatcher`, path shortening, and Hub install URI validation (the WAL test needs `pwsh`); UI and commands need a manual check in Command Palette after `just register`.
 - Commit on a branch, not `master` (even for docs-only changes). Stop and ask before opening or merging a PR: the user may have follow-up changes.
 - Push to `master` needs passing CI; land changes through a PR, direct pushes are rejected.
 
@@ -32,6 +32,7 @@ Use the `justfile`; `just` lists recipes.
 - Settings and palette are separate windows: `CommandResult.Confirm` shows only in the palette, so settings actions confirm inline in their Adaptive Card.
 - Hub data: the only writes delete `projects` rows in `hub.db` via `HubDatabase` (one or all); nothing else under `%APPDATA%\UnityHub`. Never read `accounts.db`, never log or show raw project-record JSON.
 - Never run, require or bundle the Unity CLI (`unity`); `docs/reference/unity/cli.md` is reference only.
+- Details pane metadata: use `DetailsTags` (`[new Tag(value)]`) for plain-text rows and `DetailsLink` only with a valid absolute `Uri` (avoids null-`Uri` WinRT marshaling issues).
 - No Markdown under `UnityExtension/`.
 
 ## Context7 IDs
