@@ -4,7 +4,8 @@ The dev loop: setup, build, test, debug. Each other topic has one home:
 
 | Topic | File |
 |---|---|
-| Scope, UX, roadmap | [PRODUCT.md](PRODUCT.md) |
+| Scope, UX | [PRODUCT.md](PRODUCT.md) |
+| Roadmap | [ROADMAP.md](ROADMAP.md) |
 | Unity Hub / CLI data formats | [reference/unity/](reference/unity/README.md) |
 | NuGet, tool, hook and Windows SDK updates | [DEPENDENCIES.md](DEPENDENCIES.md) |
 | Packaging, signing, releases, Store | [PUBLISHING.md](PUBLISHING.md) |

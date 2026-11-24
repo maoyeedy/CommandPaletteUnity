@@ -6,7 +6,7 @@ Command Palette extension: lists Unity Hub projects (`%APPDATA%\UnityHub\hub.db`
 
 Priorities: runs reliably, then easy to develop and maintain. Package size and dependency count are not concerns: prefer a maintained library over hand-written interop.
 
-Read before acting: `docs/PRODUCT.md` (scope, UX, roadmap), `docs/DEPENDENCIES.md` (updates), `docs/TROUBLESHOOTING.md` (errors, known warnings).
+Read before acting: `docs/PRODUCT.md` (scope, UX), `docs/ROADMAP.md` (roadmap), `docs/DEPENDENCIES.md` (updates), `docs/TROUBLESHOOTING.md` (errors, known warnings).
 Read only when the topic comes up: `docs/DEVELOPMENT.md` (setup, dev loop, doc map), `docs/PUBLISHING.md` (packaging, signing, Store).
 
 ## Commands

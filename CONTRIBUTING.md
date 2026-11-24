@@ -1,6 +1,7 @@
 # Contributing to Command Palette (CmdPal) Unity Extension
 
-1. Read [`docs/PRODUCT.md`](docs/PRODUCT.md) (what the extension should do) and
+1. Read [`docs/PRODUCT.md`](docs/PRODUCT.md) (what the extension should do),
+   [`docs/ROADMAP.md`](docs/ROADMAP.md) (what's next) and
    [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) (setup, daily loop, code rules).
 2. Keep changes small and focused.
 3. Run `just build`, `just test`, `just check`, and try the change in PowerToys (`just register`).

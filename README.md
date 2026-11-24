@@ -31,6 +31,6 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`docs/DEVELOPMENT.md`](docs/DEVELO
 
 ## Features and roadmap
 
-See [`docs/PRODUCT.md`](docs/PRODUCT.md).
+See [`docs/PRODUCT.md`](docs/PRODUCT.md) for features and [`docs/ROADMAP.md`](docs/ROADMAP.md) for what's next.
 
 [^1]: Not affiliated with Unity Technologies. This extension uses local Unity Hub data only; its one write is removing a project from Hub's list when you ask.
