@@ -4,6 +4,20 @@ using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace UnityExtension;
 
+/// <summary>
+/// Exposes our settings page through provider.Settings, so CmdPal shows it as the extension's
+/// real settings page rather than a second top-level command.
+/// </summary>
+internal sealed partial class ExtensionSettings : ICommandSettings
+{
+    public ExtensionSettings(SettingsManager settingsManager)
+    {
+        SettingsPage = new SettingsPage(settingsManager);
+    }
+
+    public IContentPage SettingsPage { get; }
+}
+
 internal sealed partial class SettingsPage : ContentPage
 {
     private readonly SettingsManager _settingsManager;
@@ -14,6 +28,7 @@ internal sealed partial class SettingsPage : ContentPage
         Icon = new IconInfo("\uE713");
         Title = "Settings";
         Name = "Settings";
+        _settingsManager.Settings.SettingsChanged += (_, _) => RaiseItemsChanged();
     }
 
     public override IContent[] GetContent() =>
