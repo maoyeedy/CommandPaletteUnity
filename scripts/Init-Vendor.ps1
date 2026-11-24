@@ -17,6 +17,10 @@ $repos = @(
             'src/modules/cmdpal/extensionsdk/Microsoft.CommandPalette.Extensions.Toolkit'
             'src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension'
             'src/modules/cmdpal/ext/SamplePagesExtension'
+            'src/modules/cmdpal/ext/Microsoft.CmdPal.Ext.Apps'
+            'src/modules/cmdpal/Microsoft.CmdPal.Common'
+            'src/modules/cmdpal/Microsoft.CmdPal.UI'
+            'src/modules/cmdpal/Microsoft.CmdPal.UI.ViewModels'
         )
     }
 )
