@@ -54,7 +54,7 @@ internal sealed partial class SettingsPage : ContentPage
                 },
                 {
                   "type": "TextBlock",
-                  "text": "Clears Hub 4's project list. No files or folders are deleted.",
+                  "text": "Clears the Unity Hub v4 project list. No files or folders are deleted.",
                   "wrap": true,
                   "isSubtle": true,
                   "spacing": "small"
@@ -63,7 +63,7 @@ internal sealed partial class SettingsPage : ContentPage
               "actions": [
                 {
                   "type": "Action.Submit",
-                  "title": "Remove all projects from Hub list",
+                  "title": "Remove all projects from Unity Hub",
                   "data": { "action": "removeAll" }
                 }
               ]
@@ -85,7 +85,7 @@ internal sealed partial class SettingsPage : ContentPage
                 },
                 {
                   "type": "TextBlock",
-                  "text": "Clears all projects from Hub's list. No files or folders are deleted.",
+                  "text": "Clears all projects from the Unity Hub v4 project list. No files or folders are deleted.",
                   "color": "attention",
                   "wrap": true,
                   "spacing": "small"

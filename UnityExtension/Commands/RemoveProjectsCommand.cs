@@ -20,7 +20,9 @@ internal sealed partial class RemoveProjectsCommand : InvokableCommand
         _projects = projects;
         _onRemoved = onRemoved;
         Name =
-            projects.Count == 1 ? "Remove from Hub list" : $"Remove all missing ({projects.Count})";
+            projects.Count == 1
+                ? "Remove from Unity Hub"
+                : $"Remove all missing ({projects.Count})";
         Icon = Resources.IconRemove;
     }
 
@@ -28,13 +30,13 @@ internal sealed partial class RemoveProjectsCommand : InvokableCommand
     {
         var description =
             _projects.Count == 1
-                ? $"{_projects[0].Title}\n{_projects[0].Path}\n\nRemoves the entry from Unity Hub's project list. The project folder is not deleted."
-                : $"Removes {_projects.Count} projects whose folders are gone from Unity Hub's project list.";
+                ? $"{_projects[0].Title}\n{_projects[0].Path}\n\nRemoves the entry from Unity Hub. The project folder is not deleted."
+                : $"Removes {_projects.Count} projects whose folders are gone from Unity Hub.";
 
         return CommandResult.Confirm(
             new ConfirmationArgs
             {
-                Title = _projects.Count == 1 ? "Remove from Hub list?" : $"{Name}?",
+                Title = _projects.Count == 1 ? "Remove from Unity Hub?" : $"{Name}?",
                 Description = description,
                 PrimaryCommand = new ConfirmedCommand(_projects, _onRemoved),
                 IsPrimaryCommandCritical = true,
@@ -65,8 +67,8 @@ internal sealed partial class RemoveProjectsCommand : InvokableCommand
                 removed == _projects.Count
                     ? (
                         removed == 1
-                            ? $"Removed {_projects[0].Title} from Unity Hub's list"
-                            : $"Removed {removed} projects from Unity Hub's list"
+                            ? $"Removed {_projects[0].Title} from Unity Hub"
+                            : $"Removed {removed} projects from Unity Hub"
                     )
                     : $"Removed {removed} of {_projects.Count}. Unity Hub may be busy; try again.";
 

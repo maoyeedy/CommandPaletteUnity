@@ -63,7 +63,7 @@ internal sealed class SettingsManager : JsonSettingsManager
             key: "groupByEditorVersion",
             label: "Group by editor version",
             description: "Organize projects under section headers by Unity editor version",
-            defaultValue: false
+            defaultValue: true
         );
 
         HideMissingProjectsSetting = new ToggleSetting(
