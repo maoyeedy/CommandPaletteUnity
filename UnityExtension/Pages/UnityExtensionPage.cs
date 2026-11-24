@@ -224,7 +224,6 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
         return new Details
         {
             Title = project.Title,
-            HeroImage = project.Exists ? Resources.IconUnity : Resources.IconMissing,
             Body = project.Exists ? string.Empty : "Project folder was not found on disk.",
             Metadata = metadata.ToArray(),
         };

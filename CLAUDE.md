@@ -14,10 +14,11 @@ Read only when the topic comes up: `docs/DEVELOPMENT.md` (setup, dev loop, doc m
 Use the `justfile`; `just` lists recipes.
 
 - Each change: `just build`, `just test`; after shell bulk edits `just check` (Claude hooks only cover Edit/Write).
-- After extension code edits: run `just register` automatically (do not ask first) so the live Command Palette session gets the change, and report whether it succeeded, failed, or Command Palette was not running. (`just register` resets release-install settings; dev settings survive.)
+- After extension code edits: run `just register` automatically (do not ask first) so the live Command Palette session gets the change, and report whether it succeeded, failed, or Command Palette was not running. (`just register` already builds Debug x64 and reloads CmdPal, which immediately re-locks `bin/`, so do not run `just build` after it; it resets release-install settings while dev settings survive.)
+- Upstream source: `just vendor` creates sparse, gitignored `vendor/PowerToys/`; read the Toolkit, extension template and sample pages there instead of `gh api repos/.../contents/...`. `just vendor-update` refreshes it.
 - After a WindowsAppSDK/CsWinRT or packaging change: `just trim`, `just bundle`.
 - New clone or new PC: `just doctor`.
-- MSB3021/MSB3027 "locked by: Unity Extension for Command Palette" = extension is running: `just build <other dir>`; never kill it.
+- MSB3021/MSB3027 "locked by: Unity Extension for Command Palette" = extension is running: `just register` (replaces `just build`) or compile-check with `just build <other dir>`; never kill it.
 - Tests cover `ProjectParser`, `HubDatabase`, `HubDataWatcher`, path shortening, and Hub install URI validation (the WAL test needs `pwsh`); UI and commands need a manual check in Command Palette after `just register`.
 - Commit on a branch, not `master` (even for docs-only changes). Stop and ask before opening or merging a PR: the user may have follow-up changes.
 - Push to `master` needs passing CI; land changes through a PR, direct pushes are rejected.

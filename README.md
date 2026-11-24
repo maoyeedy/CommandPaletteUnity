@@ -29,8 +29,4 @@ Get it from the [Microsoft Store](https://apps.microsoft.com/store/detail/app/9N
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
 
-## Features and roadmap
-
-See [`docs/PRODUCT.md`](docs/PRODUCT.md) for features and [`docs/ROADMAP.md`](docs/ROADMAP.md) for what's next.
-
 [^1]: Not affiliated with Unity Technologies. This extension uses local Unity Hub data only; its one write is removing a project from Hub's list when you ask.

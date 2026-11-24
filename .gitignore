@@ -346,3 +346,6 @@ AppPackages*
 .env
 *.key
 *.local.*
+
+# Local upstream source reference (just vendor), not part of this project
+/vendor/
