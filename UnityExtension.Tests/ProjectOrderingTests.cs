@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -169,5 +170,27 @@ public sealed class ProjectOrderingTests
     {
         var missing = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         Assert.Null(OpenSolutionCommand.TryFindSolutionFile(missing, "Anything"));
+    }
+
+    [Theory]
+    [InlineData(0L, null)]
+    [InlineData(-1L, null)]
+    [InlineData(30L, "Just now")]
+    [InlineData(60L, "1 minute ago")]
+    [InlineData(5L * 60, "5 minutes ago")]
+    [InlineData(60L * 60, "1 hour ago")]
+    [InlineData(3L * 60 * 60, "3 hours ago")]
+    [InlineData(24L * 60 * 60, "1 day ago")]
+    [InlineData(12L * 24 * 60 * 60, "12 days ago")]
+    [InlineData(30L * 24 * 60 * 60, "1 month ago")]
+    [InlineData(120L * 24 * 60 * 60, "4 months ago")]
+    [InlineData(365L * 24 * 60 * 60, "1 year ago")]
+    [InlineData(730L * 24 * 60 * 60, "2 years ago")]
+    public void Format_relative_time_formats_unix_ms(long ageSeconds, string? expected)
+    {
+        var now = new DateTimeOffset(2026, 11, 25, 0, 0, 0, TimeSpan.Zero);
+        var ms =
+            ageSeconds <= 0 ? ageSeconds : now.AddSeconds(-ageSeconds).ToUnixTimeMilliseconds();
+        Assert.Equal(expected, UnityExtensionPage.FormatRelativeTime(ms, now));
     }
 }

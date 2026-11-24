@@ -245,6 +245,7 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
     {
         var defaultCommand = new OpenUnityCommand(project);
 
+        // Keep the More menu <= 5 items, grouped by verb: Open ... -> Copy ... -> Remove ... at the bottom.
         var contextCommands = new List<IContextItem>();
 
         if (project.Exists)
@@ -288,19 +289,6 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
             }
         );
 
-        if (TryBuildRepoUri(project) is { } repoUri)
-        {
-            contextCommands.Add(
-                new CommandContextItem(
-                    new OpenUrlCommand(repoUri.AbsoluteUri)
-                    {
-                        Name = RepoCommandName(project.VcsProvider),
-                        Icon = Resources.IconUrl,
-                    }
-                )
-            );
-        }
-
         // Only Hub 4 (hub.db) entries can be removed; Hub 3 JSON is never written.
         if (project.FromHubDb)
         {
@@ -330,8 +318,6 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
                 );
             }
         }
-
-        contextCommands.Add(new CommandContextItem(new OpenUnityHubCommand()));
 
         var tags = new List<Tag>();
         if (project.IsFavorite)
@@ -367,11 +353,14 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
 
     private static Details BuildDetails(UnityProject project)
     {
-        var metadata = new List<IDetailsElement>
+        var metadata = new List<IDetailsElement>();
+        if (FormatRelativeTime(project.LastModified) is { } modified)
         {
-            TextDetail("Editor", project.Version),
-            TextDetail("Path", project.Path),
-        };
+            metadata.Add(TextDetail("Modified", modified));
+        }
+
+        metadata.Add(TextDetail("Editor", project.Version));
+        metadata.Add(TextDetail("Path", project.Path));
 
         if (project.Tags.Count > 0)
         {
@@ -476,10 +465,56 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
         return true;
     }
 
-    private static string RepoCommandName(string vcsProvider) =>
-        string.Equals(vcsProvider, "gitlab", StringComparison.OrdinalIgnoreCase)
-            ? "Open on GitLab"
-            : "Open on GitHub";
+    internal static string? FormatRelativeTime(long lastModifiedMs, DateTimeOffset? now = null)
+    {
+        if (lastModifiedMs <= 0)
+        {
+            return null;
+        }
+
+        DateTimeOffset modified;
+        try
+        {
+            modified = DateTimeOffset.FromUnixTimeMilliseconds(lastModifiedMs);
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return null;
+        }
+
+        var elapsed = (now ?? DateTimeOffset.UtcNow) - modified;
+        if (elapsed.TotalMinutes < 1)
+        {
+            return "Just now";
+        }
+
+        if (elapsed.TotalHours < 1)
+        {
+            var minutes = (int)elapsed.TotalMinutes;
+            return minutes == 1 ? "1 minute ago" : $"{minutes} minutes ago";
+        }
+
+        if (elapsed.TotalDays < 1)
+        {
+            var hours = (int)elapsed.TotalHours;
+            return hours == 1 ? "1 hour ago" : $"{hours} hours ago";
+        }
+
+        if (elapsed.TotalDays < 30)
+        {
+            var days = (int)elapsed.TotalDays;
+            return days == 1 ? "1 day ago" : $"{days} days ago";
+        }
+
+        if (elapsed.TotalDays < 365)
+        {
+            var months = (int)(elapsed.TotalDays / 30);
+            return months == 1 ? "1 month ago" : $"{months} months ago";
+        }
+
+        var years = (int)(elapsed.TotalDays / 365);
+        return years == 1 ? "1 year ago" : $"{years} years ago";
+    }
 
     internal static string ShortenHomePath(string path, string? homeDir = null)
     {
