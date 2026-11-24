@@ -12,7 +12,7 @@ internal sealed partial class RemoveAllProjectsCommand : InvokableCommand
 {
     public RemoveAllProjectsCommand()
     {
-        Name = "Remove all projects from Unity Hub list";
+        Name = "Remove all projects from Unity Hub";
         Icon = Resources.IconRemove;
     }
 
@@ -23,8 +23,8 @@ internal sealed partial class RemoveAllProjectsCommand : InvokableCommand
 
         var message =
             removed > 0
-                ? $"Removed {removed} projects from Unity Hub's list"
-                : "Nothing removed. Unity Hub may be busy, or this is Hub 3.";
+                ? $"Removed {removed} projects from Unity Hub"
+                : "Nothing removed. Unity Hub may be busy, or your Hub version is older than v4.";
 
         return CommandResult.ShowToast(
             new ToastArgs { Message = message, Result = CommandResult.KeepOpen() }

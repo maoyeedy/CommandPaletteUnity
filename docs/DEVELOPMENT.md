@@ -48,6 +48,8 @@ Agents read the Command Palette SDK, Toolkit, extension template and sample page
 local checkout in `vendor/PowerToys/` (gitignored), not through `gh api`. Run `just vendor` once per
 clone; `just vendor-update` refreshes it. The repo URL and the four sparse paths live in
 `scripts/Init-Vendor.ps1` -- add a repo there when agents start consulting another upstream source.
+The CmdPal gallery fork (`maoyeedy/CmdPal-Extensions`) is not cloned locally; clone it on demand
+only when gallery metadata changes (see [PUBLISHING.md](PUBLISHING.md#cmdpal-gallery)).
 
 ## Daily loop
 

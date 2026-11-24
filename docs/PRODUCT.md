@@ -29,24 +29,34 @@ One top-level command, **Unity Projects**, opens the page **Recent Unity Project
 
 | Element | Behavior |
 |---|---|
-| Order | Newest `lastModified` first. Favorites first if the setting is on |
+| Order | Ordered by `Sort projects by` (default newest `lastModified` first; also supports `Name (A-Z)` and `Editor version`). Favorites first if enabled; optionally grouped under section headers by editor version |
 | Title | Hub's project title, or the folder name |
 | Subtitle | Project path (with `~` for `%USERPROFILE%`). Adds "(folder not found)" when missing |
 | Tags | Star icon (gold, tooltip "Favorite"), "Missing" (red), editor version |
 | Icon | Unity logo, or a "missing" icon |
-| Details | Details pane showing editor version, full path, Hub 4 tags, Git repository (clickable link for GitHub/GitLab), render pipeline, and build target (omitting empty fields) |
+| Details | Details pane (toggled by `Show details pane`) showing relative `Modified` time at top, editor version, full path (clickable link to open in Explorer when present), Hub 4 tags, Git repository (clickable link for GitHub/GitLab), render pipeline, and build target (omitting empty fields) |
 | Enter | Opens the project in its matching editor (re-scanning the registry on miss). Missing editor with a known changeset prompts to install via `unityhub://<version>/<changeset>`; otherwise toasts "Unity <version> not found. Please install through Unity Hub.". Missing folder toasts "Project folder no longer exists" |
-| More commands | Open in File Explorer. Hub 4 only: "Remove from Unity Hub list" (confirm, deletes the `hub.db` row), and on missing projects "Remove all missing projects (n)" |
+| More commands | Kept `<= 5` items and grouped by verb (`Open ...` -> `Copy ...` -> critical `Remove ...` at the bottom): when folder exists, `Open in Console` (`Ctrl+Shift+R`, secondary action), `Open in Explorer` (`Ctrl+Shift+E`), and `Open solution` (when a `.sln`/`.slnx` exists in the project root); always `Copy path` (`Ctrl+Shift+C`); Unity Hub v4 only `Remove from Unity Hub` (`Ctrl+Shift+Delete`, confirm, deletes the `hub.db` row), and on missing projects with >1 missing `Remove all missing (n)` |
 | Empty list | "No Unity projects found" with a hint to open projects in Hub |
-| Settings page | The extension's real settings page (provider `Settings`), with the two toggles and a **Danger zone**: a "Remove all projects from Unity Hub list" button, an inline two-step confirm inside the settings card (CmdPal's `CommandResult.Confirm` dialog belongs to the palette window, not the settings window), then all `hub.db` project rows are deleted. No project folder is deleted. Hub 4 only |
+| Settings page | The extension's real settings page (provider `Settings`), with the settings below and a **Danger zone**: a "Remove all projects from Unity Hub" button, an inline two-step confirm inside the settings card (CmdPal's `CommandResult.Confirm` dialog belongs to the palette window, not the settings window), then all `hub.db` project rows are deleted. No project folder is deleted. Unity Hub v4 only |
 | Data source | `hub.db` (Hub 4), else `projects-v1.json` minus `excludedProjectFolders.json`; see scope decisions. Unreadable `hub.db` -> empty list. Watches Hub data files (`hub.db`, `hub.db-wal`, `projects-v1.json`, `excludedProjectFolders.json`) and refreshes the open list automatically on change |
 
 Settings:
 
 | Setting | Default |
 |---|---|
+| Sort projects by | Recently modified |
 | Group favorites first | on |
-| Hide projects missing from disk | off |
+| Group by editor version | on |
+| Hide missing projects | off |
+| Show details pane | on |
+
+### UI wording and layout
+
+- **User-facing terminology**: Always write `Unity Hub` and `Unity Hub v4` in UI copy; never use internal shorthand (`Hub 4`, `Hub 3`, `Hub list`).
+- **Command labels**: Keep verbs clear and concise (`Open in Unity`, `Open in Console`, `Open in Explorer`, `Open solution`, `Copy path`, `Remove from Unity Hub`).
+- **More menu budget and order**: Keep `<= 5` items grouped by verb (`Open ...` -> `Copy ...` -> critical `Remove ...` at the bottom).
+- **Settings labels and defaults**: Use plain, intuitive labels and descriptions; default discoverable features on (`Group by editor version`, `Show details pane`) so users see them immediately and can disable them if unwanted.
 
 Editors are found through the registry (`HKCU`/`HKLM\SOFTWARE\Unity Technologies\Installer`) and
 matched by exact version.
@@ -76,3 +86,4 @@ Decided against; don't propose again without new facts.
 | Per-project editor arguments (`projectsInfo.json` `cliArgs`) | Rejected as overkill: rarely set; Unity Hub remains the place for custom launch flags |
 | Details pane `HeroImage` (Unity logo) | Redundant with the list row icon and wastes vertical space above the project title |
 | Rendering details pane metadata in `Details.Body` Markdown | Command Palette's host `DetailsPane.xaml` keeps fixed margins on empty `Body` (`0,4,0,24`) and `Content` (`0,4,0,16`) rows that extensions cannot collapse; replacing `Metadata` with Markdown loses native `DetailsTags`/`DetailsLink` styling and hits light-theme contrast issues. Keep native `Title` + `Metadata` without `HeroImage` |
+| Extra More commands (`Open on GitHub/GitLab`, `Open Unity Hub`) | Keeps the More menu `<= 5` items grouped by verb (`Open` -> `Copy` -> red `Remove` at the bottom); GitHub/GitLab is already a clickable link in the Details pane |
