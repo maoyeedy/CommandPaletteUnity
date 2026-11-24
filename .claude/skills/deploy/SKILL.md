@@ -24,7 +24,7 @@ Stop and report if the build fails; do not deploy a stale output.
 
 **Debug.** `just register` (MSIX debug build, Assets copy, `Add-AppxPackage -Register`). It first removes any installed copy: a dev registration with `-PreserveApplicationData` (settings kept), a release install outright (its settings reset). It then reloads extensions via `x-cmdpal://reload` if Command Palette is running.
 
-**Release.** Follow "Signing" and "Install for testing" in `docs/PUBLISHING.md` (`#signing`, `#install-for-testing`). Use the git-ignored `scripts/sign.ps1` (read its `param()` block; pass `-BundlePath` and `-Subject` equal to the manifest `Publisher`). Trusting the cert and verifying the signature need an **elevated** shell, which an agent session is not; hand the user the exact admin command. Confirm with `Get-AppxPackage` (new version, `SignatureKind` Developer) and that `UnityExtension.exe` is running from `WindowsApps`.
+**Release.** Follow "Signing" and "Install for testing" in `docs/PUBLISHING.md` (`#signing`, `#install-for-testing`). Use the git-ignored `scripts/Sign-LocalMsix.ps1` (read its `param()` block; pass `-BundlePath` and `-Subject` equal to the manifest `Publisher`). Trusting the cert and verifying the signature need an **elevated** shell, which an agent session is not; hand the user the exact admin command. Confirm with `Get-AppxPackage` (new version, `SignatureKind` Developer) and that `UnityExtension.exe` is running from `WindowsApps`.
 
 ## 4. Reload and verify
 
