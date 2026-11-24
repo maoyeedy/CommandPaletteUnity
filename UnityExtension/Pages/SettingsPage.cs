@@ -54,7 +54,7 @@ internal sealed partial class SettingsPage : ContentPage
                 },
                 {
                   "type": "TextBlock",
-                  "text": "Clears every entry from Hub 4's project list, including ones still on disk. Your project files stay untouched.",
+                  "text": "Clears Hub 4's project list. No files or folders are deleted.",
                   "wrap": true,
                   "isSubtle": true,
                   "spacing": "small"
@@ -85,7 +85,7 @@ internal sealed partial class SettingsPage : ContentPage
                 },
                 {
                   "type": "TextBlock",
-                  "text": "Every entry leaves Hub's project list, including projects still on disk. Your project files stay untouched.",
+                  "text": "Clears all projects from Hub's list. No files or folders are deleted.",
                   "color": "attention",
                   "wrap": true,
                   "spacing": "small"
