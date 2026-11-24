@@ -108,13 +108,27 @@ register:
     # Uninstall first: a release install blocks -Register (0x80073CFB), and a running dev
     # registration locks bin/ (MSB3021). Removal also stops the extension, so PowerToys can stay
     # open. Dev data (settings) is kept; a release install's settings are not.
-    foreach ($installed in Get-AppxPackage YidiMao.CommandPalette-Unity) {
+    foreach ($installed in @(Get-AppxPackage YidiMao.CommandPalette-Unity)) {
         if ($installed.IsDevelopmentMode) {
-            "Removing dev registration $($installed.Version) (settings kept)"
-            Remove-AppxPackage $installed.PackageFullName -PreserveApplicationData
+            $kind = 'dev registration'
+            $remove = @{ Package = $installed.PackageFullName; PreserveApplicationData = $true }
         } else {
-            "Removing release package $($installed.Version) (its settings are reset)"
-            Remove-AppxPackage $installed.PackageFullName
+            $kind = 'release package'
+            $remove = @{ Package = $installed.PackageFullName }
+        }
+        "Removing $kind $($installed.Version)"
+        try {
+            Remove-AppxPackage @remove
+            "Removed $kind $($installed.Version)"
+        } catch {
+            # A concurrent register/uninstall can make the package disappear between
+            # Get-AppxPackage and Remove-AppxPackage (0x80073CF1). That is fine; any
+            # other removal failure still stops the recipe.
+            if ($_.Exception.Message -match '0x80073CF1|Package was not found') {
+                "$kind $($installed.Version) is already gone; continuing"
+            } else {
+                throw
+            }
         }
     }
     dotnet build UnityExtension/UnityExtension.csproj -c Debug -p:Platform=x64 -p:WindowsPackageType=MSIX
