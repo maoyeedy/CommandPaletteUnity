@@ -17,7 +17,7 @@ public partial class UnityExtensionCommandsProvider : CommandProvider
         DisplayName = "Unity Projects";
         Icon = Resources.IconUnity;
 
-        Settings = _settingsManager.Settings;
+        Settings = new ExtensionSettings(_settingsManager);
         _commands =
         [
             new CommandItem(new UnityExtensionPage(_settingsManager)) { Title = DisplayName },

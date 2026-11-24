@@ -100,21 +100,35 @@ doctor:
     Check 'Unity Hub projects-v1.json' (Test-Path "$env:APPDATA\UnityHub\projects-v1.json") 'install Unity Hub and add a project' -Optional
     if ($missing) { "$missing required item(s) missing"; exit 1 }
 
-# Debug build + dev registration into Command Palette; then run Command Palette's Reload
+# Debug build + dev registration into Command Palette, then reload its extensions
 [group('deploy')]
 [script('pwsh', '-NoLogo', '-NoProfile')]
 register:
     $ErrorActionPreference = 'Stop'
     # Uninstall first: a release install blocks -Register (0x80073CFB), and a running dev
-    # registration locks bin/ (MSB3021). Removal also stops the extension, so PowerToys can stay
-    # open. Dev data (settings) is kept; a release install's settings are not.
-    foreach ($installed in Get-AppxPackage YidiMao.CommandPalette-Unity) {
+    # registration locks bin/ (MSB3021). Removal also stops the extension, so Command Palette can
+    # stay open. Dev data (settings) is kept; a release install's settings are not.
+    foreach ($installed in @(Get-AppxPackage YidiMao.CommandPalette-Unity)) {
         if ($installed.IsDevelopmentMode) {
-            "Removing dev registration $($installed.Version) (settings kept)"
-            Remove-AppxPackage $installed.PackageFullName -PreserveApplicationData
+            $kind = 'dev registration'
+            $remove = @{ Package = $installed.PackageFullName; PreserveApplicationData = $true }
         } else {
-            "Removing release package $($installed.Version) (its settings are reset)"
-            Remove-AppxPackage $installed.PackageFullName
+            $kind = 'release package'
+            $remove = @{ Package = $installed.PackageFullName }
+        }
+        "Removing $kind $($installed.Version)"
+        try {
+            Remove-AppxPackage @remove
+            "Removed $kind $($installed.Version)"
+        } catch {
+            # A concurrent register/uninstall can make the package disappear between
+            # Get-AppxPackage and Remove-AppxPackage (0x80073CF1). That is fine; any
+            # other removal failure still stops the recipe.
+            if ($_.Exception.Message -match '0x80073CF1|Package was not found') {
+                "$kind $($installed.Version) is already gone; continuing"
+            } else {
+                throw
+            }
         }
     }
     dotnet build UnityExtension/UnityExtension.csproj -c Debug -p:Platform=x64 -p:WindowsPackageType=MSIX
@@ -124,4 +138,15 @@ register:
     $assets = New-Item -ItemType Directory -Force (Join-Path $manifest.DirectoryName 'Assets')
     Copy-Item -Recurse -Force UnityExtension/Assets/* $assets
     Add-AppxPackage -Register $manifest.FullName -ForceUpdateFromAnyVersion
-    "Registered $($manifest.FullName). In Command Palette run Reload."
+    "Registered $($manifest.FullName)."
+    # A remove/re-register leaves the old provider in CmdPal's list until it reloads, so a
+    # second register can look like two extensions. Let the old extension process exit and
+    # CmdPal's package-catalog events settle first; reloading too early still sees two
+    # entries. This needs Command Palette running and "Enable external command links" on.
+    if (Get-Process Microsoft.CmdPal.UI -ErrorAction SilentlyContinue) {
+        Start-Sleep -Seconds 3
+        Start-Process x-cmdpal://reload
+        "Sent x-cmdpal://reload; confirm in Command Palette if it asks."
+    } else {
+        "Command Palette is not running; start it to load the extension."
+    }

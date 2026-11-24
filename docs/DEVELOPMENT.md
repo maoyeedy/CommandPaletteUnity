@@ -4,7 +4,8 @@ The dev loop: setup, build, test, debug. Each other topic has one home:
 
 | Topic | File |
 |---|---|
-| Scope, UX, roadmap | [PRODUCT.md](PRODUCT.md) |
+| Scope, UX | [PRODUCT.md](PRODUCT.md) |
+| Roadmap | [ROADMAP.md](ROADMAP.md) |
 | Unity Hub / CLI data formats | [reference/unity/](reference/unity/README.md) |
 | NuGet, tool, hook and Windows SDK updates | [DEPENDENCIES.md](DEPENDENCIES.md) |
 | Packaging, signing, releases, Store | [PUBLISHING.md](PUBLISHING.md) |
@@ -33,7 +34,7 @@ winget install --exact --id Microsoft.DotNet.SDK.10 --source winget
 winget install --exact --id Microsoft.PowerShell --source winget
 winget install --exact --id Git.Git --source winget
 
-# Host: Command Palette ships with PowerToys
+# Host: Command Palette ships with PowerToys but runs standalone
 winget install --exact --id Microsoft.PowerToys --source winget
 
 # Deploy and publish: winapp (dev registration, MSIX), msstore (Store submissions)
@@ -47,21 +48,36 @@ All commands are in the root `justfile` ([just](https://just.systems)); `just` l
 
 1. `just build` (Debug x64). If the running extension locks `bin/`: `just build <other dir>`.
 2. `just test`, `just check`.
-3. `just register` (uninstalls any installed copy first, keeping dev settings), then run Command Palette's `Reload`.
+3. `just register` (uninstalls any installed copy first, keeping dev settings but resetting a release install's settings); if Command Palette is running it also reloads extensions via `x-cmdpal://reload` (the first request asks to confirm).
 4. After a WindowsAppSDK, CsWinRT or packaging change: `just trim`, `just bundle`.
 
 Before a release: `just versions`, `just pins`.
 
+For register caveats and loading problems, see
+[TROUBLESHOOTING.md](TROUBLESHOOTING.md#changes-not-showing).
+
 ## Test
 
-`UnityExtension.Tests` (xUnit) covers `ProjectParser` only. Check UI and commands by hand in
-PowerToys; [PRODUCT.md](PRODUCT.md#current-behavior) lists the expected behavior.
+`UnityExtension.Tests` (xUnit) covers `ProjectParser` and `HubDatabase` only (the WAL test needs
+`pwsh`). Check UI and commands by hand in Command Palette;
+[PRODUCT.md](PRODUCT.md#current-behavior) lists the expected behavior.
+
+## Settings page
+
+The settings page is a separate window from the palette. `CommandResult.Confirm` is a `ContentDialog`
+owned by the palette window, so it cannot show in settings; destructive settings actions confirm
+inline by swapping `FormContent.TemplateJson` in `SubmitForm` (the host re-renders the card on a
+property change). See `SettingsPage.cs`.
 
 ## Debug
 
 Attach to `UnityExtension.exe` after `just register`. Useful breakpoints: provider constructor,
 `UnityExtensionPage.GetItems`, `OpenUnityCommand.Invoke`, `ProjectParser`, `EditorParser`. Watch the
 VS Output window ("Debug").
+
+For settings, break in `SettingsPage.DangerZoneForm.SubmitForm` or `RemoveAllProjectsCommand.Invoke`;
+they run in the same process as the palette. To check the UI by hand, open the extension's settings
+page in Command Palette, not the palette runner: the runner never shows settings content.
 
 ## Code rules
 
@@ -70,5 +86,5 @@ VS Output window ("Debug").
 - CLSID: `[Guid]` in `UnityExtension.cs` equals both `ClassId` entries in `Package.appxmanifest`.
 - Package versions only in `Directory.Packages.props`.
 - `ProjectParser` swallows exceptions and returns an empty list.
-- Hub data: the only write is deleting a `projects` row in `hub.db` via `HubDatabase`; never read
-  `accounts.db`, never log raw project-record JSON.
+- Hub data: the only writes delete `projects` rows in `hub.db` via `HubDatabase` (one or all);
+  never read `accounts.db`, never log raw project-record JSON.
