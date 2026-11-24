@@ -360,7 +360,20 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
         }
 
         metadata.Add(TextDetail("Editor", project.Version));
-        metadata.Add(TextDetail("Path", project.Path));
+        if (project.Exists && TryBuildFolderUri(project.Path) is { } folderUri)
+        {
+            metadata.Add(
+                new DetailsElement
+                {
+                    Key = "Path",
+                    Data = new DetailsLink { Link = folderUri, Text = project.Path },
+                }
+            );
+        }
+        else
+        {
+            metadata.Add(TextDetail("Path", project.Path));
+        }
 
         if (project.Tags.Count > 0)
         {
@@ -422,6 +435,16 @@ internal sealed partial class UnityExtensionPage : ListPage, IDisposable
             Key = key,
             Data = new DetailsTags { Tags = [new Tag(value)] },
         };
+
+    internal static Uri? TryBuildFolderUri(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path) || !Path.IsPathRooted(path))
+        {
+            return null;
+        }
+
+        return Uri.TryCreate(path, UriKind.Absolute, out var uri) && uri.IsFile ? uri : null;
+    }
 
     internal static Uri? TryBuildRepoUri(UnityProject project)
     {

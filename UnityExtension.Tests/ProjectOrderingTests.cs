@@ -193,4 +193,15 @@ public sealed class ProjectOrderingTests
             ageSeconds <= 0 ? ageSeconds : now.AddSeconds(-ageSeconds).ToUnixTimeMilliseconds();
         Assert.Equal(expected, UnityExtensionPage.FormatRelativeTime(ms, now));
     }
+
+    [Theory]
+    [InlineData(@"E:\thesis\workspaces\unity", "file:///E:/thesis/workspaces/unity")]
+    [InlineData(@"C:\Users\alice\My Game", "file:///C:/Users/alice/My%20Game")]
+    [InlineData(@"relative\path", null)]
+    [InlineData("", null)]
+    public void Try_build_folder_uri_handles_rooted_paths(string path, string? expected)
+    {
+        var uri = UnityExtensionPage.TryBuildFolderUri(path);
+        Assert.Equal(expected, uri?.AbsoluteUri);
+    }
 }

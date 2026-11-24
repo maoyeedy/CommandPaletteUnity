@@ -34,7 +34,7 @@ One top-level command, **Unity Projects**, opens the page **Recent Unity Project
 | Subtitle | Project path (with `~` for `%USERPROFILE%`). Adds "(folder not found)" when missing |
 | Tags | Star icon (gold, tooltip "Favorite"), "Missing" (red), editor version |
 | Icon | Unity logo, or a "missing" icon |
-| Details | Details pane (toggled by `Show details pane`) showing relative `Modified` time at top, editor version, full path, Hub 4 tags, Git repository (clickable link for GitHub/GitLab), render pipeline, and build target (omitting empty fields) |
+| Details | Details pane (toggled by `Show details pane`) showing relative `Modified` time at top, editor version, full path (clickable link to open in Explorer when present), Hub 4 tags, Git repository (clickable link for GitHub/GitLab), render pipeline, and build target (omitting empty fields) |
 | Enter | Opens the project in its matching editor (re-scanning the registry on miss). Missing editor with a known changeset prompts to install via `unityhub://<version>/<changeset>`; otherwise toasts "Unity <version> not found. Please install through Unity Hub.". Missing folder toasts "Project folder no longer exists" |
 | More commands | Kept `<= 5` items and grouped by verb (`Open ...` -> `Copy ...` -> critical `Remove ...` at the bottom): when folder exists, `Open in Console` (`Ctrl+Shift+R`, secondary action), `Open in Explorer` (`Ctrl+Shift+E`), and `Open solution` (when a `.sln`/`.slnx` exists in the project root); always `Copy path` (`Ctrl+Shift+C`); Hub 4 only `Remove from Hub list` (`Ctrl+Shift+Delete`, confirm, deletes the `hub.db` row), and on missing projects with >1 missing `Remove all missing (n)` |
 | Empty list | "No Unity projects found" with a hint to open projects in Hub |
