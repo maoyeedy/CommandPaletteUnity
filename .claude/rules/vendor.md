@@ -7,6 +7,8 @@ paths:
 
 `vendor/PowerToys/` is reference only, never a build input. Search it with `fd`/`rg` before falling back to `gh api`; every path in the table is materialized locally. Paths are relative to `vendor/PowerToys/src/modules/cmdpal/`.
 
+> `vendor/PowerToys/` tracks upstream `main` and can be ahead of both `Directory.Packages.props` and the installed Command Palette host. Check `(Get-AppxPackage *CommandPalette*).Version` (and `git -C vendor/PowerToys log`) before relying on newly added host features or Adaptive Card inputs.
+
 | Path | Read it for |
 |---|---|
 | `extensionsdk/Microsoft.CommandPalette.Extensions` | WinRT ABI in `Microsoft.CommandPalette.Extensions.idl`: `IExtension`, `ICommandItem`, `IListPage`, `IDetails`, `ICommandResult`. |
@@ -15,5 +17,5 @@ paths:
 | `ext/SamplePagesExtension` | Page-pattern catalog `SamplesListPage.cs`, sections in `Pages/SectionsPages/`, details in `SampleListPageWithDetails.cs`, grids in `SampleGridsListPage.cs`. |
 | `ext/Microsoft.CmdPal.Ext.Apps` | `AllAppsPage`/`AppListItem`/`AppCommand`, `Win32Program.GetCommands()` -> `ToAppItem()` -> `MoreCommands`, icons in `Icons.cs` + `AppxIconLoader`, confirm/toast patterns. |
 | `Microsoft.CmdPal.Common` | `Helpers/WellKnownKeyChords.cs`, `PathHelper`, `CommandLineParser`, `Text/FuzzyMatcherProvider`, logging, sanitization, extension gallery. |
-| `Microsoft.CmdPal.UI` | `Controls/DetailsPane.xaml` (link/metadata templates) and `Helpers/MarkdownImageProviders/` (`file:`/`ms-appx:`/`data:` images). |
+| `Microsoft.CmdPal.UI` | `Controls/DetailsPane.xaml` (link/metadata templates), `Controls/AdaptiveCards/` (custom inputs/pickers), and `Helpers/MarkdownImageProviders/` (`file:`/`ms-appx:`/`data:` images). |
 | `Microsoft.CmdPal.UI.ViewModels` | `DetailsViewModel.cs` (metadata rows) and `DetailsLinkViewModel.cs` (`file:` links via `NavigateCommand` -> `ShellHelpers.OpenInShell`). |
