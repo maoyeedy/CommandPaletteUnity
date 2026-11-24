@@ -7,7 +7,7 @@ and current behavior live in [PRODUCT.md](PRODUCT.md); ideas we decided against 
 | # | Item | Notes |
 |---|---|---|
 | 1 | Projects Hub doesn't list | Editor's recent-projects registry list ([community.md](reference/unity/community.md)). Read-only fallback, deduped by path and labeled so it never looks like a Hub row |
-| 2 | Missing editor: Hub install prompt | Today: toast only. `unityhub://<version>/<changeset>` opens Hub's install modal; Hub does not need to be running (see [deeplinks.md](reference/unity/deeplinks.md)) |
+| 2 | Missing editor: Hub install prompt | Today: toast only. `unityhub://<version>/<changeset>` opens Hub's install modal; Hub does not need to be running (see [protocol.md](reference/unity/unityhub/protocol.md)) |
 | 3 | Show and search tags | `tag:` search, Hub 4 only. `UnityProject.Tags` is already parsed; show tags in details first. Search syntax needs a dedicated UI/UX pass |
 | 4 | Visual polish | Show `~` for the home folder; star without the word "Favorite" |
 | 5 | Git info in details | `vcsProvider`, `organizationName`, `repositoryName` from `hub.db`. Branch is computed live, so it stays out |

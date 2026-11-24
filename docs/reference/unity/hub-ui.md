@@ -1,4 +1,4 @@
-# Unity Hub 4 Projects page
+# Unity Hub 4 Projects page and tags
 
 Quoted UI text uses `-` where Hub shows a middle dot.
 
@@ -26,7 +26,7 @@ Cells:
 - **Warning icon** before the name when the project cannot open. Tooltip:
   > This project can't be opened in the Editor. To proceed, resolve the following issues:
   > - Missing Editor version
-  The install flow can also be opened with a deeplink (see [deeplinks.md](deeplinks.md)).
+  The install flow can also be opened with a deeplink (see [unityhub/protocol.md](unityhub/protocol.md)).
 - **Tags**: chips. **Branch**: live Git branch, dash without Git.
 
 ## Expanded row
@@ -59,4 +59,5 @@ The row header shows icons for star, Git provider (repo linked) and cloud (Unity
 From the row `...` menu. "Organize this project with one or more tags. Filter your projects by tag
 from the Projects list." Input hint: "Press Enter or , to add - 50 characters max". Collapsible
 **Tag suggestions**: game, prototype, simulation, visualization, 2d, 3d, client project, personal,
-archived, work in progress. Cancel / Save. Saved to the `tags` array of the `hub.db` row.
+archived, work in progress. Cancel / Save. Saved to the `tags` array of the `hub.db` row (see
+[unityhub/registry.md#project-record-fields](unityhub/registry.md#project-record-fields)).

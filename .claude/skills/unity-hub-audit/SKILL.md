@@ -7,7 +7,8 @@ description: >-
 # Unity Hub / CLI audit
 
 Goal: find what changed in Hub and CLI behavior since the last audit, prove it, and update
-`docs/reference/unity/` (README, hub-data, hub-ui, cli, community, rea) and
+`docs/reference/unity/` (README, unityhub/{protocol,registry,configdir,installdir}, hub-ui, cli,
+community, rea) and
 `references/baseline.json`. For database schemas, follow the recipe in `docs/reference/unity/rea.md`.
 
 ## 1. Snapshot and diff
@@ -42,6 +43,8 @@ user's data (project/editor counts, presence counts moving together). Look for:
   copy of `hub.db`. Never write to `hub.db`, `projects-v1.json` or run mutating CLI commands
   (`projects pin/add/remove`) on real data without asking: they change the user's Hub state.
 - Items listed under "Unverified" in `cli.md`: retry them when the version changes.
+- Quick local facts: `just hubfacts` and `just editors` are read-only Windows helpers in `scripts/`;
+  `just docs-check` verifies links after the edits.
 
 ## 3. Update the docs
 

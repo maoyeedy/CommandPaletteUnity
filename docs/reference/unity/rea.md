@@ -10,7 +10,7 @@ Needs Node 22.23.4+, 24.22.1+ or 26.12.1+. Run with `npx -y rea-agents@latest <c
 
 | Tool (CLI command) | Use in this repo | Notes |
 |---|---|---|
-| `inspect-sqlite-database` | Schema of `hub.db` and `install-state.db` (see [hub-data.md](hub-data.md)) | Opens a private copy with extensions disabled; never touches the source file. `--schema-scope database` for the schema only |
+| `inspect-sqlite-database` | Schema of `hub.db` and `install-state.db` (see [registry.md](unityhub/registry.md)) | Opens a private copy with extensions disabled; never touches the source file. `--schema-scope database` for the schema only |
 | `inspect-rust-binary` | Crate names and versions in `Unity Hub.exe` / `unity.exe` | Only reads `cargo-auditable` metadata. No result does not mean a crate is missing |
 | `inspect-pe-imports`, `inspect-native-exports` | Which system DLLs Hub and the CLI link | Bundled SQLite does not show up |
 | `capabilities` | Lists which providers are installed | Run first |
@@ -42,9 +42,9 @@ Unity Mono/IL2CPP detection (that is for games, not the Hub).
 1. Copy `hub.db`, `hub.db-wal` and `install-state\install-state.db` from `%APPDATA%\UnityHub` into a
    new temp dir. Never copy `accounts.db` (personal data).
 2. `npx -y rea-agents@latest inspect-sqlite-database <copy> --schema-scope database --json > <copy>.json`
-3. Compare `schema.tables[].sql` with [hub-data.md](hub-data.md) and update it.
+3. Compare `schema.tables[].sql` with [registry.md](unityhub/registry.md) and update it.
 
-Last run 2026-11-18 against Hub 4.0.x: matches `hub-data.md`. The only addition was the
+Last run 2026-11-18 against Hub 4.0.x: matches `unityhub/registry.md`. The only addition was the
 `writer_kind` column.
 
 ## Safety
