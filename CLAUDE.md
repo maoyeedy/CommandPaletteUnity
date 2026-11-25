@@ -55,4 +55,4 @@ Unpinned (track default branch); confirm API details against the installed packa
 
 ## Upstream source
 
-`just vendor` creates a sparse, gitignored `vendor/PowerToys/` checkout; `just vendor-update` refreshes it. Read the Toolkit, extension template and sample pages there instead of `gh api repos/.../contents/...`. The repo URL and sparse paths live in `scripts/Init-Vendor.ps1`.
+PowerToys reference source is checked out under `./vendor/` (gitignored).
