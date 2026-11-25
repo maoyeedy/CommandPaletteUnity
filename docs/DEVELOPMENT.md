@@ -45,9 +45,12 @@ winget install --exact --id 9P53PC5S0PHJ --source msstore
 ### Upstream source
 
 Agents read the Command Palette SDK, Toolkit, extension template and sample pages from a sparse
-local checkout in `vendor/PowerToys/` (gitignored), not through `gh api`. Run `just vendor` once per
-clone; `just vendor-update` refreshes it. The repo URL and the four sparse paths live in
-`scripts/Init-Vendor.ps1` -- add a repo there when agents start consulting another upstream source.
+local checkout in `vendor/PowerToys/` (gitignored), not through `gh api`. `just vendor` creates it
+once; `just vendor-update` re-fetches it at the PowerToys release matching the installed app (the
+host ships with PowerToys), so the source shows what Command Palette actually runs. The repo URL
+and the eight sparse paths live in `scripts/Init-Vendor.ps1` -- add a repo there when agents start
+consulting another upstream source. To diff the template against unreleased `main` when bumping
+`Microsoft.CommandPalette.Extensions`, fetch `main` ad hoc inside `vendor/PowerToys/`.
 The CmdPal gallery fork (`maoyeedy/CmdPal-Extensions`) is not cloned locally; clone it on demand
 only when gallery metadata changes (see [PUBLISHING.md](PUBLISHING.md#cmdpal-gallery)).
 

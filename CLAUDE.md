@@ -30,7 +30,7 @@ Use the `justfile`; `just` lists recipes.
 - Package versions only in `Directory.Packages.props`; `just pins` passes (shared packages <= PowerToys' pins).
 - `ProjectParser` swallows exceptions and returns an empty list on failure.
 - Settings and palette are separate windows: `CommandResult.Confirm` shows only in the palette, so settings actions confirm inline in their Adaptive Card.
-- Hub data: the only writes delete `projects` rows in `hub.db` via `HubDatabase` (one or all); nothing else under `%APPDATA%\UnityHub`. Never read `accounts.db`, never log or show raw project-record JSON.
+- Hub data: the only writes are `hub.db` `projects` row inserts (`INSERT OR IGNORE` new projects) and deletes (one or all) via `HubDatabase`; nothing else under `%APPDATA%\UnityHub`. Never read `accounts.db`, never log or show raw project-record JSON.
 - Never run, require or bundle the Unity CLI (`unity`); `docs/reference/unity/cli.md` is reference only.
 - Details pane metadata: use `DetailsTags` (`[new Tag(value)]`) for plain-text rows and `DetailsLink` only with a valid absolute `Uri` (avoids null-`Uri` WinRT marshaling issues).
 - No Markdown under `UnityExtension/`.
@@ -55,4 +55,4 @@ Unpinned (track default branch); confirm API details against the installed packa
 
 ## Upstream source
 
-`just vendor` creates a sparse, gitignored `vendor/PowerToys/` checkout; `just vendor-update` refreshes it. Read the Toolkit, extension template and sample pages there instead of `gh api repos/.../contents/...`. The repo URL and sparse paths live in `scripts/Init-Vendor.ps1`.
+PowerToys reference source is checked out under `./vendor/` (gitignored).

@@ -1,0 +1,13 @@
+CoCreateInstance
+CoInitializeEx
+CoTaskMemFree
+CoUninitialize
+COINIT
+FileOpenDialog
+IFileOpenDialog
+IShellItem
+IShellItemArray
+FILEOPENDIALOGOPTIONS
+SIGDN
+CLSCTX
+GetForegroundWindow
